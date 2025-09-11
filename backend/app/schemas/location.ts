@@ -1,0 +1,48 @@
+import { z } from "zod"
+import { WeatherSchema } from "./weather"
+
+// Address Schema
+export const AddressSchema = z.object({
+  city: z.string(),
+  state: z.string(),
+  postalCode: z.string(),
+  country: z.string(),
+  street: z.string().optional(),
+  streetNumber: z.string().optional()
+})
+
+// Geocoded Address Schema
+export const GeocodedAddressSchema = z.object({
+  latitude: z.number(),
+  longitude: z.number(),
+  formattedAddress: z.string(),
+  structuredAddress: AddressSchema
+})
+
+// Location Schema
+export const LocationSchema = z.object({
+  locationId: z.string(),
+  description: z.string(),
+  normalizedLocation: z.string(),
+  geocodedAddress: GeocodedAddressSchema,
+  weather: z.array(WeatherSchema)
+})
+
+// Create Location Schema (for API input)
+export const CreateLocationSchema = z.object({
+  description: z.string().min(1, "Location description is required")
+})
+
+// Update Location Schema
+export const UpdateLocationSchema = z.object({
+  locationId: z.string(),
+  description: z.string().optional(),
+  normalizedLocation: z.string().optional()
+})
+
+// Type exports
+export type Address = z.infer<typeof AddressSchema>
+export type GeocodedAddress = z.infer<typeof GeocodedAddressSchema>
+export type Location = z.infer<typeof LocationSchema>
+export type CreateLocation = z.infer<typeof CreateLocationSchema>
+export type UpdateLocation = z.infer<typeof UpdateLocationSchema>
