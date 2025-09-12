@@ -55,8 +55,8 @@ export const locations = router({
   //   }))
   // }),
 
-  // Decode location description using OpenAI LLM
-  decodeLocation: procedure
+  // Creates a location object from a description.
+  createLocation: procedure
     .input(z.object({ description: z.string().min(1, "Description is required") }))
     .mutation(async ({ ctx, input }) => {
       try {
@@ -70,6 +70,7 @@ export const locations = router({
         // if (existingLocation) {
         //   console.log(`Location "${llmResult.normalizedLocation}" already exists`)
         //   return ctx.cradle.locations.toModel(existingLocation)
+        // update existing location with new description
         // }
         
         // 2. TODO: Geocoding using OpenCage API to get lat/lng and structured address
@@ -101,7 +102,7 @@ export const locations = router({
         return ctx.cradle.locations.toModel(location)
         
       } catch (error) {
-        console.error("Error in decodeLocation:", error)
+        console.error("Error in createLocation:", error)
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: "Failed to decode location description"

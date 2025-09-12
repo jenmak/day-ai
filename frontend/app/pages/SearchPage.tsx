@@ -1,5 +1,5 @@
 import { Input } from "@/components/ui/input"
-import { useDecodeLocation } from "../hooks/useDecodeLocation"
+import { useCreateLocation } from "../hooks/useCreateLocation"
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { ChevronRight } from "lucide-react"
@@ -8,7 +8,7 @@ import { Spinner } from "@/components/ui/spinner"
 export function Search() {
   const [search, setSearch] = useState("")
 
-  const { decodeLocation, isLoading, error } = useDecodeLocation({
+  const { createLocation, isLoading, error } = useCreateLocation({
     onSuccess: (location) => {
       console.log("Location decoded and saved:", location)
     },
@@ -19,7 +19,7 @@ export function Search() {
 
   const handleSearch = () => {
     if (search.trim()) {
-      decodeLocation(search.trim())
+      createLocation(search.trim())
     }
   }
 
