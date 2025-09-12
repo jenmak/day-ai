@@ -10,7 +10,7 @@ export const TemperatureRangeSchema = z.object({
 
 // Weather Schema
 export const WeatherSchema = z.object({
-  date: z.date(),
+  date: z.string().transform((str) => new Date(str)),
   degreesFahrenheit: z.number(),
   degreesCelsius: z.number(),
   temperatureRange: TemperatureRangeSchema,

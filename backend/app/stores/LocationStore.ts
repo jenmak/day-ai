@@ -1,7 +1,7 @@
 import type { Location } from "#app/schemas/location.ts"
 import { Store, type StoreItem } from "#core/Store.ts"
 
-export interface LocationStoreItem extends StoreItem, Location {}
+export interface LocationStoreItem extends StoreItem, Location { }
 
 export class LocationStore extends Store<LocationStoreItem> {
   constructor() {
@@ -16,6 +16,7 @@ export class LocationStore extends Store<LocationStoreItem> {
       locationId: item.locationId,
       description: item.description,
       normalizedLocation: item.normalizedLocation,
+      slug: item.slug,
       geocodedAddress: item.geocodedAddress,
       weather: item.weather
     }

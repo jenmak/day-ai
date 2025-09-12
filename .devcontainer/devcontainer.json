@@ -6,7 +6,6 @@
   "service": "devcontainer",
   "workspaceFolder": "/workspace",
   "shutdownAction": "stopCompose",
-
   // Configure tool-specific properties.
   "customizations": {
     // Configure properties specific to VS Code.
@@ -22,16 +21,18 @@
       ]
     },
     "codespaces": {
-      "openFiles": ["README.md"]
+      "openFiles": [
+        "README.md"
+      ]
     }
   },
-
   "features": {
     "ghcr.io/devcontainers/features/node:1": {}
   },
-
-  "forwardPorts": [3333, 6173],
-
+  "forwardPorts": [
+    3333,
+    6173
+  ],
   "postCreateCommand": "bash .devcontainer/postCreateCommand.sh",
   "postStartCommand": "bash .devcontainer/postStartCommand.sh"
 }

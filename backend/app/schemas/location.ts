@@ -21,14 +21,17 @@ export const GeocodedAddressSchema = z.object({
 
 // Location Schema
 export const LocationSchema = z.object({
+  id: z.string(),
   locationId: z.string(),
   description: z.string(),
   normalizedLocation: z.string(),
+  slug: z.string(),
   geocodedAddress: GeocodedAddressSchema,
-  weather: z.array(WeatherSchema)
+  // weather: z.array(WeatherSchema).optional(),
+  createdAt: z.string()
 })
 
-// Create Location Schema (for API input)
+// Create Location Schema
 export const CreateLocationSchema = z.object({
   description: z.string().min(1, "Location description is required")
 })
