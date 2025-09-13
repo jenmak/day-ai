@@ -1,8 +1,12 @@
+import { config } from "dotenv"
 import { appRouter } from "#app/router/index.ts"
 import { createContext } from "#core/trpc.ts"
 import { trpcServer } from "@hono/trpc-server"
 import { Hono } from "hono"
 import { cors } from "hono/cors"
+
+// Load environment variables from .env file
+config()
 
 const app = new Hono()
   .use(cors())

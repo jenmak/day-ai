@@ -8,14 +8,7 @@ import { Spinner } from "@/components/ui/spinner"
 export function Search() {
   const [search, setSearch] = useState("")
 
-  const { createLocation, isLoading, error } = useCreateLocation({
-    onSuccess: (location) => {
-      console.log("Location decoded and saved:", location)
-    },
-    onError: (error) => {
-      console.error("Failed to decode location:", error)
-    }
-  })
+  const { createLocation, isLoading, error } = useCreateLocation()
 
   const handleSearch = () => {
     if (search.trim()) {
@@ -44,10 +37,10 @@ export function Search() {
     <div className="flex flex-col gap-4 p-4 justify-center items-center">
       <div className="flex flex-row gap-2 w-full min-w-[300px]">
          <Input
-           placeholder="ie. Gotham City"
+           placeholder="ie. Gotham"
            value={search}
            onChange={(e) => setSearch(e.target.value)}
-           onKeyPress={handleKeyPress}
+           onKeyDown={handleKeyPress}
          />
          <Button onClick={handleSearch} disabled={isLoading || !search.trim()}>
            <ChevronRight className="h-4 w-4" />
@@ -57,14 +50,14 @@ export function Search() {
       
       {error && (
         <div className="text-red-500 text-sm text-center">
-          Error: {error.message || "Failed to decode location"}
+          Error: {error.message || "Failed to find location"}
         </div>
       )}
       
       {isLoading && (
         <div className="text-gray-500 text-sm text-center flex flex-row gap-2 items-center">
           <Spinner />
-          Decoding location...
+          Loading...
         </div>
       )}
        {/* {

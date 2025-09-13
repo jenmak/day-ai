@@ -1,46 +1,30 @@
 import {
   CreateLocationSchema,
-  UpdateLocationSchema
+  LocationSchema,
+  UpdateLocationSchema,
+  type Location,
 } from "#app/schemas/location.ts"
-import { ClothingService } from "#app/services/clothingService.ts"
-import { LLMService } from "#app/services/llmService.ts"
-import type { ClothingCategory } from "#app/rules/clothingRules.ts"
+// import { ClothingService } from "#app/services/clothingService.ts"
+import { GeolocationService } from "#app/services/geolocationService.ts"
+import { LLMService, type LocationNormalization } from "#app/services/llmService.ts"
+// import type { ClothingCategory } from "#app/rules/clothingRules.ts"
 import { procedure, router } from "#core/trpc.ts"
 import { TRPCError } from "@trpc/server"
 import { z } from "zod"
 
 export const locations = router({
-  // Phase II:
-  // Get a specific location by ID
-  // get: procedure.input(z.object({ id: z.string() })).query(async ({ ctx, input }) => {
-  //   const location = ctx.cradle.locations.get(input.id)
-
-  //   if (!location) {
-  //     throw new TRPCError({
-  //       code: "NOT_FOUND",
-  //       message: "Location not found."
-  //     })
-  //   }
-
-  //   return location
-  // }),
-
-  // Phase II:
   // Get location by normalized location string
-  // getByNormalizedLocation: procedure
-  //   .input(z.object({ normalizedLocation: z.string() }))
-  //   .query(async ({ ctx, input }) => {
-  //     const location = ctx.cradle.locations.getByNormalizedLocation(input.normalizedLocation)
+  getByNormalizedLocation: procedure
+    .input(z.object({ normalizedLocation: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const location = ctx.cradle.locations.getByNormalizedLocation(input.normalizedLocation)
 
-  //     if (!location) {
-  //       throw new TRPCError({
-  //         code: "NOT_FOUND",
-  //         message: "Location not found."
-  //       })
-  //     }
+      if (!location) {
+        return false
+      }
 
-  //     return location
-  //   }),
+      return location
+    }),
 
   // Phase II: List all locations
   // list: procedure.query(async ({ ctx }) => {
@@ -55,166 +39,170 @@ export const locations = router({
   //   }))
   // }),
 
-  // Creates a location object from a description.
-  createLocation: procedure
-    .input(z.object({ description: z.string().min(1, "Description is required") }))
+  /**
+   * Creates a location object from a description.
+   * If the location already exists,
+   * it updates the location with the new description.
+   */
+  create: procedure
+    .input(CreateLocationSchema)
     .mutation(async ({ ctx, input }) => {
       try {
-        // 1. Use LLM to normalize the location description
-        const llmResult = await LLMService.normalizeLocation(input.description)
-        console.log(`LLM normalized "${input.description}" to "${llmResult.normalizedLocation}" (confidence: ${llmResult.confidence})`)
-        
-        // Phase II:
-        // Check if location already exists
-        // const existingLocation = ctx.cradle.locations.getByNormalizedLocation(llmResult.normalizedLocation)
-        // if (existingLocation) {
-        //   console.log(`Location "${llmResult.normalizedLocation}" already exists`)
-        //   return ctx.cradle.locations.toModel(existingLocation)
-        // update existing location with new description
-        // }
-        
-        // 2. TODO: Geocoding using OpenCage API to get lat/lng and structured address
-        // 3. TODO: Fetching weather data from Open-Meteo API
-        // 4. TODO: Getting clothing recommendations from rules engine
-        // 5. Save to database
-        
-        // Create new location with LLM-normalized data
-        const locationData = {
-          description: input.description,
-          normalizedLocation: llmResult.normalizedLocation,
-          slug: llmResult.normalizedLocation.toLowerCase().replace(/ /g, "-").replace(/,/g, ""),
-          geocodedAddress: {
-            latitude: 0, // Would be filled by geocoding API
-            longitude: 0, // Would be filled by geocoding API
-            formattedAddress: llmResult.normalizedLocation,
-            structuredAddress: {
-              city: llmResult.normalizedLocation.split(',')[0]?.trim() || "",
-              state: llmResult.normalizedLocation.split(',')[1]?.trim() || "",
-              postalCode: "",
-              country: ""
-            }
-          },
-          // weather: [] // Would be filled by weather API
-        }
-        
-        const location = ctx.cradle.locations.add(locationData)
-        console.log(`Created new location: ${llmResult.normalizedLocation}`)
-        return ctx.cradle.locations.toModel(location)
+          // 1. Use LLM to normalize the location description
+          const llmResult = await LLMService.normalizeLocation(input.description)
+          console.log(`LLM normalized "${input.description}" to "${llmResult.normalizedLocation}" (confidence: ${llmResult.confidence})`)
+          console.log(`LLM generated slug: "${llmResult.slug}"`)
+
+          // 1b. Check if location already exists, and return it if so.
+          const existingLocation = ctx.cradle.locations.getByNormalizedLocation(llmResult.normalizedLocation)
+
+          if (existingLocation) {
+            const updatedLocation = ctx.cradle.locations.update(existingLocation.id, { description: input.description })
+            return ctx.cradle.locations.toModel(updatedLocation)
+          }
+
+          // 2. Geocode the location with the OpenCage API
+          const geocodedAddress = await GeolocationService.geocodeLocation(llmResult.normalizedLocation)
+          console.log(`Geocoded "${llmResult.normalizedLocation}" to:`, geocodedAddress)
+
+          // 3. Create new location with input description, normalized location, slug, geocoded address, and weather.
+          const locationData = {
+            description: input.description,
+            normalizedLocation: llmResult.normalizedLocation,
+            slug: llmResult.slug,
+            geocodedAddress
+          }
+
+          // TODO: Fetching weather data from Open-Meteo API
+          // TODO: Getting clothing recommendations from rules engine
+
+          // 4. Save to database
+          const location = ctx.cradle.locations.createLocation(locationData)
+          const model = ctx.cradle.locations.toModel(location)
+          return model
         
       } catch (error) {
-        console.error("Error in createLocation:", error)
+        console.error("Error in create:", error)
+        
+        // Handle specific error for description not found
+        if (error instanceof Error && error.message === 'Description not found.') {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "Description not found."
+          })
+        }
+        
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
-          message: "Failed to decode location description"
+          message: "Failed to create location"
         })
       }
     }),
 
-  // Create a new location
-  create: procedure.input(CreateLocationSchema).mutation(async ({ ctx, input }) => {
-    // This would typically involve:
-    // 1. Normalizing the location description using LLM
-    // 2. Geocoding using OpenCage API
-    // 3. Fetching weather data from Open-Meteo API
-    // 4. Get list of clothing from Clothing rules engine
-    // Phase II:
-    // 5. Getting clothing recommendations from TikTok Shop API
-    
-    const location = ctx.cradle.locations.add(input)
-    return ctx.cradle.locations.toModel(location)
-  }),
+  /**
+   * Updates a location with a new description.
+   */
+  update: procedure
+    .input(UpdateLocationSchema)
+    .mutation(async ({ ctx, input }) => {
+      return ctx.cradle.locations.update(input.id, { description: input.description })
+    }),
 
-  // Update an existing location
-  update: procedure.input(UpdateLocationSchema).mutation(async ({ ctx, input }) => {
-    const location = ctx.cradle.locations.get(input.locationId)
+  /**
+   * Gets a location by slug.
+   * If the location does not exist, return an error.
+   */
+  getBySlug: procedure.input(z.object({ slug: z.string() }))
+    .query(async ({ ctx, input }) => {
+    const location = ctx.cradle.locations.getBySlug(input.slug)
 
     if (!location) {
       throw new TRPCError({
         code: "NOT_FOUND",
-        message: "Location not found."
+        message: `Location not found with slug: "${input.slug}".`
       })
     }
 
-    ctx.cradle.locations.update(input.locationId, input)
-    const updatedLocation = ctx.cradle.locations.get(input.locationId)!
-    return ctx.cradle.locations.toModel(updatedLocation)
+    return location
   }),
 
-  // Phase II:
-  //  Delete a location
-  // delete: procedure.input(z.object({ id: z.string() })).mutation(async ({ ctx, input }) => {
-  //   const location = ctx.cradle.locations.get(input.id)
+  /**
+   * Deletes a location by id.
+   * If the location does not exist, return an error.
+   */
+  delete: procedure.input(z.object({ id: z.string() })).mutation(async ({ ctx, input }) => {
+    const location = ctx.cradle.locations.get(input.id)
 
-  //   if (!location) {
-  //     throw new TRPCError({
-  //       code: "NOT_FOUND",
-  //       message: "Location not found."
-  //     })
-  //   }
+    if (!location) {
+      throw new TRPCError({
+        code: "NOT_FOUND",
+        message: `Location not found with id: "${input.id}".`
+      })
+    }
 
-  //   ctx.cradle.locations.remove(input.id)
-  //   return { success: true, message: "Location deleted successfully" }
-  // }),
+    ctx.cradle.locations.remove(input.id)
+    return { success: true, message: "Location deleted successfully" }
+  }),
 
   // Get weather for a specific location
-  getWeather: procedure
-    .input(z.object({ locationId: z.string() }))
-    .query(async ({ ctx, input }) => {
-      const location = ctx.cradle.locations.get(input.locationId)
+  // getWeather: procedure
+  //   .input(z.object({ locationId: z.string() }))
+  //   .query(async ({ ctx, input }) => {
+  //     const location = ctx.cradle.locations.get(input.locationId)
 
-      if (!location) {
-        throw new TRPCError({
-          code: "NOT_FOUND",
-          message: "Location not found."
-        })
-      }
+  //     if (!location) {
+  //       throw new TRPCError({
+  //         code: "NOT_FOUND",
+  //         message: "Location not found."
+  //       })
+  //     }
 
-      return location.weather
-    }),
+  //     return location.weather
+  //   }),
 
 
   // Refresh weather data for a location
-  refreshWeather: procedure
-    .input(z.object({ locationId: z.string() }))
-    .mutation(async ({ ctx, input }) => {
-      const location = ctx.cradle.locations.get(input.locationId)
+  // refreshWeather: procedure
+  //   .input(z.object({ locationId: z.string() }))
+  //   .mutation(async ({ ctx, input }) => {
+  //     const location = ctx.cradle.locations.get(input.locationId)
 
-      if (!location) {
-        throw new TRPCError({
-          code: "NOT_FOUND",
-          message: "Location not found."
-        })
-      }
+  //     if (!location) {
+  //       throw new TRPCError({
+  //         code: "NOT_FOUND",
+  //         message: "Location not found."
+  //       })
+  //     }
 
-      // This would typically:
-      // 1. Fetch fresh weather data from Open-Meteo API
-      // 2. Get updated clothing recommendations from TikTok Shop API
-      // 3. Update the location with new weather data
+  //     // This would typically:
+  //     // 1. Fetch fresh weather data from Open-Meteo API
+  //     // 2. Get updated clothing recommendations from TikTok Shop API
+  //     // 3. Update the location with new weather data
       
-      // For now, we'll just return the existing weather
-      // In a real implementation, this would call external APIs
-      return location.weather
-    }),
+  //     // For now, we'll just return the existing weather
+  //     // In a real implementation, this would call external APIs
+  //     return location.weather
+  //   }),
 
   // Get clothing recommendations using the rules engine
-  getClothingRecommendations: procedure
-    .input(
-      z.object({
-        locationId: z.string(),
-        date: z.date().optional() // If not provided, use current date
-      })
-    )
-    .query(async ({ ctx, input }) => {
-      const location = ctx.cradle.locations.get(input.locationId)
+  // getClothingRecommendations: procedure
+  //   .input(
+  //     z.object({
+  //       locationId: z.string(),
+  //       date: z.date().optional() // If not provided, use current date
+  //     })
+  //   )
+  //   .query(async ({ ctx, input }) => {
+  //     const location = ctx.cradle.locations.get(input.locationId)
 
-      if (!location) {
-        throw new TRPCError({
-          code: "NOT_FOUND",
-          message: "Location not found."
-        })
-      }
+  //     if (!location) {
+  //       throw new TRPCError({
+  //         code: "NOT_FOUND",
+  //         message: "Location not found."
+  //       })
+  //     }
 
-      const targetDate = input.date || new Date()
+  //     const targetDate = input.date || new Date()
       // const weatherForDate = location.weather.find(
       //   (w) => w.date.toDateString() === targetDate.toDateString()
       // )
@@ -238,28 +226,28 @@ export const locations = router({
       //   clothingRecommendations: recommendations.categories
       //   // Phase II: tikTokShopQueries: recommendations.searchQueries
       // }
-    }),
+    // }),
 
   // Get weather appropriateness score for a specific clothing item
-  getClothingScore: procedure
-    .input(
-      z.object({
-        locationId: z.string(),
-        clothingCategory: z.string(),
-        date: z.date().optional()
-      })
-    )
-    .query(async ({ ctx, input }) => {
-      const location = ctx.cradle.locations.get(input.locationId)
+  // getClothingScore: procedure
+  //   .input(
+  //     z.object({
+  //       locationId: z.string(),
+  //       clothingCategory: z.string(),
+  //       date: z.date().optional()
+  //     })
+  //   )
+  //   .query(async ({ ctx, input }) => {
+  //     const location = ctx.cradle.locations.get(input.locationId)
 
-      if (!location) {
-        throw new TRPCError({
-          code: "NOT_FOUND",
-          message: "Location not found."
-        })
-      }
+  //     if (!location) {
+  //       throw new TRPCError({
+  //         code: "NOT_FOUND",
+  //         message: "Location not found."
+  //       })
+  //     }
 
-      const targetDate = input.date || new Date()
+  //     const targetDate = input.date || new Date()
       // const weatherForDate = location.weather.find(
       //   (w) => w.date.toDateString() === targetDate.toDateString()
       // )
@@ -288,5 +276,5 @@ export const locations = router({
       //                  score >= 40 ? "Consider alternatives" : 
       //                  "Not recommended for this weather"
       // }
-    })
+    // })
 })

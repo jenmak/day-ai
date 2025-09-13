@@ -21,16 +21,12 @@ export const useCreateLocation = (options?: useCreateLocationOptions) => {
         throw new Error("Location description is required")
       }
       
-      return trpcClient.locations.createLocation.mutate({ description })
+      return trpcClient.locations.create.mutate({ description })
     },
     onSuccess: (data: LocationType) => {
-      console.log("Location decoded successfully", data)
+      console.log("Location created or updated successfully", data)
 
       setLocation(data)
-      
-      // Phase II:
-      // Save location to store
-      // setLocation(data)
       
       // Invalidate and refetch location queries
       // queryClient.invalidateQueries({ queryKey: trpc.locations.list.queryKey() })

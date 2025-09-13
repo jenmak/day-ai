@@ -22,8 +22,7 @@ export const GeocodedAddressSchema = z.object({
 // Location Schema
 export const LocationSchema = z.object({
   id: z.string(),
-  locationId: z.string(),
-  description: z.string(),
+  description: z.string().optional(),
   normalizedLocation: z.string(),
   slug: z.string(),
   geocodedAddress: GeocodedAddressSchema,
@@ -33,14 +32,13 @@ export const LocationSchema = z.object({
 
 // Create Location Schema
 export const CreateLocationSchema = z.object({
-  description: z.string().min(1, "Location description is required")
+  description: z.string()
 })
 
 // Update Location Schema
 export const UpdateLocationSchema = z.object({
-  locationId: z.string(),
-  description: z.string().optional(),
-  normalizedLocation: z.string().optional()
+  id: z.string(),
+  description: z.string()
 })
 
 // Type exports
