@@ -29,7 +29,8 @@ export class LocationStore extends Store<LocationStoreItem> {
       normalizedLocation: item.normalizedLocation,
       slug: item.slug,
       geocodedAddress: item.geocodedAddress,
-      createdAt: item.createdAt.toISOString()
+      weather: item.weather,
+      createdAt: item.createdAt
     }
   }
 
@@ -82,12 +83,14 @@ export class LocationStore extends Store<LocationStoreItem> {
         streetNumber?: string
       }
     }
+    weather?: any[]
   }): LocationStoreItem {
     const locationData: Omit<LocationStoreItem, "id" | "createdAt"> = {
       description: data.description,
       normalizedLocation: data.normalizedLocation,
       slug: data.slug,
-      geocodedAddress: data.geocodedAddress
+      geocodedAddress: data.geocodedAddress,
+      weather: data.weather
     }
 
     return this.add(locationData)

@@ -1,16 +1,15 @@
 import {
   CreateLocationSchema,
-  LocationSchema,
   UpdateLocationSchema,
-  type Location,
 } from "#app/schemas/location.ts"
-// import { ClothingService } from "#app/services/clothingService.ts"
 import { GeolocationService } from "#app/services/geolocationService.ts"
-import { LLMService, type LocationNormalization } from "#app/services/llmService.ts"
-// import type { ClothingCategory } from "#app/rules/clothingRules.ts"
+import { LLMService } from "#app/services/llmService.ts"
+import { WeatherService } from "#app/services/weatherService.ts"
 import { procedure, router } from "#core/trpc.ts"
 import { TRPCError } from "@trpc/server"
 import { z } from "zod"
+// import { ClothingService } from "#app/services/clothingService.ts"
+// import type { ClothingCategory } from "#app/rules/clothingRules.ts"
 
 export const locations = router({
   // Get location by normalized location string
@@ -65,19 +64,21 @@ export const locations = router({
           const geocodedAddress = await GeolocationService.geocodeLocation(llmResult.normalizedLocation)
           console.log(`Geocoded "${llmResult.normalizedLocation}" to:`, geocodedAddress)
 
-          // 3. Create new location with input description, normalized location, slug, geocoded address, and weather.
-          const locationData = {
-            description: input.description,
-            normalizedLocation: llmResult.normalizedLocation,
-            slug: llmResult.slug,
-            geocodedAddress
-          }
+          const weatherData = await WeatherService.get7DayForecast({ latitude: geocodedAddress.latitude, longitude: geocodedAddress.longitude })
 
-          // TODO: Fetching weather data from Open-Meteo API
           // TODO: Getting clothing recommendations from rules engine
 
           // 4. Save to database
+          const locationData = {  
+            description: input.description,
+            normalizedLocation: llmResult.normalizedLocation,
+            slug: llmResult.slug,
+            geocodedAddress,
+            weather: weatherData
+          }
           const location = ctx.cradle.locations.createLocation(locationData)
+
+          console.log("Location created:", location)
           const model = ctx.cradle.locations.toModel(location)
           return model
         
@@ -143,6 +144,68 @@ export const locations = router({
     ctx.cradle.locations.remove(input.id)
     return { success: true, message: "Location deleted successfully" }
   }),
+
+  /**
+   * Get 7-day weather forecast for a location by slug
+   */
+  getWeatherForecast: procedure
+    .input(z.object({ slug: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const location = ctx.cradle.locations.getBySlug(input.slug)
+
+      if (!location) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: `Location not found with slug: "${input.slug}".`
+        })
+      }
+
+      try {
+        const forecast = await WeatherService.get7DayForecast({
+          latitude: location.geocodedAddress.latitude,
+          longitude: location.geocodedAddress.longitude
+        })
+
+        return forecast
+      } catch (error) {
+        console.error("Error fetching weather forecast:", error)
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to fetch weather forecast"
+        })
+      }
+    }),
+
+  /**
+   * Get current day weather for a location by slug
+   */
+  getCurrentWeather: procedure
+    .input(z.object({ slug: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const location = ctx.cradle.locations.getBySlug(input.slug)
+
+      if (!location) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: `Location not found with slug: "${input.slug}".`
+        })
+      }
+
+      try {
+        const weather = await WeatherService.getCurrentDayWeather(
+          location.geocodedAddress.latitude,
+          location.geocodedAddress.longitude
+        )
+
+        return weather
+      } catch (error) {
+        console.error("Error fetching current weather:", error)
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to fetch current weather"
+        })
+      }
+    }),
 
   // Get weather for a specific location
   // getWeather: procedure

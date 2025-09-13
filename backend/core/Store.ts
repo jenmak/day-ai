@@ -5,7 +5,7 @@ import superjson from "superjson"
 
 export interface StoreItem {
   id: string
-  createdAt: Date
+  createdAt: string
   [key: string]: unknown
 }
 
@@ -24,7 +24,7 @@ export abstract class Store<T extends StoreItem> {
   toModel(item: T) {
     return {
       id: item.id,
-      createdAt: item.createdAt.toISOString()
+      createdAt: item.createdAt
     }
   }
 
@@ -32,7 +32,7 @@ export abstract class Store<T extends StoreItem> {
     const newItem = {
       ...item,
       id: this.generateId(),
-      createdAt: new Date()
+      createdAt: new Date().toISOString()
     } as T
 
     this.items.set(newItem.id, newItem)

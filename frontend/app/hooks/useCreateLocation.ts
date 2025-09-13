@@ -16,12 +16,17 @@ export const useCreateLocation = (options?: useCreateLocationOptions) => {
   const { setLocation } = useLocationStore()
   
   const createLocationMutation = useMutation({
-    mutationFn: async (description: string) => {
+    mutationFn: async (description: string): Promise<LocationType> => {
       if (!description.trim()) {
         throw new Error("Location description is required")
       }
       
-      return trpcClient.locations.create.mutate({ description })
+      try {
+        const result = await trpcClient.locations.create.mutate({ description })
+        return result as LocationType
+      } catch (error) {
+        throw error
+      }
     },
     onSuccess: (data: LocationType) => {
       console.log("Location created or updated successfully. Setting location in store and navigating to location page.", data)
@@ -37,18 +42,13 @@ export const useCreateLocation = (options?: useCreateLocationOptions) => {
       onSuccess?.(data)
     },
     onError: (error) => {
-      console.error("Error decoding location", error)
+      console.error("Error creating location:", error)
       onError?.(error)
     }
   })
 
-  const createLocation = async (description: string) => {
-    try {
-      const result = await createLocationMutation.mutateAsync(description)
-      return result
-    } catch (error) {
-      throw error
-    }
+  const createLocation = (description: string) => {
+    createLocationMutation.mutate(description)
   }
 
   return {

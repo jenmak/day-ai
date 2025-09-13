@@ -26,8 +26,8 @@ export const LocationSchema = z.object({
   normalizedLocation: z.string(),
   slug: z.string(),
   geocodedAddress: GeocodedAddressSchema,
-  // weather: z.array(WeatherSchema).optional(),
-  createdAt: z.string()
+  weather: z.array(WeatherSchema).optional(),
+  createdAt: z.date().transform((date) => date.toISOString())
 })
 
 // Create Location Schema
