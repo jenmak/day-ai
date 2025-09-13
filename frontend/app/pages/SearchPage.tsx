@@ -62,8 +62,8 @@ export function Search() {
       )}
        {/* {
         locations.map((location) => (
-          <div key={location.locationId}>
-            <Link to={`/${location.normalizedLocation}`}>
+          <div key={location.id}>
+            <Link to={`/${location.slug}`}>
               {location.normalizedLocation}
             </Link>
           </div>

@@ -123,7 +123,7 @@ export const locations = router({
       })
     }
 
-    return location
+    return ctx.cradle.locations.toModel(location)
   }),
 
   /**

@@ -11,7 +11,7 @@ export function App() {
     <Routes>
       <Route path="/" element={<Layout />}>
         <Route path="/" element={<Search />} />
-        <Route path="/:normalizedLocation" element={<Location />} />
+        <Route path="/:slug" element={<Location />} />
       </Route>
     </Routes>
   )

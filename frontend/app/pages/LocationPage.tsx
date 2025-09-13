@@ -1,31 +1,20 @@
 import { useParams } from "react-router"
-import { useLocationStore } from "../stores/locationStore"
 import { useLocationBySlug } from "../hooks/useLocationBySlug"
 import { Spinner } from "@/components/ui/spinner"
-import { useState } from "react"
 import { PageWrapper } from "../components/PageWrapper"
 
 export function Location() {
   const { slug } = useParams()
-  const { location, setLocation } = useLocationStore()
-  const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState<Error | null>(null)
-
-  /**
-   * If the location is not in the store, fetch it by slug.
-   */
-  if (!location) {
-    const { data, isLoading, error } = useLocationBySlug({ slug: slug as string })
-    if (data) {
-      setLocation(data)
-    }
-    if (error) {
-      setError(error)
-    }
-    if (isLoading) {
-      setIsLoading(isLoading)
-    }
+  
+  if (!slug) {
+    return (
+      <PageWrapper>
+        <div>No slug provided</div>
+      </PageWrapper>
+    )
   }
+
+  const { data: location, isLoading, error } = useLocationBySlug({ slug })
 
   if (isLoading) {
     return (
@@ -38,7 +27,15 @@ export function Location() {
   if (error) {
     return (
       <PageWrapper>
-        <div>Error: {error.message}</div>
+        <div>Error: {error instanceof Error ? error.message : 'Unknown error'}</div>
+      </PageWrapper>
+    )
+  }
+
+  if (!location) {
+    return (
+      <PageWrapper>
+        <div>Location not found.</div>
       </PageWrapper>
     )
   }
@@ -46,10 +43,9 @@ export function Location() {
   return (
     <PageWrapper>
       <h1>{location.normalizedLocation}</h1>
-      <p>{location.description}</p>
-      <p>{location.geocodedAddress.latitude}, {location.geocodedAddress.longitude}</p>
-      <p>{location.geocodedAddress.structuredAddress.city}, {location.geocodedAddress.structuredAddress.state} {location.geocodedAddress.structuredAddress.postalCode}</p>
-      <p>{location.geocodedAddress.structuredAddress.country}</p>
+      <p>Coordinates: {location.geocodedAddress.latitude}, {location.geocodedAddress.longitude}</p>
+      <p>Address: {location.geocodedAddress.structuredAddress.city}, {location.geocodedAddress.structuredAddress.state} {location.geocodedAddress.structuredAddress.postalCode}</p>
+      <p>Country: {location.geocodedAddress.structuredAddress.country}</p>
     </PageWrapper>
   )
 }

@@ -24,7 +24,7 @@ export const useCreateLocation = (options?: useCreateLocationOptions) => {
       return trpcClient.locations.create.mutate({ description })
     },
     onSuccess: (data: LocationType) => {
-      console.log("Location created or updated successfully", data)
+      console.log("Location created or updated successfully. Setting location in store and navigating to location page.", data)
 
       setLocation(data)
       
