@@ -1,9 +1,9 @@
-import type { WeatherCondition } from "#app/schemas/weatherConditions.ts"
+import type { WeatherCondition } from "../schemas/weatherConditions"
 import { 
   getClothingRecommendations, 
   // getTikTokShopClothingQuery,
   type ClothingCategory 
-} from "#app/rules/clothingRules.ts"
+} from "../rules/clothingRules"
 
 export class ClothingService {
   /**

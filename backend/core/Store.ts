@@ -77,6 +77,12 @@ export abstract class Store<T extends StoreItem> {
   }
 
   private async persist() {
+    // Skip persistence in serverless environments like Vercel
+    if (process.env.VERCEL || process.env.NODE_ENV === 'production') {
+      console.log("Skipping persistence in serverless environment")
+      return
+    }
+    
     try {
       await fs.mkdir(path.dirname(this.storePath), { recursive: true })
       const serialized = superjson.stringify(Array.from(this.items.entries()))
@@ -87,6 +93,12 @@ export abstract class Store<T extends StoreItem> {
   }
 
   protected async load() {
+    // Skip loading in serverless environments like Vercel
+    if (process.env.VERCEL || process.env.NODE_ENV === 'production') {
+      console.log("Skipping store load in serverless environment")
+      return
+    }
+    
     try {
       const exists = await fs
         .access(this.storePath)

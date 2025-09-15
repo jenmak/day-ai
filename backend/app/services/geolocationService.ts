@@ -1,4 +1,4 @@
-import { GeocodedAddressSchema, type GeocodedAddress, type Address } from "#app/schemas/location.ts"
+import { type GeocodedAddress, type Address } from "../schemas/location"
 
 export interface OpenCageResponse {
   results: Array<{
@@ -30,7 +30,7 @@ export class GeolocationService {
   static async geocodeLocation(locationDescription: string): Promise<GeocodedAddress> {
     try {
       // Check if OpenCage API key is available
-      if (!import.meta.env.OPENCAGE_API_KEY) {
+      if (!process.env.OPENCAGE_API_KEY) {
         console.warn("OpenCage API key not found, falling back to mock implementation")
         return this.getMockGeocoding(locationDescription)
       }
@@ -136,7 +136,7 @@ export class GeolocationService {
    * Call OpenCage Geocoding API
    */
   private static async callOpenCageAPI(locationDescription: string): Promise<OpenCageResponse> {
-    const apiKey = import.meta.env.OPENCAGE_API_KEY
+    const apiKey = process.env.OPENCAGE_API_KEY
     const encodedLocation = encodeURIComponent(locationDescription)
     const url = `https://api.opencagedata.com/geocode/v1/json?q=${encodedLocation}&key=${apiKey}&limit=1&no_annotations=1`
 
@@ -163,7 +163,7 @@ export class GeolocationService {
   /**
    * Parse OpenCage API response into our GeocodedAddress format
    */
-  private static parseOpenCageResponse(response: OpenCageResponse, originalDescription: string): GeocodedAddress {
+  private static parseOpenCageResponse(response: OpenCageResponse, _originalDescription: string): GeocodedAddress {
     if (!response.results || response.results.length === 0) {
       throw new Error("No geocoding results found")
     }

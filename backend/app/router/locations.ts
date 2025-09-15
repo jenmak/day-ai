@@ -1,15 +1,16 @@
 import {
   CreateLocationSchema,
   UpdateLocationSchema,
-} from "#app/schemas/location.ts"
-import { GeolocationService } from "#app/services/geolocationService.ts"
-import { LLMService } from "#app/services/llmService.ts"
-import { WeatherService } from "#app/services/weatherService.ts"
-import { procedure, router } from "#core/trpc.ts"
+} from "../schemas/location"
+import { ClothingService } from "../services/clothingService"
+import { GeolocationService } from "../services/geolocationService"
+import { LLMService } from "../services/llmService"
+import { WeatherService } from "../services/weatherService"
+import { procedure, router } from "../../core/trpc"
 import { TRPCError } from "@trpc/server"
 import { z } from "zod"
-// import { ClothingService } from "#app/services/clothingService.ts"
-// import type { ClothingCategory } from "#app/rules/clothingRules.ts"
+// import { ClothingService } from "#app/services/clothingService"
+// import type { ClothingCategory } from "#app/rules/clothingRules"
 
 export const locations = router({
   // Get location by normalized location string
@@ -66,7 +67,10 @@ export const locations = router({
 
           const weatherData = await WeatherService.get7DayForecast({ latitude: geocodedAddress.latitude, longitude: geocodedAddress.longitude })
 
-          // TODO: Getting clothing recommendations from rules engine
+          // 3. Get clothing recommendations from rules engine
+          weatherData.forEach((weather) => {
+            weather.clothing = ClothingService.getRecommendations(weather.degreesFahrenheit, weather.condition, weather.rainProbabilityPercentage, weather.windSpeedMph)
+          })
 
           // 4. Save to database
           const locationData = {  

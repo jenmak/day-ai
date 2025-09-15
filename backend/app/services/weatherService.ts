@@ -1,6 +1,6 @@
 import { z } from "zod"
-import { WeatherSchema, type Weather } from "#app/schemas/weather.ts"
-import { WeatherConditionEnum } from "#app/schemas/weatherConditions.ts"
+import { type Weather } from "../schemas/weather"
+import { WeatherConditionEnum } from "../schemas/weatherConditions"
 
 // Open-Meteo API Response Schema
 const OpenMeteoDailySchema = z.object({
@@ -108,7 +108,7 @@ export class WeatherService {
         const weatherCode = validatedData.daily.weathercode[i]
         
         const weather: Weather = {
-          date,
+          date: date.toISOString(),
           degreesFahrenheit: Math.round(avgTemp),
           degreesCelsius: Math.round(celsius),
           temperatureRange: {

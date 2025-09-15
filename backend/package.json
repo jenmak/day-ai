@@ -8,18 +8,31 @@
     "./schemas": "./app/schemas/index.ts"
   },
   "scripts": {
-    "dev": "bun run --hot src/index.ts"
+    "dev": "bun run --hot src/index.ts",
+    "build": "tsc --declaration --emitDeclarationOnly",
+    "build:full": "tsc",
+    "start": "bun run src/index.ts",
+    "vercel-build": "node scripts/build.cjs",
+    "test:deployment": "node test-deployment.js"
   },
   "dependencies": {
     "@hono/trpc-server": "^0.3.4",
+    "@trpc/server": "^11.0.0",
     "awilix": "^12.0.5",
     "dotenv": "^17.2.2",
     "hono": "^4.7.4",
     "openai": "^5.20.1",
+    "superjson": "^2.2.1",
     "zod": "^3.24.2"
   },
   "imports": {
     "#app/*": "./app/*",
     "#core/*": "./core/*"
+  },
+  "devDepen": {
+    "@types/node": "^24.3.3"
+  },
+  "devDependencies": {
+    "esbuild": "^0.25.9"
   }
 }

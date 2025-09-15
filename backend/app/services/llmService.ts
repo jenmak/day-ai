@@ -1,6 +1,6 @@
 import { z } from "zod"
 import OpenAI from "openai"
-import { MOCK_MAPPINGS, OPENAI_API_KEY } from "../consts/LocationConsts.ts"
+import { MOCK_MAPPINGS, OPENAI_API_KEY } from "../consts/LocationConsts"
 
 // LLM Response Schema
 const LocationNormalizationSchema = z.object({
@@ -76,15 +76,6 @@ export class LLMService {
           confidence: value.confidence * 0.8 // Reduce confidence for partial matches
         }
       }
-    }
-
-    // If no match found in mock mappings, throw an error
-    throw new Error('Description not found.')
-  }
-
-  private static getMockNormalizationWithSlug(slug: string): LocationNormalization {
-    if (Object.values(MOCK_MAPPINGS).find((mapping) => mapping.slug === slug)) {
-      return Object.values(MOCK_MAPPINGS).find((mapping) => mapping.slug === slug)!
     }
 
     // If no match found in mock mappings, throw an error

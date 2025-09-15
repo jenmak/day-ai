@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/button";
+import { Button } from "../../src/components/ui/button";
 import { ChevronLeft } from "lucide-react";
 import { useLocation, useNavigate } from "react-router";
 import { useLocationStore } from "../stores/locationStore";

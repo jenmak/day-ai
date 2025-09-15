@@ -1,4 +1,4 @@
-import { type WeatherCondition, WeatherConditionEnum } from "#app/schemas/weatherConditions.ts"
+import { type WeatherCondition, WeatherConditionEnum } from "../schemas/weatherConditions"
 
 // TikTok Shop Clothing Categories
 export const ClothingCategoryEnum = {

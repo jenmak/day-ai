@@ -1,4 +1,4 @@
-import { WeatherService } from "#app/services/weatherService.ts"
+import { WeatherService } from "../services/weatherService"
 
 // Test the weather service with New York City coordinates
 export async function testWeatherService() {
@@ -19,7 +19,7 @@ export async function testWeatherService() {
     
     console.log(`✅ Successfully fetched ${forecast.length} days of weather data:\n`)
     
-    forecast.forEach((weather, index) => {
+    forecast.forEach((weather: any, index: number) => {
       const date = new Date(weather.date)
       const dayName = date.toLocaleDateString('en-US', { weekday: 'long' })
       const dateStr = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })

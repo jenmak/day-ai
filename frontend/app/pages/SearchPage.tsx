@@ -1,9 +1,9 @@
-import { Input } from "@/components/ui/input"
+import { Input } from "../../src/components/ui/input"
 import { useCreateLocation } from "../hooks/useCreateLocation"
 import { useState } from "react"
-import { Button } from "@/components/ui/button"
+import { Button } from "../../src/components/ui/button"
 import { ChevronRight } from "lucide-react"
-import { Spinner } from "@/components/ui/spinner"
+import { Spinner } from "../../src/components/ui/spinner"
 
 export function Search() {
   const [search, setSearch] = useState("")

@@ -27,8 +27,7 @@
     "preserveSymlinks": true,
     "baseUrl": ".",
     "paths": {
-      "@/*": ["src/*"],
-      "@/app/*": ["app/*"]
+      "@/*": ["src/*"]
     }
   },
   "include": ["src", "app"],

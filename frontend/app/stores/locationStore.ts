@@ -9,8 +9,9 @@ interface LocationState {
 
 const initialState = {
   location: {
-    locationId: "",
+    id: "",
     description: "",
+    slug: "",
     normalizedLocation: "",
     geocodedAddress: {
       latitude: 0,
@@ -23,7 +24,8 @@ const initialState = {
         country: "",
       }
     },
-    weather: []
+    weather: [],
+    createdAt: ""
   },
 }
 

@@ -1,8 +1,9 @@
-import { trpcClient } from "@/lib/trpc"
 import { useMutation } from "@tanstack/react-query"
 import { useNavigate } from "react-router"
 import { Location as LocationType } from "@dayai/backend/schemas"
 import { useLocationStore } from "../stores/locationStore"
+
+const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3333"
 
 interface useCreateLocationOptions {
   onSuccess?: (location: any) => void
@@ -22,8 +23,24 @@ export const useCreateLocation = (options?: useCreateLocationOptions) => {
       }
       
       try {
-        const result = await trpcClient.locations.create.mutate({ description })
-        return result as LocationType
+        const response = await fetch(`${API_BASE_URL}/trpc/locations.create`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            "json": { 
+              description: description
+            }
+          })
+        })
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`)
+        }
+        
+        const data = await response.json()
+        return data.result.data.json
       } catch (error) {
         throw error
       }

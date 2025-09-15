@@ -1,6 +1,7 @@
 import { initTRPC } from "@trpc/server"
 import type { FetchCreateContextFnOptions } from "@trpc/server/adapters/fetch"
 import { container } from "./container"
+import superjson from "superjson"
 
 export const createContext = async (opts: FetchCreateContextFnOptions) => {
   const cradle = container.cradle
@@ -11,7 +12,9 @@ export const createContext = async (opts: FetchCreateContextFnOptions) => {
   }
 }
 
-const trpc = initTRPC.context<typeof createContext>().create()
+const trpc = initTRPC.context<typeof createContext>().create({
+  transformer: superjson
+})
 
 export const router = trpc.router
 export const procedure = trpc.procedure

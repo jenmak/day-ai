@@ -1,4 +1,4 @@
-import { LocationStore } from "#app/stores/LocationStore.ts"
+import { LocationStore } from "../app/stores/LocationStore"
 import { asValue, createContainer } from "awilix"
 
 type Cradle = {

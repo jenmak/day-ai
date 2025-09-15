@@ -1,6 +1,6 @@
 import { z } from "zod"
-import { ClothingCategoryEnum } from "#app/rules/clothingRules.ts"
-import { WeatherConditionEnum, WeatherConditionZodEnum } from "#app/schemas/weatherConditions.ts"
+import { ClothingCategoryEnum } from "../rules/clothingRules"
+import { WeatherConditionZodEnum } from "./weatherConditions"
 
 // Temperature Range Schema
 export const TemperatureRangeSchema = z.object({
@@ -10,7 +10,7 @@ export const TemperatureRangeSchema = z.object({
 
 // Weather Schema
 export const WeatherSchema = z.object({
-  date: z.string().transform((str) => new Date(str)),
+  date: z.string(),
   degreesFahrenheit: z.number(),
   degreesCelsius: z.number(),
   temperatureRange: TemperatureRangeSchema,
@@ -23,6 +23,5 @@ export const WeatherSchema = z.object({
 })
 
 // Type exports
-export type WeatherCondition = z.infer<typeof WeatherConditionZodEnum>
 export type TemperatureRange = z.infer<typeof TemperatureRangeSchema>
 export type Weather = z.infer<typeof WeatherSchema>

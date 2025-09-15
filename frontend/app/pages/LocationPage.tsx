@@ -1,6 +1,6 @@
 import { useParams } from "react-router"
 import { useLocationBySlug } from "../hooks/useLocationBySlug"
-import { Spinner } from "@/components/ui/spinner"
+import { Spinner } from "../../src/components/ui/spinner"
 import { PageWrapper } from "../components/PageWrapper"
 import { Weather } from "@dayai/backend/schemas"
 
@@ -44,6 +44,7 @@ export function Location() {
   return (
     <PageWrapper>
       <h1>{location.normalizedLocation}</h1>
+      <p>{location.description}</p>
       <p>Coordinates: {location.geocodedAddress.latitude}, {location.geocodedAddress.longitude}</p>
       <p>Address: {location.geocodedAddress.structuredAddress.city}, {location.geocodedAddress.structuredAddress.state} {location.geocodedAddress.structuredAddress.postalCode}</p>
       <p>Country: {location.geocodedAddress.structuredAddress.country}</p>
@@ -54,6 +55,7 @@ export function Location() {
       <p>Weather: {location.weather?.map((weather: Weather) => weather.temperatureRange.temperatureMaximum).join(", ")}</p>
       <p>Weather: {location.weather?.map((weather: Weather) => weather.rainProbabilityPercentage).join(", ")}</p>
       <p>Weather: {location.weather?.map((weather: Weather) => weather.windSpeedMph).join(", ")}</p>
+      <p>Weather: {location.weather?.map((weather: Weather) => weather.clothing.join(", ")).join(", ")}</p>
     </PageWrapper>
   )
 }

@@ -1,5 +1,5 @@
-import type { CreateLocation, Location } from "#app/schemas/location.ts"
-import { Store, type StoreItem } from "#core/Store.ts"
+import type { Location } from "../schemas/location"
+import { Store, type StoreItem } from "../../core/Store"
 
 export interface LocationStoreItem extends StoreItem, Omit<Location, 'id' | 'createdAt'> { }
 

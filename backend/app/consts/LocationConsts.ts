@@ -1,5 +1,5 @@
 import { config } from "dotenv"
-import type { LocationNormalization } from "../services/llmService.ts"
+import type { LocationNormalization } from "../services/llmService"
 
 // Load environment variables
 config()

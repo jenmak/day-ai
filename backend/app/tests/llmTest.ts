@@ -1,4 +1,4 @@
-import { LLMService } from "#app/services/llmService.ts"
+import { LLMService } from "../services/llmService"
 
 // Test the LLM service with various location descriptions
 export async function testLLMService() {
