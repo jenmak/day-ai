@@ -335,7 +335,7 @@ var WeatherSchema = z2.object({
   // clothing: z.array(ClothingSchema)
 });
 
-// app/schemas/location.ts
+// app/schemas/place.ts
 var AddressSchema = z3.object({
   city: z3.string(),
   state: z3.string(),
@@ -350,19 +350,19 @@ var GeocodedAddressSchema = z3.object({
   formattedAddress: z3.string(),
   structuredAddress: AddressSchema
 });
-var LocationSchema = z3.object({
+var PlaceSchema = z3.object({
   id: z3.string(),
   description: z3.string().optional(),
-  normalizedLocation: z3.string(),
+  normalizedPlace: z3.string(),
   slug: z3.string(),
   geocodedAddress: GeocodedAddressSchema,
   weather: z3.array(WeatherSchema).optional(),
   createdAt: z3.date().transform((date) => date.toISOString())
 });
-var CreateLocationSchema = z3.object({
+var CreatePlaceSchema = z3.object({
   description: z3.string()
 });
-var UpdateLocationSchema = z3.object({
+var UpdatePlaceSchema = z3.object({
   id: z3.string(),
   description: z3.string()
 });
@@ -483,42 +483,42 @@ var GeolocationService = class {
    * Geocode a location description using OpenCage API
    * Converts location descriptions to structured address data with coordinates
    */
-  static async geocodeLocation(locationDescription) {
+  static async geocodePlace(description) {
     try {
       if (!process.env.OPENCAGE_API_KEY) {
         console.warn("OpenCage API key not found, falling back to mock implementation");
-        return this.getMockGeocoding(locationDescription);
+        return this.getMockGeocoding(description);
       }
-      const opencageResponse = await this.callOpenCageAPI(locationDescription);
-      return this.parseOpenCageResponse(opencageResponse, locationDescription);
+      const opencageResponse = await this.callOpenCageAPI(description);
+      return this.parseOpenCageResponse(opencageResponse, description);
     } catch (error) {
       console.error("Error geocoding location:", error);
       console.warn("OpenCage API failed, falling back to mock implementation");
       try {
-        return this.getMockGeocoding(locationDescription);
+        return this.getMockGeocoding(description);
       } catch (mockError) {
         console.error("Mock implementation also failed:", mockError);
-        throw new Error("Failed to geocode location description");
+        throw new Error("Failed to geocode place description");
       }
     }
   }
   /**
    * Mock implementation for fallback when OpenCage API is unavailable
    */
-  static getMockGeocoding(locationDescription) {
-    const mockCoordinates = this.getMockCoordinates(locationDescription);
+  static getMockGeocoding(description) {
+    const mockCoordinates = this.getMockCoordinates(description);
     return {
       latitude: mockCoordinates.lat,
       longitude: mockCoordinates.lng,
-      formattedAddress: locationDescription,
-      structuredAddress: this.parseStructuredAddress(locationDescription)
+      formattedAddress: description,
+      structuredAddress: this.parseStructuredAddress(description)
     };
   }
   /**
    * Get mock coordinates for common locations
    */
-  static getMockCoordinates(locationDescription) {
-    const location = locationDescription.toLowerCase();
+  static getMockCoordinates(description) {
+    const place = description.toLowerCase();
     const cityCoordinates = {
       "new york": { lat: 40.7128, lng: -74.006 },
       "los angeles": { lat: 34.0522, lng: -118.2437 },
@@ -551,7 +551,7 @@ var GeolocationService = class {
       "mesa": { lat: 33.4152, lng: -111.8315 }
     };
     for (const [city, coords] of Object.entries(cityCoordinates)) {
-      if (location.includes(city)) {
+      if (place.includes(city)) {
         return coords;
       }
     }
@@ -560,8 +560,8 @@ var GeolocationService = class {
   /**
    * Parse structured address from location description
    */
-  static parseStructuredAddress(locationDescription) {
-    const parts = locationDescription.split(",").map((part) => part.trim());
+  static parseStructuredAddress(description) {
+    const parts = description.split(",").map((part) => part.trim());
     return {
       city: parts[0] || "",
       state: parts[1] || "",
@@ -572,10 +572,10 @@ var GeolocationService = class {
   /**
    * Call OpenCage Geocoding API
    */
-  static async callOpenCageAPI(locationDescription) {
+  static async callOpenCageAPI(description) {
     const apiKey = process.env.OPENCAGE_API_KEY;
-    const encodedLocation = encodeURIComponent(locationDescription);
-    const url = `https://api.opencagedata.com/geocode/v1/json?q=${encodedLocation}&key=${apiKey}&limit=1&no_annotations=1`;
+    const encodedPlace = encodeURIComponent(description);
+    const url = `https://api.opencagedata.com/geocode/v1/json?q=${encodedPlace}&key=${apiKey}&limit=1&no_annotations=1`;
     try {
       const response = await fetch(url);
       if (!response.ok) {
@@ -594,7 +594,7 @@ var GeolocationService = class {
   /**
    * Parse OpenCage API response into our GeocodedAddress format
    */
-  static parseOpenCageResponse(response, _originalDescription) {
+  static parseOpenCageResponse(response, _originalPlace) {
     if (!response.results || response.results.length === 0) {
       throw new Error("No geocoding results found");
     }
@@ -620,121 +620,121 @@ var GeolocationService = class {
 import { z as z4 } from "zod";
 import OpenAI from "openai";
 
-// app/consts/LocationConsts.ts
+// app/consts/PlaceConsts.ts
 import { config } from "dotenv";
 config();
 var OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 var MOCK_MAPPINGS = {
   "gotham city": {
-    normalizedLocation: "New York, NY",
+    normalizedPlace: "New York, NY",
     slug: "new-york-ny",
     confidence: 0.95,
     reasoning: "Gotham City is commonly associated with New York City in popular culture"
   },
   "metropolis": {
-    normalizedLocation: "New York, NY",
+    normalizedPlace: "New York, NY",
     slug: "new-york-ny",
     confidence: 0.9,
     reasoning: "Metropolis is often depicted as New York City in Superman comics"
   },
   "springfield": {
-    normalizedLocation: "Springfield, IL",
+    normalizedPlace: "Springfield, IL",
     slug: "springfield-il",
     confidence: 0.85,
     reasoning: "Springfield could refer to multiple cities, defaulting to Illinois state capital"
   },
   "home of the school that's better than yale": {
-    normalizedLocation: "Cambridge, MA",
+    normalizedPlace: "Cambridge, MA",
     slug: "cambridge-ma",
     confidence: 0.95,
     reasoning: "This refers to Harvard University in Cambridge, Massachusetts"
   },
   "the big apple": {
-    normalizedLocation: "New York, NY",
+    normalizedPlace: "New York, NY",
     slug: "new-york-ny",
     confidence: 0.98,
     reasoning: "The Big Apple is a well-known nickname for New York City"
   },
   "la la land": {
-    normalizedLocation: "Los Angeles, CA",
+    normalizedPlace: "Los Angeles, CA",
     slug: "los-angeles-ca",
     confidence: 0.9,
     reasoning: "La La Land is a nickname for Los Angeles"
   },
   "the windy city": {
-    normalizedLocation: "Chicago, IL",
+    normalizedPlace: "Chicago, IL",
     slug: "chicago-il",
     confidence: 0.95,
     reasoning: "The Windy City is a nickname for Chicago"
   },
   "the city of angels": {
-    normalizedLocation: "Los Angeles, CA",
+    normalizedPlace: "Los Angeles, CA",
     slug: "los-angeles-ca",
     confidence: 0.9,
     reasoning: "The City of Angels is a nickname for Los Angeles"
   },
   "the city that never sleeps": {
-    normalizedLocation: "New York, NY",
+    normalizedPlace: "New York, NY",
     slug: "new-york-ny",
     confidence: 0.95,
     reasoning: "The City That Never Sleeps is a nickname for New York City"
   },
   "the emerald city": {
-    normalizedLocation: "Seattle, WA",
+    normalizedPlace: "Seattle, WA",
     slug: "seattle-wa",
     confidence: 0.85,
     reasoning: "The Emerald City is a nickname for Seattle"
   },
   "the city of brotherly love": {
-    normalizedLocation: "Philadelphia, PA",
+    normalizedPlace: "Philadelphia, PA",
     slug: "philadelphia-pa",
     confidence: 0.9,
     reasoning: "The City of Brotherly Love is a nickname for Philadelphia"
   },
   "the mile high city": {
-    normalizedLocation: "Denver, CO",
+    normalizedPlace: "Denver, CO",
     slug: "denver-co",
     confidence: 0.9,
     reasoning: "The Mile High City is a nickname for Denver"
   },
   "the motor city": {
-    normalizedLocation: "Detroit, MI",
+    normalizedPlace: "Detroit, MI",
     slug: "detroit-mi",
     confidence: 0.9,
     reasoning: "The Motor City is a nickname for Detroit"
   },
   "the music city": {
-    normalizedLocation: "Nashville, TN",
+    normalizedPlace: "Nashville, TN",
     slug: "nashville-tn",
     confidence: 0.9,
     reasoning: "The Music City is a nickname for Nashville"
   },
   "the queen city": {
-    normalizedLocation: "Charlotte, NC",
+    normalizedPlace: "Charlotte, NC",
     slug: "charlotte-nc",
     confidence: 0.8,
     reasoning: "The Queen City is a nickname for Charlotte"
   },
   "the space city": {
-    normalizedLocation: "Houston, TX",
+    normalizedPlace: "Houston, TX",
     slug: "houston-tx",
     confidence: 0.9,
     reasoning: "The Space City is a nickname for Houston"
   },
   "the alamo city": {
-    normalizedLocation: "San Antonio, TX",
+    normalizedPlace: "San Antonio, TX",
     slug: "san-antonio-tx",
     confidence: 0.9,
     reasoning: "The Alamo City is a nickname for San Antonio"
   },
   "the valley of the sun": {
-    normalizedLocation: "Phoenix, AZ",
+    normalizedPlace: "Phoenix, AZ",
     slug: "phoenix-az",
     confidence: 0.85,
     reasoning: "The Valley of the Sun is a nickname for Phoenix"
   },
   "the gateway to the west": {
-    normalizedLocation: "St. Louis, MO",
+    normalizedPlace: "St. Louis, MO",
     slug: "st-louis-mo",
     confidence: 0.85,
     reasoning: "The Gateway to the West is a nickname for St. Louis"
@@ -744,7 +744,7 @@ var MOCK_MAPPINGS = {
 // app/services/llmService.ts
 var LocationNormalizationSchema = z4.object({
   slug: z4.string(),
-  normalizedLocation: z4.string(),
+  normalizedPlace: z4.string(),
   confidence: z4.number().min(0).max(1),
   reasoning: z4.string().optional()
 });
@@ -753,42 +753,23 @@ var LLMService = class {
     __name(this, "LLMService");
   }
   /**
-   * Normalize a location description using OpenAI LLM
+   * Normalize a place description using OpenAI LLM
    * Converts descriptions like "Gotham City" to "New York, NY"
    */
-  static async normalizeLocation(description) {
+  static async normalizePlace(description) {
     try {
       if (!OPENAI_API_KEY) {
         console.warn("OpenAI API key not found, falling back to mock implementation");
         const mockResponse = this.getMockNormalization(description);
         return LocationNormalizationSchema.parse(mockResponse);
       }
-      const openaiResponse = await this.convertDescriptionToNormalizedLocation(description);
+      const openaiResponse = await this.convertDescriptionToNormalizedPlace(description);
       return LocationNormalizationSchema.parse(openaiResponse);
     } catch (error) {
       throw new Error("Failed to normalize location from description: " + error);
     }
   }
-  /**
-   * Normalize a slug using OpenAI LLM
-   * Converts slugs like "new-york-ny" to "New York, NY"
-   */
-  // static async normalizeLocationWithSlug(slug: string): Promise<LocationNormalization> {
-  //   try {
-  //     // Check if OpenAI API key is available
-  //     if (!OPENAI_API_KEY) {
-  //       console.warn("OpenAI API key not found, falling back to mock implementation")
-  //       const mockResponse = this.getMockNormalizationWithSlug(slug)
-  //       return LocationNormalizationSchema.parse(mockResponse)
-  //     }
-  //     // Use OpenAI API for location normalization with slug
-  //     const openaiResponse = await this.convertSlugToNormalizedLocation(slug)
-  //     return LocationNormalizationSchema.parse(openaiResponse)
-  //   } catch (error) {
-  //     console.error("Error normalizing location with slug:", error)
-  //     throw new Error("Failed to normalize location with slug")
-  //   }
-  // }
+
   /**
    * Mock implementation for fallback when OpenAI API is unavailable
    * Used when API key is missing or API calls fail
@@ -819,7 +800,7 @@ var LLMService = class {
         messages: [
           {
             role: "system",
-            content: "You are a location normalization expert. Always respond with valid JSON."
+            content: "You are a place normalization expert. Always respond with valid JSON."
           },
           {
             role: "user",
@@ -837,29 +818,29 @@ var LLMService = class {
       return LocationNormalizationSchema.parse(parsed);
     } catch (error) {
       console.error("OpenAI API error:", error);
-      throw new Error("Failed to normalize location with OpenAI");
+      throw new Error("Failed to normalize place with OpenAI");
     }
   }
   /**
    * Production method for calling OpenAI API for description to normalized location.
    * Converts descriptions like "Gotham City" to "New York, NY".
    */
-  static async convertDescriptionToNormalizedLocation(description) {
+  static async convertDescriptionToNormalizedPlace(description) {
     const prompt = `Convert this location description to a normalized format with city and state/country.
 
-Location description: "${description}"
+Place description: "${description}"
 
 Please respond with a JSON object containing:
-- normalizedLocation: The standardized location (e.g., "New York, NY" or "London, UK")
+- normalizedPlace: The standardized place (e.g., "New York, NY" or "London, UK")
 - slug: A URL-friendly slug (e.g., "new-york-ny" or "london-uk")
 - confidence: A number between 0 and 1 indicating your confidence
 - reasoning: Brief explanation of your choice
 
 Examples:
-- "Gotham City" \u2192 {"normalizedLocation": "New York, NY", "slug": "new-york-ny", "confidence": 0.95, "reasoning": "Gotham City is commonly associated with New York City"}
-- "The Big Apple" \u2192 {"normalizedLocation": "New York, NY", "slug": "new-york-ny", "confidence": 0.98, "reasoning": "The Big Apple is a well-known nickname for New York City"}
-- "Home of Harvard" \u2192 {"normalizedLocation": "Cambridge, MA", "slug": "cambridge-ma", "confidence": 0.95, "reasoning": "Harvard University is located in Cambridge, Massachusetts"}
-- "Springfield" \u2192 {"normalizedLocation": "Springfield, IL", "slug": "springfield-il", "confidence": 0.85, "reasoning": "Springfield could refer to multiple cities, defaulting to Illinois state capital"}
+- "Gotham City" \u2192 {"normalizedPlace": "New York, NY", "slug": "new-york-ny", "confidence": 0.95, "reasoning": "Gotham City is commonly associated with New York City"}
+- "The Big Apple" \u2192 {"normalizedPlace": "New York, NY", "slug": "new-york-ny", "confidence": 0.98, "reasoning": "The Big Apple is a well-known nickname for New York City"}
+- "Home of Harvard" \u2192 {"normalizedPlace": "Cambridge, MA", "slug": "cambridge-ma", "confidence": 0.95, "reasoning": "Harvard University is located in Cambridge, Massachusetts"}
+- "Springfield" \u2192 {"normalizedPlace": "Springfield, IL", "slug": "springfield-il", "confidence": 0.85, "reasoning": "Springfield could refer to multiple cities, defaulting to Illinois state capital"}
 
 Respond only with valid JSON:`;
     return this.createOpenAICompletion(prompt);
@@ -1116,16 +1097,16 @@ var Store = class {
   }
 };
 
-// app/stores/LocationStore.ts
-var LocationStore = class extends Store {
+// app/stores/PlaceStore.ts
+var PlaceStore = class extends Store {
   static {
-    __name(this, "LocationStore");
+    __name(this, "PlaceStore");
   }
   constructor() {
-    super("locations");
+    super("places");
   }
   /**
-   * Generate a URL-friendly slug from a location string
+   * Generate a URL-friendly slug from a place string
    */
   static generateSlug(text) {
     return text.toLowerCase().replace(/[^a-z0-9\s-]/g, "").replace(/\s+/g, "-").replace(/-+/g, "-").replace(/^-|-$/g, "");
@@ -1135,7 +1116,7 @@ var LocationStore = class extends Store {
     return {
       ...model,
       description: item.description,
-      normalizedLocation: item.normalizedLocation,
+      normalizedPlace: item.normalizedPlace,
       slug: item.slug,
       geocodedAddress: item.geocodedAddress,
       weather: item.weather,
@@ -1148,30 +1129,30 @@ var LocationStore = class extends Store {
   getBySlug(slug) {
     return this.getAll().find((item) => item.slug === slug);
   }
-  getByNormalizedLocation(normalizedLocation) {
-    return this.getAll().find((item) => item.normalizedLocation === normalizedLocation);
+  getByNormalizedPlace(normalizedPlace) {
+    return this.getAll().find((item) => item.normalizedPlace === normalizedPlace);
   }
   /**
-   * Get location by ID and return as model
+   * Get place by ID and return as model
    */
   getById(id) {
     const item = this.get(id);
     return item ? this.toModel(item) : void 0;
   }
   /**
-   * Get all locations as models
+   * Get all places as models
    */
   getAllAsModels() {
     return this.getAll().map((item) => this.toModel(item));
   }
   /**
    * Create a complete location with all required fields
-   * This method should be used instead of the basic add() method for locations
+   * This method should be used instead of the basic add() method for places
    */
   createLocation(data) {
     const locationData = {
       description: data.description,
-      normalizedLocation: data.normalizedLocation,
+      normalizedPlace: data.normalizedPlace,
       slug: data.slug,
       geocodedAddress: data.geocodedAddress,
       weather: data.weather
@@ -1184,7 +1165,7 @@ var LocationStore = class extends Store {
   update(id, updates) {
     const oldItem = this.get(id);
     if (!oldItem) {
-      throw new Error(`Location with id "${id}" not found`);
+      throw new Error(`Place with id "${id}" not found`);
     }
     super.update(id, updates);
     const updatedItem = this.get(id);
@@ -1196,7 +1177,7 @@ var LocationStore = class extends Store {
 import { asValue, createContainer } from "awilix";
 var container = createContainer();
 container.register({
-  locations: asValue(new LocationStore())
+  places: asValue(new PlaceStore())
 });
 
 // core/trpc.ts
@@ -1214,61 +1195,50 @@ var trpc = initTRPC.context().create({
 var router = trpc.router;
 var procedure = trpc.procedure;
 
-// app/router/locations.ts
+// app/router/places.ts
 import { TRPCError } from "@trpc/server";
 import { z as z6 } from "zod";
-var locations = router({
-  // Get location by normalized location string
-  getByNormalizedLocation: procedure.input(z6.object({ normalizedLocation: z6.string() })).query(async ({ ctx, input }) => {
-    const location = ctx.cradle.locations.getByNormalizedLocation(input.normalizedLocation);
+var places = router({
+  // Get place by normalized place string
+  getByNormalizedPlace: procedure.input(z6.object({ normalizedPlace: z6.string() })).query(async ({ ctx, input }) => {
+    const location = ctx.cradle.places.getByNormalizedPlace(input.normalizedPlace);
     if (!location) {
       return false;
     }
     return location;
   }),
-  // Phase II: List all locations
-  // list: procedure.query(async ({ ctx }) => {
-  //   const records = ctx.cradle.locations.getAll()
-  //   return records.map((record) => ({
-  //     id: record.id,
-  //     createdAt: record.createdAt,
-  //     description: record.description,
-  //     normalizedLocation: record.normalizedLocation,
-  //     geocodedAddress: record.geocodedAddress,
-  //     weather: record.weather
-  //   }))
-  // }),
+
   /**
-   * Creates a location object from a description.
-   * If the location already exists,
-   * it updates the location with the new description.
+   * Creates a place object from a description.
+   * If the place already exists,
+   * it updates the place with the new description.
    */
-  create: procedure.input(CreateLocationSchema).mutation(async ({ ctx, input }) => {
+  create: procedure.input(CreatePlaceSchema).mutation(async ({ ctx, input }) => {
     try {
-      const llmResult = await LLMService.normalizeLocation(input.description);
-      console.log(`LLM normalized "${input.description}" to "${llmResult.normalizedLocation}" (confidence: ${llmResult.confidence})`);
+      const llmResult = await LLMService.normalizePlace(input.description);
+      console.log(`LLM normalized "${input.description}" to "${llmResult.normalizedPlace}" (confidence: ${llmResult.confidence})`);
       console.log(`LLM generated slug: "${llmResult.slug}"`);
-      const existingLocation = ctx.cradle.locations.getByNormalizedLocation(llmResult.normalizedLocation);
+      const existingLocation = ctx.cradle.places.getByNormalizedPlace(llmResult.normalizedPlace);
       if (existingLocation) {
         const updatedLocation = ctx.cradle.locations.update(existingLocation.id, { description: input.description });
-        return ctx.cradle.locations.toModel(updatedLocation);
+        return ctx.cradle.places.toModel(updatedLocation);
       }
-      const geocodedAddress = await GeolocationService.geocodeLocation(llmResult.normalizedLocation);
-      console.log(`Geocoded "${llmResult.normalizedLocation}" to:`, geocodedAddress);
+      const geocodedAddress = await GeolocationService.geocodePlace(llmResult.normalizedPlace);
+      console.log(`Geocoded "${llmResult.normalizedPlace}" to:`, geocodedAddress);
       const weatherData = await WeatherService.get7DayForecast({ latitude: geocodedAddress.latitude, longitude: geocodedAddress.longitude });
       weatherData.forEach((weather) => {
         weather.clothing = ClothingService.getRecommendations(weather.degreesFahrenheit, weather.condition, weather.rainProbabilityPercentage, weather.windSpeedMph);
       });
       const locationData = {
         description: input.description,
-        normalizedLocation: llmResult.normalizedLocation,
+        normalizedPlace: llmResult.normalizedPlace,
         slug: llmResult.slug,
         geocodedAddress,
         weather: weatherData
       };
-      const location = ctx.cradle.locations.createLocation(locationData);
-      console.log("Location created:", location);
-      const model = ctx.cradle.locations.toModel(location);
+      const place = ctx.cradle.places.createPlace(locationData);
+      console.log("Place created:", place);
+      const model = ctx.cradle.places.toModel(place);
       return model;
     } catch (error) {
       console.error("Error in create:", error);
@@ -1280,60 +1250,60 @@ var locations = router({
       }
       throw new TRPCError({
         code: "INTERNAL_SERVER_ERROR",
-        message: "Failed to create location"
+        message: "Failed to create place"
       });
     }
   }),
   /**
    * Updates a location with a new description.
    */
-  update: procedure.input(UpdateLocationSchema).mutation(async ({ ctx, input }) => {
-    return ctx.cradle.locations.update(input.id, { description: input.description });
+  update: procedure.input(UpdatePlaceSchema).mutation(async ({ ctx, input }) => {
+    return ctx.cradle.places.update(input.id, { description: input.description });
   }),
   /**
-   * Gets a location by slug.
-   * If the location does not exist, return an error.
+   * Gets a place by slug.
+   * If the place does not exist, return an error.
    */
   getBySlug: procedure.input(z6.object({ slug: z6.string() })).query(async ({ ctx, input }) => {
-    const location = ctx.cradle.locations.getBySlug(input.slug);
-    if (!location) {
+    const place = ctx.cradle.places.getBySlug(input.slug);
+    if (!place) {
       throw new TRPCError({
         code: "NOT_FOUND",
-        message: `Location not found with slug: "${input.slug}".`
+        message: `Place not found with slug: "${input.slug}".`
       });
     }
-    return ctx.cradle.locations.toModel(location);
+    return ctx.cradle.places.toModel(place);
   }),
   /**
-   * Deletes a location by id.
-   * If the location does not exist, return an error.
+   * Deletes a place by id.
+   * If the place does not exist, return an error.
    */
   delete: procedure.input(z6.object({ id: z6.string() })).mutation(async ({ ctx, input }) => {
-    const location = ctx.cradle.locations.get(input.id);
-    if (!location) {
+    const place = ctx.cradle.places.get(input.id);
+    if (!place) {
       throw new TRPCError({
         code: "NOT_FOUND",
-        message: `Location not found with id: "${input.id}".`
+        message: `Place not found with id: "${input.id}".`
       });
     }
-    ctx.cradle.locations.remove(input.id);
-    return { success: true, message: "Location deleted successfully" };
+    ctx.cradle.places.remove(input.id);
+    return { success: true, message: "Place deleted successfully" };
   }),
   /**
-   * Get 7-day weather forecast for a location by slug
+   * Get 7-day weather forecast for a place by slug
    */
   getWeatherForecast: procedure.input(z6.object({ slug: z6.string() })).query(async ({ ctx, input }) => {
-    const location = ctx.cradle.locations.getBySlug(input.slug);
-    if (!location) {
+    const place = ctx.cradle.places.getBySlug(input.slug);
+    if (!place) {
       throw new TRPCError({
         code: "NOT_FOUND",
-        message: `Location not found with slug: "${input.slug}".`
+        message: `Place not found with slug: "${input.slug}".`
       });
     }
     try {
       const forecast = await WeatherService.get7DayForecast({
-        latitude: location.geocodedAddress.latitude,
-        longitude: location.geocodedAddress.longitude
+        latitude: place.geocodedAddress.latitude,
+        longitude: place.geocodedAddress.longitude
       });
       return forecast;
     } catch (error) {
@@ -1345,20 +1315,20 @@ var locations = router({
     }
   }),
   /**
-   * Get current day weather for a location by slug
+   * Get current day weather for a place by slug
    */
   getCurrentWeather: procedure.input(z6.object({ slug: z6.string() })).query(async ({ ctx, input }) => {
-    const location = ctx.cradle.locations.getBySlug(input.slug);
-    if (!location) {
+    const place = ctx.cradle.places.getBySlug(input.slug);
+    if (!place) {
       throw new TRPCError({
         code: "NOT_FOUND",
-        message: `Location not found with slug: "${input.slug}".`
+        message: `Place not found with slug: "${input.slug}".`
       });
     }
     try {
       const weather = await WeatherService.getCurrentDayWeather(
-        location.geocodedAddress.latitude,
-        location.geocodedAddress.longitude
+        place.geocodedAddress.latitude,
+        place.geocodedAddress.longitude
       );
       return weather;
     } catch (error) {
@@ -1369,125 +1339,11 @@ var locations = router({
       });
     }
   })
-  // Get weather for a specific location
-  // getWeather: procedure
-  //   .input(z.object({ locationId: z.string() }))
-  //   .query(async ({ ctx, input }) => {
-  //     const location = ctx.cradle.locations.get(input.locationId)
-  //     if (!location) {
-  //       throw new TRPCError({
-  //         code: "NOT_FOUND",
-  //         message: "Location not found."
-  //       })
-  //     }
-  //     return location.weather
-  //   }),
-  // Refresh weather data for a location
-  // refreshWeather: procedure
-  //   .input(z.object({ locationId: z.string() }))
-  //   .mutation(async ({ ctx, input }) => {
-  //     const location = ctx.cradle.locations.get(input.locationId)
-  //     if (!location) {
-  //       throw new TRPCError({
-  //         code: "NOT_FOUND",
-  //         message: "Location not found."
-  //       })
-  //     }
-  //     // This would typically:
-  //     // 1. Fetch fresh weather data from Open-Meteo API
-  //     // 2. Get updated clothing recommendations from TikTok Shop API
-  //     // 3. Update the location with new weather data
-  //     // For now, we'll just return the existing weather
-  //     // In a real implementation, this would call external APIs
-  //     return location.weather
-  //   }),
-  // Get clothing recommendations using the rules engine
-  // getClothingRecommendations: procedure
-  //   .input(
-  //     z.object({
-  //       locationId: z.string(),
-  //       date: z.date().optional() // If not provided, use current date
-  //     })
-  //   )
-  //   .query(async ({ ctx, input }) => {
-  //     const location = ctx.cradle.locations.get(input.locationId)
-  //     if (!location) {
-  //       throw new TRPCError({
-  //         code: "NOT_FOUND",
-  //         message: "Location not found."
-  //       })
-  //     }
-  //     const targetDate = input.date || new Date()
-  // const weatherForDate = location.weather.find(
-  //   (w) => w.date.toDateString() === targetDate.toDateString()
-  // )
-  // if (!weatherForDate) {
-  //   throw new TRPCError({
-  //     code: "NOT_FOUND",
-  //     message: "Weather data not found for the specified date."
-  //   })
-  // }
-  // const recommendations = ClothingService.getRecommendationsForDate({
-  //   temperature: weatherForDate.degreesFahrenheit,
-  //   condition: weatherForDate.condition,
-  //   rainProbability: weatherForDate.rainProbabilityPercentage,
-  //   windSpeed: weatherForDate.windSpeedMph
-  // })
-  // return {
-  //   weather: weatherForDate,
-  //   clothingRecommendations: recommendations.categories
-  //   // Phase II: tikTokShopQueries: recommendations.searchQueries
-  // }
-  // }),
-  // Get weather appropriateness score for a specific clothing item
-  // getClothingScore: procedure
-  //   .input(
-  //     z.object({
-  //       locationId: z.string(),
-  //       clothingCategory: z.string(),
-  //       date: z.date().optional()
-  //     })
-  //   )
-  //   .query(async ({ ctx, input }) => {
-  //     const location = ctx.cradle.locations.get(input.locationId)
-  //     if (!location) {
-  //       throw new TRPCError({
-  //         code: "NOT_FOUND",
-  //         message: "Location not found."
-  //       })
-  //     }
-  //     const targetDate = input.date || new Date()
-  // const weatherForDate = location.weather.find(
-  //   (w) => w.date.toDateString() === targetDate.toDateString()
-  // )
-  // if (!weatherForDate) {
-  //   throw new TRPCError({
-  //     code: "NOT_FOUND",
-  //     message: "Weather data not found for the specified date."
-  //   })
-  // }
-  // const score = ClothingService.getWeatherAppropriatenessScore(
-  //   input.clothingCategory as ClothingCategory,
-  //   weatherForDate.degreesFahrenheit,
-  //   weatherForDate.condition,
-  //   weatherForDate.rainProbabilityPercentage,
-  //   weatherForDate.windSpeedMph
-  // )
-  // return {
-  //   clothingCategory: input.clothingCategory,
-  //   weather: weatherForDate,
-  //   appropriatenessScore: score,
-  //   recommendation: score >= 80 ? "Highly recommended" : 
-  //                  score >= 60 ? "Good choice" : 
-  //                  score >= 40 ? "Consider alternatives" : 
-  //                  "Not recommended for this weather"
-  // }
-  // })
 });
 
 // app/router/index.ts
 var appRouter = router({
-  locations
+  places
 });
 
 // src/index.ts

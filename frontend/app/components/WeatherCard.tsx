@@ -1,4 +1,4 @@
-import { Card, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardHeader, CardTitle } from "../../src/components/ui/card"
 import { Weather } from "../../src/types/api"
 
 export const WeatherCard = ({ weather }: { weather: Weather }) => {

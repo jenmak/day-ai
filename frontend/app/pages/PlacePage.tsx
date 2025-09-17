@@ -1,5 +1,5 @@
 import { useParams } from "react-router"
-import { useLocationBySlug } from "../hooks/useLocationBySlug"
+import { usePlaceBySlug } from "../hooks/usePlaceBySlug"
 import { Spinner } from "../../src/components/ui/spinner"
 import { PageWrapper } from "../components/PageWrapper"
 import { Weather } from "../../src/types/api"
@@ -8,11 +8,11 @@ import { Header } from "../components/Header"
 import { Subheading } from "../components/Subheading"
 import { Heading } from "../components/Heading"
 
-export function Location() {
+export function Place() {
 
   // TODO: Deal with these views
   const { slug } = useParams()
-  
+
   if (!slug) {
     return (
       <PageWrapper>
@@ -21,7 +21,7 @@ export function Location() {
     )
   }
 
-  const { data: location, isLoading, error } = useLocationBySlug({ slug })
+  const { data: place, isLoading, error } = usePlaceBySlug({ slug })
 
   if (isLoading) {
     return (
@@ -39,13 +39,14 @@ export function Location() {
     )
   }
 
-  if (!location || !location.weather) {
+  if (!place || !place.weather) {
     return (
       <PageWrapper>
-        <div>Location with weather data not found.</div>
+        <div>Place with weather data not found.</div>
       </PageWrapper>
     )
   }
+  console.log(place)
 
   // Determine background colors based on weather conditions
   // hot
@@ -55,14 +56,14 @@ export function Location() {
   return (
     <PageWrapper>
       <Header />
-      {location && (
+      {place && (
         <div className="flex flex-col text-center text-white">
-          <Subheading>{location.description}</Subheading>
-          <Heading>{location.normalizedLocation}</Heading>
+          <Subheading>{place.description}</Subheading>
+          <Heading>{place.normalizedLocation}</Heading>
         </div>
       )}
       {
-        location.weather.map((weather: Weather) => (
+        place.weather.map((weather: Weather) => (
           <WeatherCard key={weather.date.toString()} weather={weather} />
         ))
       }

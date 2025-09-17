@@ -1,5 +1,5 @@
 export * from "./user"
-export * from "./location"
+export * from "./place"
 export * from "./weather"
 export * from "./weatherConditions"
 export * from "./clothing"

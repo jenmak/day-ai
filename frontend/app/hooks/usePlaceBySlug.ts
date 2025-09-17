@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query"
 import { Place as PlaceType } from "@dayai/backend/schemas"
-import { useLocationStore } from "../stores/locationStore"
+import { useLocationStore } from "../stores/placeStore"
 import { useEffect } from "react"
 
 interface usePlaceBySlugOptions {

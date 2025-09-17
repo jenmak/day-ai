@@ -1,4 +1,4 @@
-import { type GeocodedAddress, type Address } from "../schemas/location"
+import { type GeocodedAddress, type Address } from "../schemas/place"
 
 export interface OpenCageResponse {
   results: Array<{

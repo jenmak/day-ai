@@ -1,14 +1,14 @@
-import { useCreateLocation } from "../hooks/useCreateLocation"
+import { useCreatePlace } from "../hooks/useCreatePlace"
 import { Label } from "../../src/components/ui/label"
 import { Image } from "../../src/components/ui/image"
 import logoImage from "../images/drip-drop-city-logo.png"
 import { SearchInput } from "../components/SearchInput"
 
 export function Search() {
-  const { createLocation, isLoading, error } = useCreateLocation()
+  const { createPlace, isLoading, error } = useCreatePlace()
 
   const handleSearch = (searchTerm: string) => {
-    createLocation(searchTerm)
+    createPlace(searchTerm)
   }
 
   return (

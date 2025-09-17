@@ -1,14 +1,18 @@
-import { LocationStore } from "../app/stores/LocationStore"
+import { PlaceStore } from "../app/stores/PlaceStore"
 import { asValue, createContainer } from "awilix"
 
 type Cradle = {
-  locations: LocationStore
+  places: PlaceStore
+  // Legacy alias for backward compatibility
+  locations: PlaceStore
 }
 
 const container = createContainer<Cradle>()
 
+const placeStore = new PlaceStore()
 container.register({
-  locations: asValue(new LocationStore())
+  places: asValue(placeStore),
+  locations: asValue(placeStore) // Legacy alias
 })
 
 export { container }

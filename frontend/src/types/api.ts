@@ -1,7 +1,7 @@
 // Type definitions for the DayAI API
 // These should match the backend schemas
 
-export interface Location {
+export interface Place {
   id: string
   name: string
   slug: string
@@ -26,6 +26,9 @@ export interface Location {
   createdAt: string
   updatedAt: string
 }
+
+// Legacy alias for backward compatibility
+export interface Location extends Place {}
 
 export interface Weather {
   date: string
@@ -70,6 +73,7 @@ export interface WeatherQuery {
 }
 
 // Export types that were previously imported from backend
-export type LocationType = Location
+export type PlaceType = Place
+export type LocationType = Place // Legacy alias
 export type WeatherType = Weather
 export type WeatherConditionType = WeatherCondition

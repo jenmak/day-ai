@@ -1,7 +1,7 @@
 import { useMutation } from "@tanstack/react-query"
 import { useNavigate } from "react-router"
 import { Place as PlaceType } from "@dayai/backend/schemas"
-import { useLocationStore } from "../stores/locationStore"
+import { useLocationStore } from "../stores/placeStore"
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3333"
 

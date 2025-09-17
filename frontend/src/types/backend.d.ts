@@ -1,15 +1,39 @@
 // Type declarations for @dayai/backend
 declare module '@dayai/backend' {
   export interface AppRouter {
-    locations: {
+    places: {
       create: {
-        mutate: (input: { description: string }) => Promise<Location>
+        mutate: (input: { description: string }) => Promise<Place>
       }
       getByNormalizedLocation: {
-        query: (input: { normalizedLocation: string }) => Promise<Location | false>
+        query: (input: { normalizedLocation: string }) => Promise<Place | false>
       }
       getBySlug: {
-        query: (input: { slug: string }) => Promise<Location>
+        query: (input: { slug: string }) => Promise<Place>
+      }
+      getWeatherForecast: {
+        query: (input: { slug: string }) => Promise<Weather[]>
+      }
+      getCurrentWeather: {
+        query: (input: { slug: string }) => Promise<Weather>
+      }
+      getWeatherByDate: {
+        query: (input: { slug: string; date: string }) => Promise<Weather>
+      }
+      getWeatherByDateRange: {
+        query: (input: { slug: string; startDate: string; endDate: string }) => Promise<Weather[]>
+      }
+    }
+    // Legacy alias for backward compatibility
+    locations: {
+      create: {
+        mutate: (input: { description: string }) => Promise<Place>
+      }
+      getByNormalizedLocation: {
+        query: (input: { normalizedLocation: string }) => Promise<Place | false>
+      }
+      getBySlug: {
+        query: (input: { slug: string }) => Promise<Place>
       }
       getWeatherForecast: {
         query: (input: { slug: string }) => Promise<Weather[]>
@@ -33,7 +57,7 @@ declare module '@dayai/backend' {
 }
 
 declare module '@dayai/backend/schemas' {
-  export interface Location {
+  export interface Place {
     id: string
     description?: string
     normalizedLocation: string
@@ -54,6 +78,9 @@ declare module '@dayai/backend/schemas' {
     weather?: Weather[]
     createdAt: string
   }
+
+  // Legacy alias for backward compatibility
+  export interface Location extends Place {}
 
   export interface Weather {
     date: string
