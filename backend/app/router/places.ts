@@ -9,7 +9,8 @@ import { WeatherService } from "../services/weatherService"
 import { procedure, router } from "../../core/trpc"
 import { TRPCError } from "@trpc/server"
 import { z } from "zod"
-import { getPlaceTemperatureRangeCategory } from "../utils/temperatureUtils"
+import { ensureTemperatureRangeCategory, getPlaceTemperatureRangeCategory } from "../utils/temperatureUtils"
+
 
 export const places = router({
   // Get place by normalized place string
@@ -22,7 +23,8 @@ export const places = router({
         return false
       }
 
-      return place
+      const model = ctx.cradle.places.toModel(place)
+      return ensureTemperatureRangeCategory(model)
     }),
 
   /**
@@ -74,7 +76,7 @@ export const places = router({
 
         console.log("Place created:", place)
         const model = ctx.cradle.places.toModel(place)
-        return model
+        return ensureTemperatureRangeCategory(model)
 
       } catch (error) {
         console.error("Error in create:", error)
@@ -118,7 +120,8 @@ export const places = router({
         })
       }
 
-      return ctx.cradle.places.toModel(place)
+      const model = ctx.cradle.places.toModel(place)
+      return ensureTemperatureRangeCategory(model)
     }),
 
   /**
@@ -138,8 +141,8 @@ export const places = router({
 
       try {
         const forecast = await WeatherService.get7DayForecast({
-          latitude: place.geocodedAddress.latitude,
-          longitude: place.geocodedAddress.longitude
+          latitude: place.geocodedAddress!.latitude,
+          longitude: place.geocodedAddress!.longitude
         })
 
         return forecast
@@ -169,8 +172,8 @@ export const places = router({
 
       try {
         const weather = await WeatherService.getCurrentDayWeather(
-          place.geocodedAddress.latitude,
-          place.geocodedAddress.longitude
+          place.geocodedAddress!.latitude,
+          place.geocodedAddress!.longitude
         )
 
         return weather
@@ -204,8 +207,8 @@ export const places = router({
       try {
         const targetDate = new Date(input.date)
         const forecast = await WeatherService.get7DayForecast({
-          latitude: place.geocodedAddress.latitude,
-          longitude: place.geocodedAddress.longitude,
+          latitude: place.geocodedAddress!.latitude,
+          longitude: place.geocodedAddress!.longitude,
           startDate: targetDate,
           endDate: targetDate
         })
@@ -271,8 +274,8 @@ export const places = router({
         }
 
         const forecast = await WeatherService.get7DayForecast({
-          latitude: place.geocodedAddress.latitude,
-          longitude: place.geocodedAddress.longitude,
+          latitude: place.geocodedAddress!.latitude,
+          longitude: place.geocodedAddress!.longitude,
           startDate: startDate,
           endDate: endDate
         })

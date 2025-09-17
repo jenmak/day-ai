@@ -714,7 +714,7 @@ var PlaceSchema = z2.object({
   description: z2.string().optional(),
   normalizedPlace: z2.string(),
   slug: z2.string(),
-  geocodedAddress: GeocodedAddressSchema,
+  geocodedAddress: GeocodedAddressSchema.nullable(),
   weather: z2.array(WeatherSchema).optional(),
   temperatureRangeCategory: TemperatureRangeCategorySchema.optional(),
   createdAt: z2.date().transform((date) => date.toISOString())
@@ -1076,7 +1076,12 @@ var LLMService = class {
         };
       }
     }
-    throw new Error("Description not found.");
+    return {
+      normalizedPlace: "No specific location found",
+      slug: "no-specific-location-found",
+      confidence: 0,
+      reasoning: "Could not identify a specific location from the description"
+    };
   }
   static async createOpenAICompletion(prompt) {
     const openai = new OpenAI({
@@ -1305,6 +1310,13 @@ function getPlaceTemperatureRangeCategory(weatherData) {
   return getAverageTemperatureRangeCategory(temperatures);
 }
 __name(getPlaceTemperatureRangeCategory, "getPlaceTemperatureRangeCategory");
+function ensureTemperatureRangeCategory(model) {
+  if (!model.temperatureRangeCategory && model.weather && model.weather.length > 0) {
+    model.temperatureRangeCategory = getPlaceTemperatureRangeCategory(model.weather);
+  }
+  return model;
+}
+__name(ensureTemperatureRangeCategory, "ensureTemperatureRangeCategory");
 
 // app/services/weatherService.ts
 var WeatherService = class {
@@ -1583,7 +1595,8 @@ var places = router({
     if (!place) {
       return false;
     }
-    return place;
+    const model = ctx.cradle.places.toModel(place);
+    return ensureTemperatureRangeCategory(model);
   }),
   /**
    * Creates a place object from a description.
@@ -1595,6 +1608,20 @@ var places = router({
       const llmResult = await LLMService.normalizePlace(input.description);
       console.log(`LLM normalized "${input.description}" to "${llmResult.normalizedPlace}" (confidence: ${llmResult.confidence})`);
       console.log(`LLM generated slug: "${llmResult.slug}"`);
+      if (llmResult.slug === "no-specific-location-found") {
+        const placeData2 = {
+          description: input.description,
+          normalizedPlace: llmResult.normalizedPlace,
+          slug: llmResult.slug,
+          geocodedAddress: null,
+          weather: [],
+          temperatureRangeCategory: null
+        };
+        const place2 = ctx.cradle.places.createPlace(placeData2);
+        console.log("Place created for no location found:", place2);
+        const model2 = ctx.cradle.places.toModel(place2);
+        return model2;
+      }
       const existingPlace = ctx.cradle.places.getByNormalizedPlace(llmResult.normalizedPlace);
       if (existingPlace) {
         const updatedPlace = ctx.cradle.places.update(existingPlace.id, { description: input.description });
@@ -1618,15 +1645,9 @@ var places = router({
       const place = ctx.cradle.places.createPlace(placeData);
       console.log("Place created:", place);
       const model = ctx.cradle.places.toModel(place);
-      return model;
+      return ensureTemperatureRangeCategory(model);
     } catch (error) {
       console.error("Error in create:", error);
-      if (error instanceof Error && error.message === "Description not found.") {
-        throw new TRPCError({
-          code: "BAD_REQUEST",
-          message: "Description not found."
-        });
-      }
       throw new TRPCError({
         code: "INTERNAL_SERVER_ERROR",
         message: "Failed to create place"
@@ -1651,7 +1672,8 @@ var places = router({
         message: `Place not found with slug: "${input.slug}".`
       });
     }
-    return ctx.cradle.places.toModel(place);
+    const model = ctx.cradle.places.toModel(place);
+    return ensureTemperatureRangeCategory(model);
   }),
   /**
    * Get 7-day weather forecast for a place by slug
@@ -1662,6 +1684,12 @@ var places = router({
       throw new TRPCError({
         code: "NOT_FOUND",
         message: `Place not found with slug: "${input.slug}".`
+      });
+    }
+    if (!place.geocodedAddress) {
+      throw new TRPCError({
+        code: "BAD_REQUEST",
+        message: "No location data available for this place."
       });
     }
     try {
@@ -1687,6 +1715,12 @@ var places = router({
       throw new TRPCError({
         code: "NOT_FOUND",
         message: `Place not found with slug: "${input.slug}".`
+      });
+    }
+    if (!place.geocodedAddress) {
+      throw new TRPCError({
+        code: "BAD_REQUEST",
+        message: "No location data available for this place."
       });
     }
     try {
@@ -1715,6 +1749,12 @@ var places = router({
       throw new TRPCError({
         code: "NOT_FOUND",
         message: `Place not found with slug: "${input.slug}".`
+      });
+    }
+    if (!place.geocodedAddress) {
+      throw new TRPCError({
+        code: "BAD_REQUEST",
+        message: "No location data available for this place."
       });
     }
     try {
@@ -1756,6 +1796,12 @@ var places = router({
       throw new TRPCError({
         code: "NOT_FOUND",
         message: `Place not found with slug: "${input.slug}".`
+      });
+    }
+    if (!place.geocodedAddress) {
+      throw new TRPCError({
+        code: "BAD_REQUEST",
+        message: "No location data available for this place."
       });
     }
     try {

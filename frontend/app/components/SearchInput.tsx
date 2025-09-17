@@ -2,14 +2,17 @@ import { Input } from "../../src/components/ui/input"
 import { Button } from "../../src/components/ui/button"
 import { ChevronRight } from "lucide-react"
 import { useState } from "react"
+import { useForm, useFormState } from "react-hook-form"
 
 type SearchInputProps = {
   onSearch: (searchTerm: string) => void
-  isLoading: boolean
+  isLoading?: boolean
 }
 
 export function SearchInput({ onSearch, isLoading }: SearchInputProps) {
   const [searchTerm, setSearchTerm] = useState("")
+  const { handleSubmit, control } = useForm()
+  const { isSubmitting } = useFormState({ control})
   
   const handleSearch = () => {
     if (searchTerm.trim()) {
@@ -24,22 +27,24 @@ export function SearchInput({ onSearch, isLoading }: SearchInputProps) {
   }
 
   return (
-    <div className="input-container">
-      <Input
-        className="search-input focus-visible:ring-0"
-        placeholder="ie. Gotham"
-        value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
-        onKeyDown={handleKeyPress}
-      />
-      <Button 
-        onClick={handleSearch} 
-        disabled={isLoading || !searchTerm.trim()} 
-        className="search-button"
-      >
-        <ChevronRight className="h-4 w-4" />
-        <span className="sr-only">Search</span>
-      </Button>
-    </div>
+    <form onSubmit={handleSubmit(handleSearch)}>
+      <div className={`input-container min-w-[350px] ${(isLoading || isSubmitting) && 'input-container-loading'}`}>
+        <Input
+          className="search-input focus-visible:ring-0"
+          placeholder="ie. Gotham"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          onKeyDown={handleKeyPress}
+        />
+        <Button 
+          type="submit"
+          disabled={(isLoading || isSubmitting) || !searchTerm.trim()} 
+          className="search-button"
+        >
+          <ChevronRight className="h-4 w-4" />
+          <span className="sr-only">Search</span>
+        </Button>
+      </div>
+    </form> 
   )
 }

@@ -76,3 +76,15 @@ export function getPlaceTemperatureRangeCategory(weatherData: Array<{ degreesFah
   const temperatures = weatherData.map(weather => weather.degreesFahrenheit)
   return getAverageTemperatureRangeCategory(temperatures)
 }
+
+/**
+ * Ensure temperature range category is calculated for existing places
+ * @param model - The place model
+ * @returns The place model with the temperature range category
+ */
+export function ensureTemperatureRangeCategory(model: any) {
+  if (!model.temperatureRangeCategory && model.weather && model.weather.length > 0) {
+    model.temperatureRangeCategory = getPlaceTemperatureRangeCategory(model.weather)
+  }
+  return model
+}

@@ -23,6 +23,7 @@ export interface Place {
     }
   }
   weather?: Weather[]
+  temperatureRangeCategory?: 'VERY_HOT' | 'HOT' | 'WARM' | 'MILD' | 'COOL' | 'COLD' | 'VERY_COLD'
   createdAt: string
   updatedAt: string
 }

@@ -7,13 +7,23 @@
   /* Font families */
   --font-family-heading: 'Cormorant Garamond', serif;
   --font-family-body: 'Poppins', sans-serif;
-  
-  /* Cool weather colors */
-  --color-cool-aquamarine: #73FBD3;
-  --color-cool-cyan: #44E5E7;
-  --color-cool-skyblue: #59D2FE;
-  --color-cool-blue: #4A8FE7;
-  --color-cool-crayola-blue: #5C7AFF;
+
+  /* Aliases */
+  --color-hot-1: var(--color-hot-amber);
+  --color-hot-2: var(--color-hot-orange);
+  --color-hot-3: var(--color-hot-fulvous);
+  --color-hot-4: var(--color-hot-pantone-orange);
+  --color-hot-5: var(--color-hot-coquelicot);
+  --color-cool-1: var(--color-cool-aquamarine);
+  --color-cool-2: var(--color-cool-cyan);
+  --color-cool-3: var(--color-cool-skyblue);
+  --color-cool-4: var(--color-cool-blue);
+  --color-cool-5: var(--color-cool-crayola-blue);
+  --color-cold-1: var(--color-cold-indigo);
+  --color-cold-2: var(--color-cold-slate-blue);
+  --color-cold-3: var(--color-cold-cornflower-blue);
+  --color-cold-4: var(--color-cold-maya-blue);
+  --color-cold-5: var(--color-cold-prussian-blue);
 
   /* Hot weather colors */
   --color-hot-amber: #F3B700;
@@ -22,12 +32,19 @@
   --color-hot-pantone-orange: #FF6201;
   --color-hot-coquelicot: #F63E02;
 
-  /* Rainy weather colors */
-  --color-rain-indigo: #A682FF;
-  --color-rain-slate-blue: #715AFF;
-  --color-rain-cornflower-blue: #5887FF;
-  --color-rain-maya-blue: #55C1FF;
-  --color-rain-prussian-blue: #102E4A;
+  /* Cool weather colors */
+  --color-cool-aquamarine: #73FBD3;
+  --color-cool-cyan: #44E5E7;
+  --color-cool-skyblue: #59D2FE;
+  --color-cool-blue: #4A8FE7;
+  --color-cool-crayola-blue: #5C7AFF;
+
+  /* Cold weather colors */
+  --color-cold-indigo: #A682FF;
+  --color-cold-slate-blue: #715AFF;
+  --color-cold-cornflower-blue: #5887FF;
+  --color-cold-maya-blue: #55C1FF;
+  --color-cold-prussian-blue: #102E4A;
 
   /* Profile colors */
   --color-eggplant: #533b4d;
@@ -39,9 +56,9 @@
 }
 
 :root {
-  --ring-color-1: var(--color-cool-aquamarine);
-  --ring-color-2: var(--color-cool-skyblue);
-  --ring-color-3: var(--color-cool-crayola-blue);
+  --ring-color-1: rgba(255, 255, 255, 0.8);
+  --ring-color-2: rgba(255, 255, 255, 0.4);
+  --ring-color-3: rgba(255, 255, 255, 0.1);
   --ring-size: 3px;
   --ring-radius: calc(infinity * 1px);
   --ring-speed: 2.5s;
@@ -60,7 +77,21 @@
   opacity: 1;
 }
 
-.input-container::after {
+.search-input:focus::placeholder {
+  opacity: 0;
+}
+
+.input-container-loading {
+  opacity: 0.5;
+}
+
+.input-container-loading:focus-within::after {
+  opacity: 1;
+  transform: scale(1);
+  animation-play-state: running;
+} 
+
+/* .input-container::after {
   content: "";
   position: absolute;
   top: -2px;
@@ -68,10 +99,10 @@
   right: -2px;
   bottom: -2px;
   inset: calc(-1 * var(--ring-size));
-  border-radius: calc(var(--ring-radius) + var(--ring-size));
+  border-radius: calc(var(--input-border-radius) + var(--ring-size));
   pointer-events: none;
   opacity: 0;
-  transform: scale(0.98); /* subtle pop-in */
+  transform: scale(0.98);
   transition: opacity 120ms ease, transform 120ms ease;
   background:
     conic-gradient(
@@ -80,23 +111,23 @@
       var(--ring-color-2),
       var(--ring-color-3),
       var(--ring-color-1)
-    );
+    ); */
   /* Make a ring instead of a fill */
-  -webkit-mask:
+  /* -webkit-mask:
     radial-gradient(farthest-side, transparent calc(100% - var(--ring-size)), #000 calc(100% - var(--ring-size)));
   mask:
     radial-gradient(farthest-side, transparent calc(100% - var(--ring-size)), #000 calc(100% - var(--ring-size)));
   animation: spin var(--ring-speed) linear infinite paused;
   z-index: 1;
-}
+} */
 
 /* Activate animation for keyboard focus 
 (and click focus for buttons/inputs) */
-.input-container:focus-within::after {
+/* .input-container:focus-within::after {
   opacity: 1;
   transform: scale(1);
   animation-play-state: running;
-}
+} */
 
 /* Ring animation */
 @keyframes spin {
@@ -106,11 +137,6 @@
 /* Reduce motion users: keep it static but visible */
 @media (prefers-reduced-motion: reduce) {
   .input-container::after { animation: none; }
-}
-
-.input-container:focus-within {
-  border-color: var(--color-rain-maya-blue);
-  opacity: 1;
 }
 
 .search-input {
@@ -376,9 +402,9 @@
   } */
   
   /* Gradient utilities */
-  /* .bg-gradient-profile {
+  .bg-gradient-profile {
     background: linear-gradient(45deg, var(--color-eggplant), var(--color-pale-dogwood), var(--color-champagne));
-  } */
+  }
   
   /* .weather-card {
     @apply bg-card border border-border rounded-lg p-6 shadow-sm;

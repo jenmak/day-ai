@@ -56,6 +56,7 @@ export const usePlaceBySlug = (options?: usePlaceBySlugOptions) => {
   useEffect(() => {
     if (query.data) {
       setPlace(query.data)
+      console.log("query.data", query.data)
       onSuccessRef.current?.(query.data)
     }
   }, [query.data, setPlace])

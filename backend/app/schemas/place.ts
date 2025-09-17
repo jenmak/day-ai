@@ -25,7 +25,7 @@ export const PlaceSchema = z.object({
   description: z.string().optional(),
   normalizedPlace: z.string(),
   slug: z.string(),
-  geocodedAddress: GeocodedAddressSchema,
+  geocodedAddress: GeocodedAddressSchema.nullable(),
   weather: z.array(WeatherSchema).optional(),
   temperatureRangeCategory: TemperatureRangeCategorySchema.optional(),
   createdAt: z.date().transform((date) => date.toISOString())

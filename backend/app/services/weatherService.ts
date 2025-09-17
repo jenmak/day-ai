@@ -62,7 +62,7 @@ export class WeatherService {
         const weatherCode = validatedData.daily.weathercode[i]
         
         const weather: Weather = {
-          date: date.toISOString(),
+          date: DateService.formatDate(date),
           degreesFahrenheit: Math.round(avgTemp),
           temperatureRange: {
             temperatureMinimum: Math.round(minTemp),

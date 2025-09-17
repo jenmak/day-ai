@@ -1,10 +1,10 @@
 import { create } from "zustand"
 import { devtools } from "zustand/middleware"
-import { Place as PlaceType } from "@dayai/backend/schemas"
+import { Place } from "@dayai/backend/schemas"
 
 interface PlaceState {
-  place: PlaceType
-  setPlace: (place: PlaceType) => void
+  place: Place
+  setPlace: (place: Place) => void
 }
 
 const initialState = {
@@ -25,7 +25,8 @@ const initialState = {
       }
     },
     weather: [],
-    createdAt: ""
+    createdAt: "",
+    temperatureRangeCategory: ""
   },
 }
 
@@ -33,7 +34,7 @@ export const usePlaceStore = create<PlaceState>()(
   devtools(
     (set) => ({
       ...initialState,
-      setPlace: (place: PlaceType) => set({ place }),
+      setPlace: (place: Place) => set({ place }),
     })
   )
 )

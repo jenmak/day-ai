@@ -76,6 +76,7 @@ declare module '@dayai/backend/schemas' {
       }
     }
     weather?: Weather[]
+    temperatureRangeCategory?: 'VERY_HOT' | 'HOT' | 'WARM' | 'MILD' | 'COOL' | 'COLD' | 'VERY_COLD'
     createdAt: string
   }
 

@@ -49,8 +49,13 @@ export class LLMService {
       }
     }
 
-    // If no match found in mock mappings, throw an error
-    throw new Error('Description not found.')
+    // If no match found in mock mappings, return a special case
+    return {
+      normalizedPlace: "No specific location found",
+      slug: "no-specific-location-found",
+      confidence: 0.0,
+      reasoning: "Could not identify a specific location from the description"
+    }
   }
 
   private static async createOpenAICompletion(prompt: string): Promise<PlaceNormalization> {
