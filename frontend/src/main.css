@@ -114,6 +114,7 @@
 }
 
 .search-input {
+  color: var(--color-white);
   border-radius: var(--input-border-radius);  
   background: transparent;
 }
