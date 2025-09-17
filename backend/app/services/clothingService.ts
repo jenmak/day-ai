@@ -1,8 +1,5 @@
-import type { WeatherCondition } from "../schemas/weatherConditions"
-import { 
-  getClothingRecommendations, 
-  type ClothingCategory 
-} from "../rules/clothingRules"
+import type { OpenMeteoWeatherCode, ClothingCategory } from "../types"
+import { getClothingRecommendations } from "../rules/clothingRules"
 
 export class ClothingService {
   /**
@@ -10,11 +7,11 @@ export class ClothingService {
    */
   static getRecommendations(
     temperature: number,
-    condition: WeatherCondition,
+    weatherCode: OpenMeteoWeatherCode,
     rainProbability: number,
     windSpeed: number
   ): ClothingCategory[] {
-    return getClothingRecommendations(temperature, condition, rainProbability, windSpeed)
+    return getClothingRecommendations(temperature, weatherCode, rainProbability, windSpeed)
   }
   /**
    * Get clothing recommendations for a specific date
@@ -22,7 +19,7 @@ export class ClothingService {
   static getRecommendationsForDate(
     weatherData: {
       temperature: number
-      condition: WeatherCondition
+      weatherCode: OpenMeteoWeatherCode
       rainProbability: number
       windSpeed: number
     }
@@ -31,7 +28,7 @@ export class ClothingService {
   } {
     const categories = this.getRecommendations(
       weatherData.temperature,
-      weatherData.condition,
+      weatherData.weatherCode,
       weatherData.rainProbability,
       weatherData.windSpeed
     )
@@ -48,11 +45,11 @@ export class ClothingService {
   static getWeatherAppropriatenessScore(
     clothingCategory: ClothingCategory,
     temperature: number,
-    condition: WeatherCondition,
+    weatherCode: OpenMeteoWeatherCode,
     rainProbability: number,
     windSpeed: number
   ): number {
-    const recommendations = this.getRecommendations(temperature, condition, rainProbability, windSpeed)
+    const recommendations = this.getRecommendations(temperature, weatherCode, rainProbability, windSpeed)
     
     if (recommendations.includes(clothingCategory)) {
       return 100

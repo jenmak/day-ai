@@ -54,7 +54,7 @@ export const places = router({
 
         // 3. Get clothing recommendations from rules engine
         weatherData.forEach((weather) => {
-          weather.clothing = ClothingService.getRecommendations(weather.degreesFahrenheit, weather.condition, weather.rainProbabilityPercentage, weather.windSpeedMph)
+          weather.clothing = ClothingService.getRecommendations(weather.degreesFahrenheit, weather.condition as any, weather.rainProbabilityPercentage, weather.windSpeedMph)
         })
 
         // 4. Save to database

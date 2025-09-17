@@ -1,4 +1,4 @@
-import type { Place } from "../schemas/place"
+import type { Place } from "../types"
 import { Store, type StoreItem } from "../../core/Store"
 
 export interface PlaceStoreItem extends StoreItem, Omit<Place, 'id' | 'createdAt'> { }
@@ -20,7 +20,7 @@ export class PlaceStore extends Store<PlaceStoreItem> {
       .replace(/^-|-$/g, '') // Remove leading and trailing hyphens
   }
 
-  toModel(item: PlaceStoreItem) {
+  toModel(item: PlaceStoreItem): Place {
     const model = super.toModel(item)
 
     return {
@@ -31,7 +31,7 @@ export class PlaceStore extends Store<PlaceStoreItem> {
       geocodedAddress: item.geocodedAddress,
       weather: item.weather,
       createdAt: item.createdAt
-    }
+    } as Place
   }
 
 

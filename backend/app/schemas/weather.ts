@@ -1,6 +1,8 @@
 import { z } from "zod"
-import { ClothingCategoryEnum } from "../rules/clothingRules"
-import { WeatherConditionZodEnum } from "./weatherConditions"
+import { ClothingCategoryEnum } from "../consts"
+
+// Zod schema for Open-Meteo weather codes (using the numeric keys)
+export const OpenMeteoWeatherCodeSchema = z.number().int().min(0).max(99)
 
 // Open-Meteo API Response Schema
 export const OpenMeteoDailySchema = z.object({
@@ -29,10 +31,6 @@ export const WeatherSchema = z.object({
   temperatureRange: TemperatureRangeSchema,
   rainProbabilityPercentage: z.number().min(0).max(100),
   windSpeedMph: z.number(),
-  condition: WeatherConditionZodEnum,
+  condition: OpenMeteoWeatherCodeSchema,
   clothing: z.array(z.nativeEnum(ClothingCategoryEnum))
 })
-
-// Type exports
-export type TemperatureRange = z.infer<typeof TemperatureRangeSchema>
-export type Weather = z.infer<typeof WeatherSchema>

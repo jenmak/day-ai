@@ -1,5 +1,5 @@
-import { z } from "zod"
-import { ClothingCategoryEnum } from "../rules/clothingRules"
+import z from "zod"
+import { ClothingCategoryEnum } from "../consts"
 
 // Clothing category schema
 export const ClothingCategorySchema = z.enum([
@@ -39,16 +39,12 @@ export const ClothingCategorySchema = z.enum([
   ClothingCategoryEnum.SUNGLASSES
 ])
 
-export type ClothingCategory = z.infer<typeof ClothingCategorySchema>
-
 // Clothing recommendation schema
 export const ClothingRecommendationSchema = z.object({
   category: ClothingCategorySchema,
   reason: z.string().optional(),
   priority: z.number().min(1).max(5).optional()
 })
-
-export type ClothingRecommendation = z.infer<typeof ClothingRecommendationSchema>
 
 // Weather-based clothing recommendations schema
 export const WeatherClothingRecommendationsSchema = z.object({
@@ -59,5 +55,3 @@ export const WeatherClothingRecommendationsSchema = z.object({
   recommendations: z.array(ClothingCategorySchema),
   searchTerms: z.array(z.string())
 })
-
-export type WeatherClothingRecommendations = z.infer<typeof WeatherClothingRecommendationsSchema>

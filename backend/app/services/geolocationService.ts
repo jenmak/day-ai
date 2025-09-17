@@ -1,5 +1,5 @@
-import { CITY_COORDINATES } from "../consts/CityCoordinates"
-import { type GeocodedAddress, type Address } from "../schemas/place"
+import { type GeocodedAddress, type Address } from "../types"
+import { CITY_COORDINATES } from "../consts/place"
 
 export interface OpenCageResponse {
   results: Array<{

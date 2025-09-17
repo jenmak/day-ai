@@ -1,8 +1,6 @@
-import { z } from "zod"
-import { OpenMeteoResponseSchema, type Weather } from "../schemas/weather"
-import { WeatherConditionEnum } from "../schemas/weatherConditions"
+import { OpenMeteoResponseSchema } from "../schemas"
 import { DateService } from "./dateService"
-import { WEATHER_CODE_MAPPING } from "../consts/WeatherConsts"
+import { Weather } from "../types"
 
 export interface WeatherServiceOptions {
   latitude: number
@@ -71,7 +69,7 @@ export class WeatherService {
           },
           rainProbabilityPercentage: Math.round(rainProbability),
           windSpeedMph: Math.round(windSpeed),
-          condition: WeatherConditionEnum[this.mapWeatherCode(weatherCode)],
+          condition: weatherCode,
           clothing: [] // Will be populated by clothing service
         }
         
@@ -95,10 +93,4 @@ export class WeatherService {
     return forecast[0] // First day is today
   }
   
-  /**
-   * Map Open-Meteo weather code to our weather condition enum
-   */
-  private static mapWeatherCode(code: number): keyof typeof WeatherConditionEnum {
-    return WEATHER_CODE_MAPPING[code] || "SUNNY"
-  }
 }

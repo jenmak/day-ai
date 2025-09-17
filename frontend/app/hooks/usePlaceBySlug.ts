@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query"
 import { Place as PlaceType } from "@dayai/backend/schemas"
 import { usePlaceStore } from "../stores/placeStore"
-import { useEffect } from "react"
+import { useEffect, useRef } from "react"
 
 interface usePlaceBySlugOptions {
   slug: string
@@ -14,6 +14,19 @@ const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3333"
 export const usePlaceBySlug = (options?: usePlaceBySlugOptions) => {
   const { slug, onSuccess, onError } = options || { slug: '' }
   const { setPlace } = usePlaceStore()
+  
+  // Use refs to store the latest callback functions to avoid stale closures
+  const onSuccessRef = useRef(onSuccess)
+  const onErrorRef = useRef(onError)
+  
+  // Update refs when callbacks change
+  useEffect(() => {
+    onSuccessRef.current = onSuccess
+  }, [onSuccess])
+  
+  useEffect(() => {
+    onErrorRef.current = onError
+  }, [onError])
 
   const query = useQuery({
     queryKey: ["place", "slug", slug],
@@ -39,18 +52,20 @@ export const usePlaceBySlug = (options?: usePlaceBySlugOptions) => {
     enabled: !!slug, // Only run query if slug is provided
   })
 
+  // Handle success with stable dependencies
   useEffect(() => {
     if (query.data) {
       setPlace(query.data)
-      onSuccess?.(query.data)
+      onSuccessRef.current?.(query.data)
     }
-  }, [query.data, setPlace, onSuccess])
+  }, [query.data, setPlace])
 
+  // Handle error with stable dependencies
   useEffect(() => {
     if (query.error) {
-      onError?.(query.error)
+      onErrorRef.current?.(query.error)
     }
-  }, [query.error, onError])
+  }, [query.error])
 
   return {
     data: query.data,

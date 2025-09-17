@@ -62,11 +62,14 @@ export function Place() {
           <Heading>{place.normalizedLocation}</Heading>
         </div>
       )}
+      <div className="flex flex-col md:flex-row gap-6 md:gap-3">
       {
         place.weather.map((weather: Weather) => (
           <WeatherCard key={weather.date.toString()} weather={weather} />
         ))
       }
+      </div>
+
       {/* <div className="text-white">
         {location.weather?.temperatureRange.temperatureMinimum}
         {location.weather.temperatureRange.temperatureMaximum}

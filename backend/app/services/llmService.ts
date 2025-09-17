@@ -1,17 +1,9 @@
 import { z } from "zod"
 import OpenAI from "openai"
-import { MOCK_MAPPINGS, OPENAI_API_KEY } from "../consts/PlaceConsts"
 import { DESCRIPTION_TO_NORMALIZED_PLACE_PROMPT } from "../prompts/descriptionToNormalizedPlacePrompt"
-
-// LLM Response Schema
-const PlaceNormalizationSchema = z.object({
-  slug: z.string(),
-  normalizedPlace: z.string(),
-  confidence: z.number().min(0).max(1),
-  reasoning: z.string().optional()
-})
-
-export type PlaceNormalization = z.infer<typeof PlaceNormalizationSchema>
+import { PlaceNormalizationSchema } from "../schemas"
+import { OPENAI_API_KEY, MOCK_MAPPINGS } from "../consts"
+import { PlaceNormalization } from "../types"
 
 export class LLMService {
   /**

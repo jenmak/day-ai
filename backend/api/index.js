@@ -7,88 +7,33 @@ import { Hono } from "hono";
 import { cors } from "hono/cors";
 
 // app/schemas/place.ts
-import { z as z3 } from "zod";
-
-// app/schemas/weather.ts
 import { z as z2 } from "zod";
 
-// app/consts/WeatherConsts.ts
-var WeatherConditionEnum = {
-  PARTLY_SUNNY: "PartlySunny",
-  SUNNY: "Sunny",
-  PARTLY_CLOUDY: "PartlyCloudy",
-  CLOUDY: "Cloudy",
-  RAINY: "Rainy",
-  LIGHT_SHOWERS: "LightShowers",
-  SNOWY: "Snowy",
-  STORMY: "Stormy",
-  FOGGY: "Foggy",
-  WINDY: "Windy"
-};
-var WEATHER_CODE_MAPPING = {
-  0: "SUNNY",
-  // Clear sky
-  1: "SUNNY",
-  // Mainly clear
-  2: "PARTLY_CLOUDY",
-  // Partly cloudy
-  3: "CLOUDY",
-  // Overcast
-  45: "FOGGY",
-  // Fog
-  48: "FOGGY",
-  // Depositing rime fog
-  51: "LIGHT_SHOWERS",
-  // Light drizzle
-  53: "LIGHT_SHOWERS",
-  // Moderate drizzle
-  55: "LIGHT_SHOWERS",
-  // Dense drizzle
-  56: "LIGHT_SHOWERS",
-  // Light freezing drizzle
-  57: "LIGHT_SHOWERS",
-  // Dense freezing drizzle
-  61: "RAINY",
-  // Slight rain
-  63: "RAINY",
-  // Moderate rain
-  65: "RAINY",
-  // Heavy rain
-  66: "RAINY",
-  // Light freezing rain
-  67: "RAINY",
-  // Heavy freezing rain
-  71: "SNOWY",
-  // Slight snow fall
-  73: "SNOWY",
-  // Moderate snow fall
-  75: "SNOWY",
-  // Heavy snow fall
-  77: "SNOWY",
-  // Snow grains
-  80: "LIGHT_SHOWERS",
-  // Slight rain showers
-  81: "LIGHT_SHOWERS",
-  // Moderate rain showers
-  82: "RAINY",
-  // Violent rain showers
-  85: "SNOWY",
-  // Slight snow showers
-  86: "SNOWY",
-  // Heavy snow showers
-  95: "STORMY",
-  // Thunderstorm
-  96: "STORMY",
-  // Thunderstorm with slight hail
-  99: "STORMY"
-  // Thunderstorm with heavy hail
-};
-
-// app/schemas/weatherConditions.ts
+// app/schemas/weather.ts
 import { z } from "zod";
-var WeatherConditionZodEnum = z.nativeEnum(WeatherConditionEnum);
 
-// app/rules/clothingRules.ts
+// app/consts/index.ts
+import { config } from "dotenv";
+
+// app/consts/weather.ts
+var TEMPERATURE_RANGES = {
+  VERY_HOT: { min: 85, max: 120 },
+  // 85°F+
+  HOT: { min: 75, max: 84 },
+  // 75-84°F
+  WARM: { min: 65, max: 74 },
+  // 65-74°F
+  MILD: { min: 55, max: 64 },
+  // 55-64°F
+  COOL: { min: 45, max: 54 },
+  // 45-54°F
+  COLD: { min: 32, max: 44 },
+  // 32-44°F
+  VERY_COLD: { min: -20, max: 31 }
+  // Below 32°F
+};
+
+// app/consts/clothing.ts
 var ClothingCategoryEnum = {
   // Tops
   T_SHIRT: "t-shirt",
@@ -130,26 +75,10 @@ var ClothingCategoryEnum = {
   UMBRELLA: "umbrella",
   SUNGLASSES: "sunglasses"
 };
-var TemperatureRanges = {
-  VERY_HOT: { min: 85, max: 120 },
-  // 85°F+
-  HOT: { min: 75, max: 84 },
-  // 75-84°F
-  WARM: { min: 65, max: 74 },
-  // 65-74°F
-  MILD: { min: 55, max: 64 },
-  // 55-64°F
-  COOL: { min: 45, max: 54 },
-  // 45-54°F
-  COLD: { min: 32, max: 44 },
-  // 32-44°F
-  VERY_COLD: { min: -20, max: 31 }
-  // Below 32°F
-};
-var WeatherClothingRules = {
-  // Hot weather rules
-  [WeatherConditionEnum.SUNNY]: {
-    temperatureRanges: [TemperatureRanges.VERY_HOT, TemperatureRanges.HOT],
+var WEATHER_CLOTHING_RULES = {
+  // Clear/Sunny weather (codes 0, 1)
+  0: {
+    TEMPERATURE_RANGES: [TEMPERATURE_RANGES.VERY_HOT, TEMPERATURE_RANGES.HOT],
     recommended: [
       ClothingCategoryEnum.T_SHIRT,
       ClothingCategoryEnum.TANK_TOP,
@@ -168,8 +97,8 @@ var WeatherClothingRules = {
       ClothingCategoryEnum.BOOTS
     ]
   },
-  [WeatherConditionEnum.PARTLY_SUNNY]: {
-    temperatureRanges: [TemperatureRanges.HOT, TemperatureRanges.WARM],
+  1: {
+    TEMPERATURE_RANGES: [TEMPERATURE_RANGES.HOT, TEMPERATURE_RANGES.WARM],
     recommended: [
       ClothingCategoryEnum.T_SHIRT,
       ClothingCategoryEnum.SHORTS,
@@ -182,9 +111,9 @@ var WeatherClothingRules = {
       ClothingCategoryEnum.RAIN_JACKET
     ]
   },
-  // Warm weather rules
-  [WeatherConditionEnum.PARTLY_CLOUDY]: {
-    temperatureRanges: [TemperatureRanges.WARM, TemperatureRanges.MILD],
+  // Partly cloudy (code 2)
+  2: {
+    TEMPERATURE_RANGES: [TEMPERATURE_RANGES.WARM, TEMPERATURE_RANGES.MILD],
     recommended: [
       ClothingCategoryEnum.LONG_SLEEVE,
       ClothingCategoryEnum.JEANS,
@@ -196,8 +125,9 @@ var WeatherClothingRules = {
       ClothingCategoryEnum.SHORTS
     ]
   },
-  [WeatherConditionEnum.CLOUDY]: {
-    temperatureRanges: [TemperatureRanges.MILD, TemperatureRanges.COOL],
+  // Overcast (code 3)
+  3: {
+    TEMPERATURE_RANGES: [TEMPERATURE_RANGES.MILD, TEMPERATURE_RANGES.COOL],
     recommended: [
       ClothingCategoryEnum.LONG_SLEEVE,
       ClothingCategoryEnum.JEANS,
@@ -209,9 +139,130 @@ var WeatherClothingRules = {
       ClothingCategoryEnum.SHORTS
     ]
   },
-  // Rainy weather rules
-  [WeatherConditionEnum.RAINY]: {
-    temperatureRanges: [TemperatureRanges.MILD, TemperatureRanges.COOL],
+  // Foggy weather (codes 45, 48)
+  45: {
+    TEMPERATURE_RANGES: [TEMPERATURE_RANGES.MILD, TEMPERATURE_RANGES.COOL],
+    recommended: [
+      ClothingCategoryEnum.LONG_SLEEVE,
+      ClothingCategoryEnum.JEANS,
+      ClothingCategoryEnum.SWEATSHIRT,
+      ClothingCategoryEnum.SNEAKERS
+    ],
+    avoid: [
+      ClothingCategoryEnum.SHORTS,
+      ClothingCategoryEnum.TANK_TOP
+    ]
+  },
+  48: {
+    TEMPERATURE_RANGES: [TEMPERATURE_RANGES.COLD, TEMPERATURE_RANGES.VERY_COLD],
+    recommended: [
+      ClothingCategoryEnum.JACKET,
+      ClothingCategoryEnum.PANTS,
+      ClothingCategoryEnum.BOOTS,
+      ClothingCategoryEnum.SCARF
+    ],
+    avoid: [
+      ClothingCategoryEnum.SHORTS,
+      ClothingCategoryEnum.SANDALS
+    ]
+  },
+  // Light precipitation (codes 51, 53, 55, 56, 57, 80, 81)
+  51: {
+    TEMPERATURE_RANGES: [TEMPERATURE_RANGES.WARM, TEMPERATURE_RANGES.MILD],
+    recommended: [
+      ClothingCategoryEnum.RAIN_JACKET,
+      ClothingCategoryEnum.UMBRELLA,
+      ClothingCategoryEnum.SNEAKERS,
+      ClothingCategoryEnum.LONG_SLEEVE
+    ],
+    avoid: [
+      ClothingCategoryEnum.SANDALS,
+      ClothingCategoryEnum.SHORTS
+    ]
+  },
+  53: {
+    TEMPERATURE_RANGES: [TEMPERATURE_RANGES.WARM, TEMPERATURE_RANGES.MILD],
+    recommended: [
+      ClothingCategoryEnum.RAIN_JACKET,
+      ClothingCategoryEnum.UMBRELLA,
+      ClothingCategoryEnum.SNEAKERS,
+      ClothingCategoryEnum.LONG_SLEEVE
+    ],
+    avoid: [
+      ClothingCategoryEnum.SANDALS,
+      ClothingCategoryEnum.SHORTS
+    ]
+  },
+  55: {
+    TEMPERATURE_RANGES: [TEMPERATURE_RANGES.WARM, TEMPERATURE_RANGES.MILD],
+    recommended: [
+      ClothingCategoryEnum.RAIN_JACKET,
+      ClothingCategoryEnum.UMBRELLA,
+      ClothingCategoryEnum.SNEAKERS,
+      ClothingCategoryEnum.LONG_SLEEVE
+    ],
+    avoid: [
+      ClothingCategoryEnum.SANDALS,
+      ClothingCategoryEnum.SHORTS
+    ]
+  },
+  56: {
+    TEMPERATURE_RANGES: [TEMPERATURE_RANGES.COOL, TEMPERATURE_RANGES.COLD],
+    recommended: [
+      ClothingCategoryEnum.RAIN_JACKET,
+      ClothingCategoryEnum.UMBRELLA,
+      ClothingCategoryEnum.BOOTS,
+      ClothingCategoryEnum.LONG_SLEEVE,
+      ClothingCategoryEnum.GLOVES
+    ],
+    avoid: [
+      ClothingCategoryEnum.SANDALS,
+      ClothingCategoryEnum.SHORTS
+    ]
+  },
+  57: {
+    TEMPERATURE_RANGES: [TEMPERATURE_RANGES.COOL, TEMPERATURE_RANGES.COLD],
+    recommended: [
+      ClothingCategoryEnum.RAIN_JACKET,
+      ClothingCategoryEnum.UMBRELLA,
+      ClothingCategoryEnum.BOOTS,
+      ClothingCategoryEnum.LONG_SLEEVE,
+      ClothingCategoryEnum.GLOVES
+    ],
+    avoid: [
+      ClothingCategoryEnum.SANDALS,
+      ClothingCategoryEnum.SHORTS
+    ]
+  },
+  80: {
+    TEMPERATURE_RANGES: [TEMPERATURE_RANGES.WARM, TEMPERATURE_RANGES.MILD],
+    recommended: [
+      ClothingCategoryEnum.RAIN_JACKET,
+      ClothingCategoryEnum.UMBRELLA,
+      ClothingCategoryEnum.SNEAKERS,
+      ClothingCategoryEnum.LONG_SLEEVE
+    ],
+    avoid: [
+      ClothingCategoryEnum.SANDALS,
+      ClothingCategoryEnum.SHORTS
+    ]
+  },
+  81: {
+    TEMPERATURE_RANGES: [TEMPERATURE_RANGES.WARM, TEMPERATURE_RANGES.MILD],
+    recommended: [
+      ClothingCategoryEnum.RAIN_JACKET,
+      ClothingCategoryEnum.UMBRELLA,
+      ClothingCategoryEnum.SNEAKERS,
+      ClothingCategoryEnum.LONG_SLEEVE
+    ],
+    avoid: [
+      ClothingCategoryEnum.SANDALS,
+      ClothingCategoryEnum.SHORTS
+    ]
+  },
+  // Heavy precipitation (codes 61, 63, 65, 66, 67, 82)
+  61: {
+    TEMPERATURE_RANGES: [TEMPERATURE_RANGES.MILD, TEMPERATURE_RANGES.COOL],
     recommended: [
       ClothingCategoryEnum.RAIN_JACKET,
       ClothingCategoryEnum.RAIN_BOOTS,
@@ -225,22 +276,86 @@ var WeatherClothingRules = {
       ClothingCategoryEnum.TANK_TOP
     ]
   },
-  [WeatherConditionEnum.LIGHT_SHOWERS]: {
-    temperatureRanges: [TemperatureRanges.WARM, TemperatureRanges.MILD],
+  63: {
+    TEMPERATURE_RANGES: [TEMPERATURE_RANGES.MILD, TEMPERATURE_RANGES.COOL],
     recommended: [
       ClothingCategoryEnum.RAIN_JACKET,
+      ClothingCategoryEnum.RAIN_BOOTS,
       ClothingCategoryEnum.UMBRELLA,
-      ClothingCategoryEnum.SNEAKERS,
+      ClothingCategoryEnum.PANTS,
       ClothingCategoryEnum.LONG_SLEEVE
     ],
     avoid: [
       ClothingCategoryEnum.SANDALS,
-      ClothingCategoryEnum.SHORTS
+      ClothingCategoryEnum.SHORTS,
+      ClothingCategoryEnum.TANK_TOP
     ]
   },
-  // Cold weather rules
-  [WeatherConditionEnum.SNOWY]: {
-    temperatureRanges: [TemperatureRanges.COLD, TemperatureRanges.VERY_COLD],
+  65: {
+    TEMPERATURE_RANGES: [TEMPERATURE_RANGES.MILD, TEMPERATURE_RANGES.COOL],
+    recommended: [
+      ClothingCategoryEnum.RAIN_JACKET,
+      ClothingCategoryEnum.RAIN_BOOTS,
+      ClothingCategoryEnum.UMBRELLA,
+      ClothingCategoryEnum.PANTS,
+      ClothingCategoryEnum.LONG_SLEEVE
+    ],
+    avoid: [
+      ClothingCategoryEnum.SANDALS,
+      ClothingCategoryEnum.SHORTS,
+      ClothingCategoryEnum.TANK_TOP
+    ]
+  },
+  66: {
+    TEMPERATURE_RANGES: [TEMPERATURE_RANGES.COOL, TEMPERATURE_RANGES.COLD],
+    recommended: [
+      ClothingCategoryEnum.RAIN_JACKET,
+      ClothingCategoryEnum.RAIN_BOOTS,
+      ClothingCategoryEnum.UMBRELLA,
+      ClothingCategoryEnum.PANTS,
+      ClothingCategoryEnum.LONG_SLEEVE,
+      ClothingCategoryEnum.GLOVES
+    ],
+    avoid: [
+      ClothingCategoryEnum.SANDALS,
+      ClothingCategoryEnum.SHORTS,
+      ClothingCategoryEnum.TANK_TOP
+    ]
+  },
+  67: {
+    TEMPERATURE_RANGES: [TEMPERATURE_RANGES.COOL, TEMPERATURE_RANGES.COLD],
+    recommended: [
+      ClothingCategoryEnum.RAIN_JACKET,
+      ClothingCategoryEnum.RAIN_BOOTS,
+      ClothingCategoryEnum.UMBRELLA,
+      ClothingCategoryEnum.PANTS,
+      ClothingCategoryEnum.LONG_SLEEVE,
+      ClothingCategoryEnum.GLOVES
+    ],
+    avoid: [
+      ClothingCategoryEnum.SANDALS,
+      ClothingCategoryEnum.SHORTS,
+      ClothingCategoryEnum.TANK_TOP
+    ]
+  },
+  82: {
+    TEMPERATURE_RANGES: [TEMPERATURE_RANGES.MILD, TEMPERATURE_RANGES.COOL],
+    recommended: [
+      ClothingCategoryEnum.RAIN_JACKET,
+      ClothingCategoryEnum.RAIN_BOOTS,
+      ClothingCategoryEnum.UMBRELLA,
+      ClothingCategoryEnum.PANTS,
+      ClothingCategoryEnum.LONG_SLEEVE
+    ],
+    avoid: [
+      ClothingCategoryEnum.SANDALS,
+      ClothingCategoryEnum.SHORTS,
+      ClothingCategoryEnum.TANK_TOP
+    ]
+  },
+  // Snow (codes 71, 73, 75, 77, 85, 86)
+  71: {
+    TEMPERATURE_RANGES: [TEMPERATURE_RANGES.COLD, TEMPERATURE_RANGES.VERY_COLD],
     recommended: [
       ClothingCategoryEnum.WINTER_COAT,
       ClothingCategoryEnum.WINTER_BOOTS,
@@ -256,9 +371,94 @@ var WeatherClothingRules = {
       ClothingCategoryEnum.TANK_TOP
     ]
   },
-  // Stormy weather rules
-  [WeatherConditionEnum.STORMY]: {
-    temperatureRanges: [TemperatureRanges.MILD, TemperatureRanges.COOL],
+  73: {
+    TEMPERATURE_RANGES: [TEMPERATURE_RANGES.COLD, TEMPERATURE_RANGES.VERY_COLD],
+    recommended: [
+      ClothingCategoryEnum.WINTER_COAT,
+      ClothingCategoryEnum.WINTER_BOOTS,
+      ClothingCategoryEnum.GLOVES,
+      ClothingCategoryEnum.SCARF,
+      ClothingCategoryEnum.BEANIE,
+      ClothingCategoryEnum.LONG_SLEEVE,
+      ClothingCategoryEnum.PANTS
+    ],
+    avoid: [
+      ClothingCategoryEnum.SHORTS,
+      ClothingCategoryEnum.SANDALS,
+      ClothingCategoryEnum.TANK_TOP
+    ]
+  },
+  75: {
+    TEMPERATURE_RANGES: [TEMPERATURE_RANGES.COLD, TEMPERATURE_RANGES.VERY_COLD],
+    recommended: [
+      ClothingCategoryEnum.WINTER_COAT,
+      ClothingCategoryEnum.WINTER_BOOTS,
+      ClothingCategoryEnum.GLOVES,
+      ClothingCategoryEnum.SCARF,
+      ClothingCategoryEnum.BEANIE,
+      ClothingCategoryEnum.LONG_SLEEVE,
+      ClothingCategoryEnum.PANTS
+    ],
+    avoid: [
+      ClothingCategoryEnum.SHORTS,
+      ClothingCategoryEnum.SANDALS,
+      ClothingCategoryEnum.TANK_TOP
+    ]
+  },
+  77: {
+    TEMPERATURE_RANGES: [TEMPERATURE_RANGES.COLD, TEMPERATURE_RANGES.VERY_COLD],
+    recommended: [
+      ClothingCategoryEnum.WINTER_COAT,
+      ClothingCategoryEnum.WINTER_BOOTS,
+      ClothingCategoryEnum.GLOVES,
+      ClothingCategoryEnum.SCARF,
+      ClothingCategoryEnum.BEANIE,
+      ClothingCategoryEnum.LONG_SLEEVE,
+      ClothingCategoryEnum.PANTS
+    ],
+    avoid: [
+      ClothingCategoryEnum.SHORTS,
+      ClothingCategoryEnum.SANDALS,
+      ClothingCategoryEnum.TANK_TOP
+    ]
+  },
+  85: {
+    TEMPERATURE_RANGES: [TEMPERATURE_RANGES.COLD, TEMPERATURE_RANGES.VERY_COLD],
+    recommended: [
+      ClothingCategoryEnum.WINTER_COAT,
+      ClothingCategoryEnum.WINTER_BOOTS,
+      ClothingCategoryEnum.GLOVES,
+      ClothingCategoryEnum.SCARF,
+      ClothingCategoryEnum.BEANIE,
+      ClothingCategoryEnum.LONG_SLEEVE,
+      ClothingCategoryEnum.PANTS
+    ],
+    avoid: [
+      ClothingCategoryEnum.SHORTS,
+      ClothingCategoryEnum.SANDALS,
+      ClothingCategoryEnum.TANK_TOP
+    ]
+  },
+  86: {
+    TEMPERATURE_RANGES: [TEMPERATURE_RANGES.COLD, TEMPERATURE_RANGES.VERY_COLD],
+    recommended: [
+      ClothingCategoryEnum.WINTER_COAT,
+      ClothingCategoryEnum.WINTER_BOOTS,
+      ClothingCategoryEnum.GLOVES,
+      ClothingCategoryEnum.SCARF,
+      ClothingCategoryEnum.BEANIE,
+      ClothingCategoryEnum.LONG_SLEEVE,
+      ClothingCategoryEnum.PANTS
+    ],
+    avoid: [
+      ClothingCategoryEnum.SHORTS,
+      ClothingCategoryEnum.SANDALS,
+      ClothingCategoryEnum.TANK_TOP
+    ]
+  },
+  // Thunderstorms (codes 95, 96, 99)
+  95: {
+    TEMPERATURE_RANGES: [TEMPERATURE_RANGES.MILD, TEMPERATURE_RANGES.COOL],
     recommended: [
       ClothingCategoryEnum.RAIN_JACKET,
       ClothingCategoryEnum.RAIN_BOOTS,
@@ -272,264 +472,39 @@ var WeatherClothingRules = {
       ClothingCategoryEnum.TANK_TOP
     ]
   },
-  // Windy weather rules
-  [WeatherConditionEnum.WINDY]: {
-    temperatureRanges: [TemperatureRanges.COOL, TemperatureRanges.COLD],
+  96: {
+    TEMPERATURE_RANGES: [TEMPERATURE_RANGES.MILD, TEMPERATURE_RANGES.COOL],
     recommended: [
-      ClothingCategoryEnum.JACKET,
-      ClothingCategoryEnum.SCARF,
+      ClothingCategoryEnum.RAIN_JACKET,
+      ClothingCategoryEnum.RAIN_BOOTS,
+      ClothingCategoryEnum.UMBRELLA,
       ClothingCategoryEnum.LONG_SLEEVE,
-      ClothingCategoryEnum.PANTS,
-      ClothingCategoryEnum.SNEAKERS
+      ClothingCategoryEnum.PANTS
     ],
     avoid: [
+      ClothingCategoryEnum.SANDALS,
       ClothingCategoryEnum.SHORTS,
-      ClothingCategoryEnum.SANDALS
+      ClothingCategoryEnum.TANK_TOP
     ]
   },
-  // Foggy weather rules
-  [WeatherConditionEnum.FOGGY]: {
-    temperatureRanges: [TemperatureRanges.MILD, TemperatureRanges.COOL],
+  99: {
+    TEMPERATURE_RANGES: [TEMPERATURE_RANGES.MILD, TEMPERATURE_RANGES.COOL],
     recommended: [
+      ClothingCategoryEnum.RAIN_JACKET,
+      ClothingCategoryEnum.RAIN_BOOTS,
+      ClothingCategoryEnum.UMBRELLA,
       ClothingCategoryEnum.LONG_SLEEVE,
-      ClothingCategoryEnum.JEANS,
-      ClothingCategoryEnum.SWEATSHIRT,
-      ClothingCategoryEnum.SNEAKERS
+      ClothingCategoryEnum.PANTS
     ],
     avoid: [
+      ClothingCategoryEnum.SANDALS,
       ClothingCategoryEnum.SHORTS,
       ClothingCategoryEnum.TANK_TOP
     ]
   }
 };
-function getClothingRecommendations(temperature, condition, rainProbability, windSpeed) {
-  const recommendations = [];
-  const conditionRule = WeatherClothingRules[condition];
-  if (conditionRule) {
-    const isInRange = conditionRule.temperatureRanges.some(
-      (range) => temperature >= range.min && temperature <= range.max
-    );
-    if (isInRange) {
-      recommendations.push(...conditionRule.recommended);
-    }
-  }
-  if (temperature >= TemperatureRanges.VERY_HOT.min) {
-    recommendations.push(
-      ClothingCategoryEnum.TANK_TOP,
-      ClothingCategoryEnum.SHORTS,
-      ClothingCategoryEnum.SANDALS,
-      ClothingCategoryEnum.SUN_HAT
-    );
-  } else if (temperature >= TemperatureRanges.HOT.min) {
-    recommendations.push(
-      ClothingCategoryEnum.T_SHIRT,
-      ClothingCategoryEnum.SHORTS,
-      ClothingCategoryEnum.SNEAKERS
-    );
-  } else if (temperature >= TemperatureRanges.WARM.min) {
-    recommendations.push(
-      ClothingCategoryEnum.LONG_SLEEVE,
-      ClothingCategoryEnum.JEANS,
-      ClothingCategoryEnum.SNEAKERS
-    );
-  } else if (temperature >= TemperatureRanges.MILD.min) {
-    recommendations.push(
-      ClothingCategoryEnum.SWEATSHIRT,
-      ClothingCategoryEnum.JEANS,
-      ClothingCategoryEnum.SNEAKERS
-    );
-  } else if (temperature >= TemperatureRanges.COOL.min) {
-    recommendations.push(
-      ClothingCategoryEnum.JACKET,
-      ClothingCategoryEnum.PANTS,
-      ClothingCategoryEnum.SNEAKERS
-    );
-  } else if (temperature >= TemperatureRanges.COLD.min) {
-    recommendations.push(
-      ClothingCategoryEnum.COAT,
-      ClothingCategoryEnum.PANTS,
-      ClothingCategoryEnum.BOOTS
-    );
-  } else {
-    recommendations.push(
-      ClothingCategoryEnum.WINTER_COAT,
-      ClothingCategoryEnum.WINTER_BOOTS,
-      ClothingCategoryEnum.GLOVES,
-      ClothingCategoryEnum.SCARF
-    );
-  }
-  if (rainProbability > 30) {
-    recommendations.push(
-      ClothingCategoryEnum.RAIN_JACKET,
-      ClothingCategoryEnum.UMBRELLA
-    );
-    if (rainProbability > 70) {
-      recommendations.push(ClothingCategoryEnum.RAIN_BOOTS);
-    }
-  }
-  if (windSpeed > 15) {
-    recommendations.push(
-      ClothingCategoryEnum.SCARF,
-      ClothingCategoryEnum.JACKET
-    );
-  }
-  return [...new Set(recommendations)];
-}
-__name(getClothingRecommendations, "getClothingRecommendations");
 
-// app/schemas/weather.ts
-var OpenMeteoDailySchema = z2.object({
-  time: z2.array(z2.string()),
-  temperature_2m_max: z2.array(z2.number()),
-  temperature_2m_min: z2.array(z2.number()),
-  precipitation_probability_max: z2.array(z2.number()),
-  windspeed_10m_max: z2.array(z2.number()),
-  weathercode: z2.array(z2.number())
-});
-var OpenMeteoResponseSchema = z2.object({
-  daily: OpenMeteoDailySchema
-});
-var TemperatureRangeSchema = z2.object({
-  temperatureMinimum: z2.number(),
-  temperatureMaximum: z2.number()
-});
-var WeatherSchema = z2.object({
-  date: z2.string(),
-  degreesFahrenheit: z2.number(),
-  temperatureRange: TemperatureRangeSchema,
-  rainProbabilityPercentage: z2.number().min(0).max(100),
-  windSpeedMph: z2.number(),
-  condition: WeatherConditionZodEnum,
-  clothing: z2.array(z2.nativeEnum(ClothingCategoryEnum))
-});
-
-// app/schemas/place.ts
-var AddressSchema = z3.object({
-  city: z3.string(),
-  state: z3.string(),
-  postalCode: z3.string(),
-  country: z3.string(),
-  street: z3.string().optional(),
-  streetNumber: z3.string().optional()
-});
-var GeocodedAddressSchema = z3.object({
-  latitude: z3.number(),
-  longitude: z3.number(),
-  formattedAddress: z3.string(),
-  structuredAddress: AddressSchema
-});
-var PlaceSchema = z3.object({
-  id: z3.string(),
-  description: z3.string().optional(),
-  normalizedLocation: z3.string(),
-  slug: z3.string(),
-  geocodedAddress: GeocodedAddressSchema,
-  weather: z3.array(WeatherSchema).optional(),
-  createdAt: z3.date().transform((date) => date.toISOString())
-});
-var CreatePlaceSchema = z3.object({
-  description: z3.string()
-});
-var UpdatePlaceSchema = z3.object({
-  id: z3.string(),
-  description: z3.string()
-});
-
-// app/services/clothingService.ts
-var ClothingService = class {
-  static {
-    __name(this, "ClothingService");
-  }
-  /**
-   * Get clothing recommendations based on weather data
-   */
-  static getRecommendations(temperature, condition, rainProbability, windSpeed) {
-    return getClothingRecommendations(temperature, condition, rainProbability, windSpeed);
-  }
-  /**
-   * Get clothing recommendations for a specific date
-   */
-  static getRecommendationsForDate(weatherData) {
-    const categories = this.getRecommendations(
-      weatherData.temperature,
-      weatherData.condition,
-      weatherData.rainProbability,
-      weatherData.windSpeed
-    );
-    return {
-      categories
-    };
-  }
-  /**
-   * Get weather-appropriate clothing score (0-100)
-   * Higher score means more weather-appropriate
-   */
-  static getWeatherAppropriatenessScore(clothingCategory, temperature, condition, rainProbability, windSpeed) {
-    const recommendations = this.getRecommendations(temperature, condition, rainProbability, windSpeed);
-    if (recommendations.includes(clothingCategory)) {
-      return 100;
-    }
-    let score = 0;
-    if (temperature >= 85) {
-      if (["t-shirt", "tank-top", "shorts", "sandals", "dress", "skirt"].includes(clothingCategory)) {
-        score += 80;
-      } else if (["long-sleeve", "jeans", "sneakers"].includes(clothingCategory)) {
-        score += 40;
-      } else if (["hoodie", "jacket", "coat", "boots"].includes(clothingCategory)) {
-        score += 10;
-      }
-    } else if (temperature >= 75) {
-      if (["t-shirt", "shorts", "sneakers", "dress"].includes(clothingCategory)) {
-        score += 90;
-      } else if (["long-sleeve", "jeans", "sweatshirt"].includes(clothingCategory)) {
-        score += 70;
-      } else if (["jacket", "coat"].includes(clothingCategory)) {
-        score += 30;
-      }
-    } else if (temperature >= 65) {
-      if (["long-sleeve", "jeans", "sneakers", "sweatshirt"].includes(clothingCategory)) {
-        score += 90;
-      } else if (["t-shirt", "shorts"].includes(clothingCategory)) {
-        score += 50;
-      } else if (["jacket", "coat"].includes(clothingCategory)) {
-        score += 60;
-      }
-    } else if (temperature >= 45) {
-      if (["jacket", "pants", "sneakers", "long-sleeve"].includes(clothingCategory)) {
-        score += 90;
-      } else if (["coat", "boots"].includes(clothingCategory)) {
-        score += 70;
-      } else if (["t-shirt", "shorts"].includes(clothingCategory)) {
-        score += 20;
-      }
-    } else {
-      if (["coat", "winter-coat", "boots", "winter-boots", "gloves", "scarf"].includes(clothingCategory)) {
-        score += 95;
-      } else if (["jacket", "pants", "long-sleeve"].includes(clothingCategory)) {
-        score += 60;
-      } else if (["t-shirt", "shorts", "sandals"].includes(clothingCategory)) {
-        score += 5;
-      }
-    }
-    if (rainProbability > 50) {
-      if (["rain-jacket", "rain-boots", "umbrella"].includes(clothingCategory)) {
-        score += 20;
-      } else if (["sandals", "shorts", "tank-top"].includes(clothingCategory)) {
-        score -= 30;
-      }
-    }
-    if (windSpeed > 15) {
-      if (["scarf", "jacket", "coat"].includes(clothingCategory)) {
-        score += 15;
-      } else if (["dress", "skirt"].includes(clothingCategory)) {
-        score -= 20;
-      }
-    }
-    return Math.max(0, Math.min(100, score));
-  }
-};
-
-// app/consts/CityCoordinates.ts
+// app/consts/place.ts
 var CITY_COORDINATES = {
   "new york": { lat: 40.7128, lng: -74.006 },
   "los angeles": { lat: 34.0522, lng: -118.2437 },
@@ -561,126 +536,6 @@ var CITY_COORDINATES = {
   "fresno": { lat: 36.7378, lng: -119.7871 },
   "mesa": { lat: 33.4152, lng: -111.8315 }
 };
-
-// app/services/geolocationService.ts
-var GeolocationService = class {
-  static {
-    __name(this, "GeolocationService");
-  }
-  /**
-   * Geocode a place description using OpenCage API
-   * Converts place descriptions to structured address data with coordinates
-   */
-  static async geocodePlace(description) {
-    try {
-      if (!process.env.OPENCAGE_API_KEY) {
-        console.warn("OpenCage API key not found, falling back to mock implementation");
-        return this.getMockGeocoding(description);
-      }
-      const opencageResponse = await this.callOpenCageAPI(description);
-      return this.parseOpenCageResponse(opencageResponse, description);
-    } catch (error) {
-      console.error("Error geocoding place:", error);
-      console.warn("OpenCage API failed, falling back to mock implementation");
-      try {
-        return this.getMockGeocoding(description);
-      } catch (mockError) {
-        console.error("Mock implementation also failed:", mockError);
-        throw new Error("Failed to geocode place description");
-      }
-    }
-  }
-  /**
-   * Mock implementation for fallback when OpenCage API is unavailable
-   */
-  static getMockGeocoding(description) {
-    const mockCoordinates = this.getMockCoordinates(description);
-    return {
-      latitude: mockCoordinates.lat,
-      longitude: mockCoordinates.lng,
-      formattedAddress: description,
-      structuredAddress: this.parseStructuredAddress(description)
-    };
-  }
-  /**
-   * Get mock coordinates for common places
-   */
-  static getMockCoordinates(description) {
-    const place = description.toLowerCase();
-    for (const [city, coords] of Object.entries(CITY_COORDINATES)) {
-      if (place.includes(city)) {
-        return coords;
-      }
-    }
-    return { lat: 40.7128, lng: -74.006 };
-  }
-  /**
-   * Parse structured address from place description
-   */
-  static parseStructuredAddress(description) {
-    const parts = description.split(",").map((part) => part.trim());
-    return {
-      city: parts[0] || "",
-      state: parts[1] || "",
-      postalCode: "",
-      country: parts.length > 2 ? parts[2] : "US"
-    };
-  }
-  /**
-   * Call OpenCage Geocoding API
-   */
-  static async callOpenCageAPI(description) {
-    const apiKey = process.env.OPENCAGE_API_KEY;
-    const encodedPlace = encodeURIComponent(description);
-    const url = `https://api.opencagedata.com/geocode/v1/json?q=${encodedPlace}&key=${apiKey}&limit=1&no_annotations=1`;
-    try {
-      const response = await fetch(url);
-      if (!response.ok) {
-        throw new Error(`OpenCage API error: ${response.status} ${response.statusText}`);
-      }
-      const data = await response.json();
-      if (data.status.code !== 200) {
-        throw new Error(`OpenCage API error: ${data.status.message}`);
-      }
-      return data;
-    } catch (error) {
-      console.error("OpenCage API error:", error);
-      throw new Error("Failed to geocode place with OpenCage API");
-    }
-  }
-  /**
-   * Parse OpenCage API response into our GeocodedAddress format
-   */
-  static parseOpenCageResponse(response, _originalDescription) {
-    if (!response.results || response.results.length === 0) {
-      throw new Error("No geocoding results found");
-    }
-    const result = response.results[0];
-    const components = result.components;
-    return {
-      latitude: result.geometry.lat,
-      longitude: result.geometry.lng,
-      formattedAddress: result.formatted,
-      structuredAddress: {
-        city: components.city || "",
-        state: components.state || "",
-        postalCode: components.postcode || "",
-        country: components.country || "",
-        street: components.road || void 0,
-        streetNumber: components.house_number || void 0
-      }
-    };
-  }
-};
-
-// app/services/llmService.ts
-import { z as z4 } from "zod";
-import OpenAI from "openai";
-
-// app/consts/PlaceConsts.ts
-import { config } from "dotenv";
-config();
-var OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 var MOCK_MAPPINGS = {
   "gotham city": {
     normalizedPlace: "New York, NY",
@@ -798,6 +653,359 @@ var MOCK_MAPPINGS = {
   }
 };
 
+// app/consts/index.ts
+config();
+var OPENAI_API_KEY = process.env.OPENAI_API_KEY;
+
+// app/schemas/weather.ts
+var OpenMeteoWeatherCodeSchema = z.number().int().min(0).max(99);
+var OpenMeteoDailySchema = z.object({
+  time: z.array(z.string()),
+  temperature_2m_max: z.array(z.number()),
+  temperature_2m_min: z.array(z.number()),
+  precipitation_probability_max: z.array(z.number()),
+  windspeed_10m_max: z.array(z.number()),
+  weathercode: z.array(z.number())
+});
+var OpenMeteoResponseSchema = z.object({
+  daily: OpenMeteoDailySchema
+});
+var TemperatureRangeSchema = z.object({
+  temperatureMinimum: z.number(),
+  temperatureMaximum: z.number()
+});
+var WeatherSchema = z.object({
+  date: z.string(),
+  degreesFahrenheit: z.number(),
+  temperatureRange: TemperatureRangeSchema,
+  rainProbabilityPercentage: z.number().min(0).max(100),
+  windSpeedMph: z.number(),
+  condition: OpenMeteoWeatherCodeSchema,
+  clothing: z.array(z.nativeEnum(ClothingCategoryEnum))
+});
+
+// app/schemas/place.ts
+var AddressSchema = z2.object({
+  city: z2.string(),
+  state: z2.string(),
+  postalCode: z2.string(),
+  country: z2.string(),
+  street: z2.string().optional(),
+  streetNumber: z2.string().optional()
+});
+var GeocodedAddressSchema = z2.object({
+  latitude: z2.number(),
+  longitude: z2.number(),
+  formattedAddress: z2.string(),
+  structuredAddress: AddressSchema
+});
+var PlaceSchema = z2.object({
+  id: z2.string(),
+  description: z2.string().optional(),
+  normalizedPlace: z2.string(),
+  slug: z2.string(),
+  geocodedAddress: GeocodedAddressSchema,
+  weather: z2.array(WeatherSchema).optional(),
+  createdAt: z2.date().transform((date) => date.toISOString())
+});
+var CreatePlaceSchema = z2.object({
+  description: z2.string()
+});
+var UpdatePlaceSchema = z2.object({
+  id: z2.string(),
+  description: z2.string()
+});
+var PlaceNormalizationSchema = z2.object({
+  slug: z2.string(),
+  normalizedPlace: z2.string(),
+  confidence: z2.number().min(0).max(1),
+  reasoning: z2.string().optional()
+});
+
+// app/rules/clothingRules.ts
+function getClothingRecommendations(temperature, weatherCode, rainProbability, windSpeed) {
+  const recommendations = [];
+  const conditionRule = WEATHER_CLOTHING_RULES[weatherCode];
+  if (conditionRule) {
+    const isInRange = conditionRule.TEMPERATURE_RANGES.some(
+      (range) => temperature >= range.min && temperature <= range.max
+    );
+    if (isInRange) {
+      recommendations.push(...conditionRule.recommended);
+    }
+  }
+  if (temperature >= TEMPERATURE_RANGES.VERY_HOT.min) {
+    recommendations.push(
+      ClothingCategoryEnum.TANK_TOP,
+      ClothingCategoryEnum.SHORTS,
+      ClothingCategoryEnum.SANDALS,
+      ClothingCategoryEnum.SUN_HAT
+    );
+  } else if (temperature >= TEMPERATURE_RANGES.HOT.min) {
+    recommendations.push(
+      ClothingCategoryEnum.T_SHIRT,
+      ClothingCategoryEnum.SHORTS,
+      ClothingCategoryEnum.SNEAKERS
+    );
+  } else if (temperature >= TEMPERATURE_RANGES.WARM.min) {
+    recommendations.push(
+      ClothingCategoryEnum.LONG_SLEEVE,
+      ClothingCategoryEnum.JEANS,
+      ClothingCategoryEnum.SNEAKERS
+    );
+  } else if (temperature >= TEMPERATURE_RANGES.MILD.min) {
+    recommendations.push(
+      ClothingCategoryEnum.SWEATSHIRT,
+      ClothingCategoryEnum.JEANS,
+      ClothingCategoryEnum.SNEAKERS
+    );
+  } else if (temperature >= TEMPERATURE_RANGES.COOL.min) {
+    recommendations.push(
+      ClothingCategoryEnum.JACKET,
+      ClothingCategoryEnum.PANTS,
+      ClothingCategoryEnum.SNEAKERS
+    );
+  } else if (temperature >= TEMPERATURE_RANGES.COLD.min) {
+    recommendations.push(
+      ClothingCategoryEnum.COAT,
+      ClothingCategoryEnum.PANTS,
+      ClothingCategoryEnum.BOOTS
+    );
+  } else {
+    recommendations.push(
+      ClothingCategoryEnum.WINTER_COAT,
+      ClothingCategoryEnum.WINTER_BOOTS,
+      ClothingCategoryEnum.GLOVES,
+      ClothingCategoryEnum.SCARF
+    );
+  }
+  if (rainProbability > 30) {
+    recommendations.push(
+      ClothingCategoryEnum.RAIN_JACKET,
+      ClothingCategoryEnum.UMBRELLA
+    );
+    if (rainProbability > 70) {
+      recommendations.push(ClothingCategoryEnum.RAIN_BOOTS);
+    }
+  }
+  if (windSpeed > 15) {
+    recommendations.push(
+      ClothingCategoryEnum.SCARF,
+      ClothingCategoryEnum.JACKET
+    );
+  }
+  return [...new Set(recommendations)];
+}
+__name(getClothingRecommendations, "getClothingRecommendations");
+
+// app/services/clothingService.ts
+var ClothingService = class {
+  static {
+    __name(this, "ClothingService");
+  }
+  /**
+   * Get clothing recommendations based on weather data
+   */
+  static getRecommendations(temperature, weatherCode, rainProbability, windSpeed) {
+    return getClothingRecommendations(temperature, weatherCode, rainProbability, windSpeed);
+  }
+  /**
+   * Get clothing recommendations for a specific date
+   */
+  static getRecommendationsForDate(weatherData) {
+    const categories = this.getRecommendations(
+      weatherData.temperature,
+      weatherData.weatherCode,
+      weatherData.rainProbability,
+      weatherData.windSpeed
+    );
+    return {
+      categories
+    };
+  }
+  /**
+   * Get weather-appropriate clothing score (0-100)
+   * Higher score means more weather-appropriate
+   */
+  static getWeatherAppropriatenessScore(clothingCategory, temperature, weatherCode, rainProbability, windSpeed) {
+    const recommendations = this.getRecommendations(temperature, weatherCode, rainProbability, windSpeed);
+    if (recommendations.includes(clothingCategory)) {
+      return 100;
+    }
+    let score = 0;
+    if (temperature >= 85) {
+      if (["t-shirt", "tank-top", "shorts", "sandals", "dress", "skirt"].includes(clothingCategory)) {
+        score += 80;
+      } else if (["long-sleeve", "jeans", "sneakers"].includes(clothingCategory)) {
+        score += 40;
+      } else if (["hoodie", "jacket", "coat", "boots"].includes(clothingCategory)) {
+        score += 10;
+      }
+    } else if (temperature >= 75) {
+      if (["t-shirt", "shorts", "sneakers", "dress"].includes(clothingCategory)) {
+        score += 90;
+      } else if (["long-sleeve", "jeans", "sweatshirt"].includes(clothingCategory)) {
+        score += 70;
+      } else if (["jacket", "coat"].includes(clothingCategory)) {
+        score += 30;
+      }
+    } else if (temperature >= 65) {
+      if (["long-sleeve", "jeans", "sneakers", "sweatshirt"].includes(clothingCategory)) {
+        score += 90;
+      } else if (["t-shirt", "shorts"].includes(clothingCategory)) {
+        score += 50;
+      } else if (["jacket", "coat"].includes(clothingCategory)) {
+        score += 60;
+      }
+    } else if (temperature >= 45) {
+      if (["jacket", "pants", "sneakers", "long-sleeve"].includes(clothingCategory)) {
+        score += 90;
+      } else if (["coat", "boots"].includes(clothingCategory)) {
+        score += 70;
+      } else if (["t-shirt", "shorts"].includes(clothingCategory)) {
+        score += 20;
+      }
+    } else {
+      if (["coat", "winter-coat", "boots", "winter-boots", "gloves", "scarf"].includes(clothingCategory)) {
+        score += 95;
+      } else if (["jacket", "pants", "long-sleeve"].includes(clothingCategory)) {
+        score += 60;
+      } else if (["t-shirt", "shorts", "sandals"].includes(clothingCategory)) {
+        score += 5;
+      }
+    }
+    if (rainProbability > 50) {
+      if (["rain-jacket", "rain-boots", "umbrella"].includes(clothingCategory)) {
+        score += 20;
+      } else if (["sandals", "shorts", "tank-top"].includes(clothingCategory)) {
+        score -= 30;
+      }
+    }
+    if (windSpeed > 15) {
+      if (["scarf", "jacket", "coat"].includes(clothingCategory)) {
+        score += 15;
+      } else if (["dress", "skirt"].includes(clothingCategory)) {
+        score -= 20;
+      }
+    }
+    return Math.max(0, Math.min(100, score));
+  }
+};
+
+// app/services/geolocationService.ts
+var GeolocationService = class {
+  static {
+    __name(this, "GeolocationService");
+  }
+  /**
+   * Geocode a place description using OpenCage API
+   * Converts place descriptions to structured address data with coordinates
+   */
+  static async geocodePlace(description) {
+    try {
+      if (!process.env.OPENCAGE_API_KEY) {
+        console.warn("OpenCage API key not found, falling back to mock implementation");
+        return this.getMockGeocoding(description);
+      }
+      const opencageResponse = await this.callOpenCageAPI(description);
+      return this.parseOpenCageResponse(opencageResponse, description);
+    } catch (error) {
+      console.error("Error geocoding place:", error);
+      console.warn("OpenCage API failed, falling back to mock implementation");
+      try {
+        return this.getMockGeocoding(description);
+      } catch (mockError) {
+        console.error("Mock implementation also failed:", mockError);
+        throw new Error("Failed to geocode place description");
+      }
+    }
+  }
+  /**
+   * Mock implementation for fallback when OpenCage API is unavailable
+   */
+  static getMockGeocoding(description) {
+    const mockCoordinates = this.getMockCoordinates(description);
+    return {
+      latitude: mockCoordinates.lat,
+      longitude: mockCoordinates.lng,
+      formattedAddress: description,
+      structuredAddress: this.parseStructuredAddress(description)
+    };
+  }
+  /**
+   * Get mock coordinates for common places
+   */
+  static getMockCoordinates(description) {
+    const place = description.toLowerCase();
+    for (const [city, coords] of Object.entries(CITY_COORDINATES)) {
+      if (place.includes(city)) {
+        return coords;
+      }
+    }
+    return { lat: 40.7128, lng: -74.006 };
+  }
+  /**
+   * Parse structured address from place description
+   */
+  static parseStructuredAddress(description) {
+    const parts = description.split(",").map((part) => part.trim());
+    return {
+      city: parts[0] || "",
+      state: parts[1] || "",
+      postalCode: "",
+      country: parts.length > 2 ? parts[2] : "US"
+    };
+  }
+  /**
+   * Call OpenCage Geocoding API
+   */
+  static async callOpenCageAPI(description) {
+    const apiKey = process.env.OPENCAGE_API_KEY;
+    const encodedPlace = encodeURIComponent(description);
+    const url = `https://api.opencagedata.com/geocode/v1/json?q=${encodedPlace}&key=${apiKey}&limit=1&no_annotations=1`;
+    try {
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error(`OpenCage API error: ${response.status} ${response.statusText}`);
+      }
+      const data = await response.json();
+      if (data.status.code !== 200) {
+        throw new Error(`OpenCage API error: ${data.status.message}`);
+      }
+      return data;
+    } catch (error) {
+      console.error("OpenCage API error:", error);
+      throw new Error("Failed to geocode place with OpenCage API");
+    }
+  }
+  /**
+   * Parse OpenCage API response into our GeocodedAddress format
+   */
+  static parseOpenCageResponse(response, _originalDescription) {
+    if (!response.results || response.results.length === 0) {
+      throw new Error("No geocoding results found");
+    }
+    const result = response.results[0];
+    const components = result.components;
+    return {
+      latitude: result.geometry.lat,
+      longitude: result.geometry.lng,
+      formattedAddress: result.formatted,
+      structuredAddress: {
+        city: components.city || "",
+        state: components.state || "",
+        postalCode: components.postcode || "",
+        country: components.country || "",
+        street: components.road || void 0,
+        streetNumber: components.house_number || void 0
+      }
+    };
+  }
+};
+
+// app/services/llmService.ts
+import OpenAI from "openai";
+
 // app/prompts/descriptionToNormalizedPlacePrompt.ts
 var DESCRIPTION_TO_NORMALIZED_PLACE_PROMPT = /* @__PURE__ */ __name((description) => `Convert this place description to a normalized format with city and state/country.
 
@@ -818,12 +1026,6 @@ Examples:
 Respond only with valid JSON:`, "DESCRIPTION_TO_NORMALIZED_PLACE_PROMPT");
 
 // app/services/llmService.ts
-var PlaceNormalizationSchema = z4.object({
-  slug: z4.string(),
-  normalizedPlace: z4.string(),
-  confidence: z4.number().min(0).max(1),
-  reasoning: z4.string().optional()
-});
 var LLMService = class {
   static {
     __name(this, "LLMService");
@@ -1090,7 +1292,7 @@ var WeatherService = class {
           },
           rainProbabilityPercentage: Math.round(rainProbability),
           windSpeedMph: Math.round(windSpeed),
-          condition: WeatherConditionEnum[this.mapWeatherCode(weatherCode)],
+          condition: weatherCode,
           clothing: []
           // Will be populated by clothing service
         };
@@ -1109,12 +1311,6 @@ var WeatherService = class {
   static async getCurrentDayWeather(latitude, longitude) {
     const forecast = await this.get7DayForecast({ latitude, longitude });
     return forecast[0];
-  }
-  /**
-   * Map Open-Meteo weather code to our weather condition enum
-   */
-  static mapWeatherCode(code) {
-    return WEATHER_CODE_MAPPING[code] || "SUNNY";
   }
 };
 
@@ -1313,10 +1509,10 @@ var procedure = trpc.procedure;
 
 // app/router/places.ts
 import { TRPCError } from "@trpc/server";
-import { z as z5 } from "zod";
+import { z as z3 } from "zod";
 var places = router({
   // Get place by normalized place string
-  getByNormalizedPlace: procedure.input(z5.object({ normalizedPlace: z5.string() })).query(async ({ ctx, input }) => {
+  getByNormalizedPlace: procedure.input(z3.object({ normalizedPlace: z3.string() })).query(async ({ ctx, input }) => {
     const place = ctx.cradle.places.getByNormalizedPlace(input.normalizedPlace);
     if (!place) {
       return false;
@@ -1379,7 +1575,7 @@ var places = router({
    * Gets a place by slug.
    * If the place does not exist, return an error.
    */
-  getBySlug: procedure.input(z5.object({ slug: z5.string() })).query(async ({ ctx, input }) => {
+  getBySlug: procedure.input(z3.object({ slug: z3.string() })).query(async ({ ctx, input }) => {
     const place = ctx.cradle.places.getBySlug(input.slug);
     if (!place) {
       throw new TRPCError({
@@ -1392,7 +1588,7 @@ var places = router({
   /**
    * Get 7-day weather forecast for a place by slug
    */
-  getWeatherForecast: procedure.input(z5.object({ slug: z5.string() })).query(async ({ ctx, input }) => {
+  getWeatherForecast: procedure.input(z3.object({ slug: z3.string() })).query(async ({ ctx, input }) => {
     const place = ctx.cradle.places.getBySlug(input.slug);
     if (!place) {
       throw new TRPCError({
@@ -1417,7 +1613,7 @@ var places = router({
   /**
    * Get current day weather for a place by slug
    */
-  getCurrentWeather: procedure.input(z5.object({ slug: z5.string() })).query(async ({ ctx, input }) => {
+  getCurrentWeather: procedure.input(z3.object({ slug: z3.string() })).query(async ({ ctx, input }) => {
     const place = ctx.cradle.places.getBySlug(input.slug);
     if (!place) {
       throw new TRPCError({
@@ -1442,9 +1638,9 @@ var places = router({
   /**
    * Get weather for a specific date for a place by slug
    */
-  getWeatherByDate: procedure.input(z5.object({
-    slug: z5.string(),
-    date: z5.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Date must be in YYYY-MM-DD format")
+  getWeatherByDate: procedure.input(z3.object({
+    slug: z3.string(),
+    date: z3.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Date must be in YYYY-MM-DD format")
   })).query(async ({ ctx, input }) => {
     const place = ctx.cradle.places.getBySlug(input.slug);
     if (!place) {
@@ -1482,10 +1678,10 @@ var places = router({
   /**
    * Get weather for a date range for a place by slug
    */
-  getWeatherByDateRange: procedure.input(z5.object({
-    slug: z5.string(),
-    startDate: z5.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Start date must be in YYYY-MM-DD format"),
-    endDate: z5.string().regex(/^\d{4}-\d{2}-\d{2}$/, "End date must be in YYYY-MM-DD format")
+  getWeatherByDateRange: procedure.input(z3.object({
+    slug: z3.string(),
+    startDate: z3.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Start date must be in YYYY-MM-DD format"),
+    endDate: z3.string().regex(/^\d{4}-\d{2}-\d{2}$/, "End date must be in YYYY-MM-DD format")
   })).query(async ({ ctx, input }) => {
     const place = ctx.cradle.places.getBySlug(input.slug);
     if (!place) {

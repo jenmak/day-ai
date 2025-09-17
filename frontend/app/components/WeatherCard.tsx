@@ -1,3 +1,4 @@
+import { CARD_WIDTH_DESKTOP } from "../consts/CardConsts"
 import { Card, CardHeader, CardTitle } from "../../src/components/ui/card"
 import { Weather } from "../../src/types/api"
 
@@ -6,9 +7,9 @@ export const WeatherCard = ({ weather }: { weather: Weather }) => {
   const isToday = weather.date === new Date().toISOString().split('T')[0]
 
   return (
-    <Card className={`${isToday && 'outline outline-white' || ''} bg-transparent`}>
+    <Card className={`${isToday && 'outline outline-white' || ''} bg-transparent text-white ${CARD_WIDTH_DESKTOP}`}>
       <CardHeader>
-        <CardTitle>{weather.date}</CardTitle>
+
       </CardHeader>
     </Card>
     // <div className="bg-card text-card-foreground flex flex-col gap-2 rounded-md border py-4 shadow-sm">

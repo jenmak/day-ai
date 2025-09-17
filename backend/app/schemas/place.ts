@@ -23,7 +23,7 @@ export const GeocodedAddressSchema = z.object({
 export const PlaceSchema = z.object({
   id: z.string(),
   description: z.string().optional(),
-  normalizedLocation: z.string(),
+  normalizedPlace: z.string(),
   slug: z.string(),
   geocodedAddress: GeocodedAddressSchema,
   weather: z.array(WeatherSchema).optional(),
@@ -41,9 +41,10 @@ export const UpdatePlaceSchema = z.object({
   description: z.string()
 })
 
-// Type exports
-export type Address = z.infer<typeof AddressSchema>
-export type GeocodedAddress = z.infer<typeof GeocodedAddressSchema>
-export type Place = z.infer<typeof PlaceSchema>
-export type CreatePlace = z.infer<typeof CreatePlaceSchema>
-export type UpdatePlace = z.infer<typeof UpdatePlaceSchema>
+// LLM Response Schema
+export const PlaceNormalizationSchema = z.object({
+  slug: z.string(),
+  normalizedPlace: z.string(),
+  confidence: z.number().min(0).max(1),
+  reasoning: z.string().optional()
+})
