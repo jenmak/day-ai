@@ -8,6 +8,21 @@ declare module '@dayai/backend' {
       getByNormalizedLocation: {
         query: (input: { normalizedLocation: string }) => Promise<Location | false>
       }
+      getBySlug: {
+        query: (input: { slug: string }) => Promise<Location>
+      }
+      getWeatherForecast: {
+        query: (input: { slug: string }) => Promise<Weather[]>
+      }
+      getCurrentWeather: {
+        query: (input: { slug: string }) => Promise<Weather>
+      }
+      getWeatherByDate: {
+        query: (input: { slug: string; date: string }) => Promise<Weather>
+      }
+      getWeatherByDateRange: {
+        query: (input: { slug: string; startDate: string; endDate: string }) => Promise<Weather[]>
+      }
     }
     _def: any
     createCaller: any
@@ -41,6 +56,7 @@ declare module '@dayai/backend/schemas' {
   }
 
   export interface Weather {
+    date: string
     condition: string
     degreesFahrenheit: number
     degreesCelsius: number

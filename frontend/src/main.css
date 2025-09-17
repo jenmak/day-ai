@@ -49,7 +49,7 @@
   --input-border-radius: 18px;
 }
 
-/** Search Input */
+/** Search Input: TODO: Fix rotating gradient. */
 .input-container {
   position: relative;
   width: 100%;

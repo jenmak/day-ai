@@ -28,6 +28,7 @@ export interface Location {
 }
 
 export interface Weather {
+  date: string
   condition: string
   degreesFahrenheit: number
   degreesCelsius: number
@@ -55,6 +56,18 @@ export interface ClothingCategory {
 
 // Simple router type for TRPC - we'll use any for now to avoid complex typing
 export type AppRouter = any
+
+// Date-related utility types
+export interface DateRange {
+  startDate: string
+  endDate: string
+}
+
+export interface WeatherQuery {
+  slug: string
+  date?: string
+  dateRange?: DateRange
+}
 
 // Export types that were previously imported from backend
 export type LocationType = Location

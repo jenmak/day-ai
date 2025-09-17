@@ -211,6 +211,113 @@ export const locations = router({
       }
     }),
 
+  /**
+   * Get weather for a specific date for a location by slug
+   */
+  getWeatherByDate: procedure
+    .input(z.object({ 
+      slug: z.string(),
+      date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Date must be in YYYY-MM-DD format")
+    }))
+    .query(async ({ ctx, input }) => {
+      const location = ctx.cradle.locations.getBySlug(input.slug)
+
+      if (!location) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: `Location not found with slug: "${input.slug}".`
+        })
+      }
+
+      try {
+        const targetDate = new Date(input.date)
+        const forecast = await WeatherService.get7DayForecast({
+          latitude: location.geocodedAddress.latitude,
+          longitude: location.geocodedAddress.longitude,
+          startDate: targetDate,
+          endDate: targetDate
+        })
+
+        if (forecast.length === 0) {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: `Weather data not found for date: ${input.date}`
+          })
+        }
+
+        return forecast[0]
+      } catch (error) {
+        console.error("Error fetching weather by date:", error)
+        if (error instanceof TRPCError) {
+          throw error
+        }
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to fetch weather for the specified date"
+        })
+      }
+    }),
+
+  /**
+   * Get weather for a date range for a location by slug
+   */
+  getWeatherByDateRange: procedure
+    .input(z.object({ 
+      slug: z.string(),
+      startDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Start date must be in YYYY-MM-DD format"),
+      endDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "End date must be in YYYY-MM-DD format")
+    }))
+    .query(async ({ ctx, input }) => {
+      const location = ctx.cradle.locations.getBySlug(input.slug)
+
+      if (!location) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: `Location not found with slug: "${input.slug}".`
+        })
+      }
+
+      try {
+        const startDate = new Date(input.startDate)
+        const endDate = new Date(input.endDate)
+
+        // Validate date range
+        if (startDate > endDate) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "Start date must be before or equal to end date"
+          })
+        }
+
+        // Limit to 7 days maximum
+        const daysDiff = Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24))
+        if (daysDiff > 6) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "Date range cannot exceed 7 days"
+          })
+        }
+
+        const forecast = await WeatherService.get7DayForecast({
+          latitude: location.geocodedAddress.latitude,
+          longitude: location.geocodedAddress.longitude,
+          startDate: startDate,
+          endDate: endDate
+        })
+
+        return forecast
+      } catch (error) {
+        console.error("Error fetching weather by date range:", error)
+        if (error instanceof TRPCError) {
+          throw error
+        }
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to fetch weather for the specified date range"
+        })
+      }
+    }),
+
   // Get weather for a specific location
   // getWeather: procedure
   //   .input(z.object({ locationId: z.string() }))

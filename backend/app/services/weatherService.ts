@@ -1,6 +1,7 @@
 import { z } from "zod"
 import { type Weather } from "../schemas/weather"
 import { WeatherConditionEnum } from "../schemas/weatherConditions"
+import { DateService } from "./dateService"
 
 // Open-Meteo API Response Schema
 const OpenMeteoDailySchema = z.object({
@@ -67,9 +68,9 @@ export class WeatherService {
     // Calculate end date (7 days from start date)
     const forecastEndDate = endDate || new Date(startDate.getTime() + 6 * 24 * 60 * 60 * 1000)
     
-    // Format dates for API
-    const startDateStr = startDate.toISOString().split('T')[0]
-    const endDateStr = forecastEndDate.toISOString().split('T')[0]
+    // Format dates for API using DateService
+    const startDateStr = DateService.formatDate(startDate)
+    const endDateStr = DateService.formatDate(forecastEndDate)
     
     try {
       const url = new URL(this.BASE_URL)

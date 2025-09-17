@@ -11,11 +11,11 @@ export const ClothingSchema = z.object({
   images: z.array(ImageSchema),
   buyLink: z.string().url(),
   // Additional TikTok Shop attributes can be added here
-  title: z.string().optional(),
-  price: z.number().optional(),
-  brand: z.string().optional(),
-  category: z.string().optional(),
-  description: z.string().optional()
+  // title: z.string().optional(),
+  // price: z.number().optional(),
+  // brand: z.string().optional(),
+  // category: z.string().optional(),
+  // description: z.string().optional()
 })
 
 // Type exports
