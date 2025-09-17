@@ -9,7 +9,7 @@ export function Header() {
   const { pathname} = useLocation()
   const { location } = useLocationStore()
   return (
-    <div className="flex justify-between items-center p-4">
+    <div className="flex justify-between items-center p-4 fixed top-0 left-0 right-0 z-10">
       {pathname !== "/" && (
         <Button onClick={() => navigate(-1)}>
           <ChevronLeft className="h-4 w-4" />

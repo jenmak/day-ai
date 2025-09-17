@@ -43,8 +43,8 @@ export function Location() {
 
   return (
     <PageWrapper>
-      <h1>{location.normalizedLocation}</h1>
-      <p>{location.description}</p>
+      <h1 className="text-title font-heading">{location.normalizedLocation}</h1>
+      <p className="font-body">{location.description}</p>
       <p>Coordinates: {location.geocodedAddress.latitude}, {location.geocodedAddress.longitude}</p>
       <p>Address: {location.geocodedAddress.structuredAddress.city}, {location.geocodedAddress.structuredAddress.state} {location.geocodedAddress.structuredAddress.postalCode}</p>
       <p>Country: {location.geocodedAddress.structuredAddress.country}</p>

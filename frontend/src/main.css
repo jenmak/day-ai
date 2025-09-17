@@ -1,7 +1,154 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
-@custom-variant dark (&:is(.dark *));
+/* @custom-variant dark (&:is(.dark *)); */
+
+:root {
+  /* Font families */
+  --font-family-heading: 'Cormorant Garamond', serif;
+  --font-family-body: 'Poppins', sans-serif;
+  
+  /* Cool weather colors */
+  --color-cool-aquamarine: #73FBD3;
+  --color-cool-cyan: #44E5E7;
+  --color-cool-skyblue: #59D2FE;
+  --color-cool-blue: #4A8FE7;
+  --color-cool-crayola-blue: #5C7AFF;
+
+  /* Hot weather colors */
+  --color-hot-amber: #F3B700;
+  --color-hot-orange: #FAA300;
+  --color-hot-fulvous: #E57C04;
+  --color-hot-pantone-orange: #FF6201;
+  --color-hot-coquelicot: #F63E02;
+
+  /* Rainy weather colors */
+  --color-rain-indigo: #A682FF;
+  --color-rain-slate-blue: #715AFF;
+  --color-rain-cornflower-blue: #5887FF;
+  --color-rain-maya-blue: #55C1FF;
+  --color-rain-prussian-blue: #102E4A;
+
+  /* Profile colors */
+  --color-eggplant: #533b4d;
+  --color-pale-dogwood: #C1ABA6;
+  --color-champagne: #FAE3C6;
+  
+  /* Basic colors */
+  --color-white: #ffffff;
+}
+
+:root {
+  --ring-color-1: var(--color-cool-aquamarine);
+  --ring-color-2: var(--color-cool-skyblue);
+  --ring-color-3: var(--color-cool-crayola-blue);
+  --ring-size: 3px;
+  --ring-radius: calc(infinity * 1px);
+  --ring-speed: 2.5s;
+
+  --input-border-radius: 18px;
+}
+
+/** Search Input */
+.input-container {
+  position: relative;
+  width: 100%;
+  border: 1px solid var(--color-white);
+  border-radius: var(--input-border-radius);
+  outline: none;
+  background: transparent;
+  opacity: 1;
+}
+
+.input-container::after {
+  content: "";
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  inset: calc(-1 * var(--ring-size));
+  border-radius: calc(var(--ring-radius) + var(--ring-size));
+  pointer-events: none;
+  opacity: 0;
+  transform: scale(0.98); /* subtle pop-in */
+  transition: opacity 120ms ease, transform 120ms ease;
+  background:
+    conic-gradient(
+      from 0deg,
+      var(--ring-color-1),
+      var(--ring-color-2),
+      var(--ring-color-3),
+      var(--ring-color-1)
+    );
+  /* Make a ring instead of a fill */
+  -webkit-mask:
+    radial-gradient(farthest-side, transparent calc(100% - var(--ring-size)), #000 calc(100% - var(--ring-size)));
+  mask:
+    radial-gradient(farthest-side, transparent calc(100% - var(--ring-size)), #000 calc(100% - var(--ring-size)));
+  animation: spin var(--ring-speed) linear infinite paused;
+  z-index: 1;
+}
+
+/* Activate animation for keyboard focus 
+(and click focus for buttons/inputs) */
+.input-container:focus-within::after {
+  opacity: 1;
+  transform: scale(1);
+  animation-play-state: running;
+}
+
+/* Ring animation */
+@keyframes spin {
+  to { transform: scale(1) rotate(360deg); }
+}
+
+/* Reduce motion users: keep it static but visible */
+@media (prefers-reduced-motion: reduce) {
+  .input-container::after { animation: none; }
+}
+
+.input-container:focus-within {
+  border-color: var(--color-rain-maya-blue);
+  opacity: 1;
+}
+
+.search-input {
+  border-radius: var(--input-border-radius);  
+  background: transparent;
+}
+
+.search-input,
+.search-input:focus,
+.search-input:focus-within {
+  border-color: transparent;
+}
+
+.search-input::placeholder {
+  color: var(--color-white);
+  opacity: .6;
+}
+
+.search-button {
+  position: absolute;
+  background: var(--color-white);
+  opacity: .8;
+  right: 3px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 36px;
+  height: 36px;
+  border-radius: var(--input-border-radius);
+  color: var(--color-white);
+  background-color: transparent;
+}
+
+.search-button:disabled {
+  opacity: .4;
+}
+
+
+/** ------------------------------------------- Shadcn UI ------------------------------------------- */
 
 :root {
   --radius: 0.625rem;
@@ -77,6 +224,39 @@
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
+  
+  /* --color-primary: oklch(0.205 0 0);
+  --color-primary-foreground: oklch(0.985 0 0);
+  --color-secondary: oklch(0.97 0 0);
+  --color-secondary-foreground: oklch(0.205 0 0);
+  --color-muted: oklch(0.97 0 0);
+  --color-muted-foreground: oklch(0.556 0 0);
+  --color-accent: oklch(0.97 0 0);
+  --color-accent-foreground: oklch(0.205 0 0);
+  --color-destructive: oklch(0.577 0.245 27.325);
+  --color-border: oklch(0.922 0 0);
+  --color-input: oklch(0.922 0 0);
+  --color-ring: oklch(0.708 0 0); */
+
+
+  --color-brand: oklch(0.646 0.222 41.116);
+  --color-brand-light: oklch(0.8 0.15 41.116);
+  --color-weather-sunny: oklch(0.9 0.2 60);
+  --color-weather-rainy: oklch(0.6 0.15 240);
+  
+
+  
+  /* Custom spacing */
+  --spacing-xs: 0.25rem;
+  --spacing-sm: 0.5rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 1.5rem;
+  --spacing-xl: 2rem;
+  
+  /* Custom typography */
+  --font-size-hero: 3rem;
+  --font-size-title: 2rem;
+  --font-size-subtitle: 1.25rem;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -116,5 +296,140 @@
   }
   body {
     @apply bg-background text-foreground;
+    font-family: var(--font-family-body);
   }
+}
+
+@layer utilities {
+  /* Font utility classes */
+  .font-heading {
+    font-family: var(--font-family-heading);
+  }
+
+  .font-body {
+    font-family: var(--font-family-body);
+  }
+
+  .text-hero {
+    font-size: var(--font-size-hero);
+    font-weight: 800;
+    line-height: 1.1;
+    font-family: var(--font-family-heading);
+  }
+  
+  /* .font-heading {
+    font-family: var(--font-family-heading);
+  }
+  
+  .font-body {
+    font-family: var(--font-family-body);
+  } */
+  
+  /* Custom utility classes for DayAI */
+  /* 
+  .text-title {
+    font-size: var(--font-size-title);
+    font-weight: 700;
+    line-height: 1.2;
+    font-family: var(--font-family-heading);
+  }
+  
+  .text-subtitle {
+    font-size: var(--font-size-subtitle);
+    font-weight: 600;
+    line-height: 1.3;
+    font-family: var(--font-family-heading);
+  }
+  
+  .bg-brand {
+    background-color: var(--color-brand);
+  }
+  
+  .text-brand {
+    color: var(--color-brand);
+  } */
+  
+  /* Custom color utilities */
+  /* .bg-eggplant {
+    background-color: var(--color-eggplant);
+  }
+  
+  .text-eggplant {
+    color: var(--color-eggplant);
+  }
+  
+  .bg-pale-dogwood {
+    background-color: var(--color-pale-dogwood);
+  }
+  
+  .text-pale-dogwood {
+    color: var(--color-pale-dogwood);
+  }
+  
+  .bg-champagne {
+    background-color: var(--color-champagne);
+  }
+  
+  .text-champagne {
+    color: var(--color-champagne);
+  } */
+  
+  /* Gradient utilities */
+  /* .bg-gradient-profile {
+    background: linear-gradient(45deg, var(--color-eggplant), var(--color-pale-dogwood), var(--color-champagne));
+  } */
+  
+  /* .weather-card {
+    @apply bg-card border border-border rounded-lg p-6 shadow-sm;
+  }
+  
+  .weather-sunny {
+    background-color: var(--color-weather-sunny);
+  }
+  
+  .weather-rainy {
+    background-color: var(--color-weather-rainy);
+  } */
+  
+  /* Custom animations */
+  .animate-fade-in {
+    animation: fadeIn 0.5s ease-in-out;
+  }
+  
+  .animate-slide-up {
+    animation: slideUp 0.3s ease-out;
+  }
+  
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  
+  @keyframes slideUp {
+    from { 
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to { 
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  /* Rainbow ring animation for loading states */
+  @keyframes rainbow-spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+    /* Keyframes animation for the rotation */
+  @keyframes rotate {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
 }
