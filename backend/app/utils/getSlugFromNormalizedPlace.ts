@@ -6,6 +6,3 @@ export function getSlugFromNormalizedPlace(normalizedPlace: string): string {
     .replace(/-+/g, '-') // Replace multiple consecutive hyphens with a single hyphen
     .replace(/^-|-$/g, '') // Remove leading and trailing hyphens
 }
-
-// Legacy export for backward compatibility
-export const getSlugFromNormalizedLocation = getSlugFromNormalizedPlace

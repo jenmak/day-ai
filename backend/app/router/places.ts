@@ -39,11 +39,11 @@ export const places = router({
         console.log(`LLM generated slug: "${llmResult.slug}"`)
 
         // 1b. Check if location already exists, and return it if so.
-        const existingPlace = ctx.cradle.locations.getByNormalizedPlace(llmResult.normalizedPlace)
+        const existingPlace = ctx.cradle.places.getByNormalizedPlace(llmResult.normalizedPlace)
 
         if (existingPlace) {
-          const updatedLocation = ctx.cradle.locations.update(existingPlace.id, { description: input.description })
-          return ctx.cradle.locations.toModel(updatedLocation)
+          const updatedPlace = ctx.cradle.places.update(existingPlace.id, { description: input.description })
+          return ctx.cradle.places.toModel(updatedPlace)
         }
 
         // 2. Geocode the location with the OpenCage API
@@ -65,10 +65,10 @@ export const places = router({
           geocodedAddress,
           weather: weatherData
         }
-        const place = ctx.cradle.locations.createPlace(placeData)
+        const place = ctx.cradle.places.createPlace(placeData)
 
         console.log("Place created:", place)
-        const model = ctx.cradle.locations.toModel(place)
+        const model = ctx.cradle.places.toModel(place)
         return model
 
       } catch (error) {
@@ -95,7 +95,7 @@ export const places = router({
   update: procedure
     .input(UpdatePlaceSchema)
     .mutation(async ({ ctx, input }) => {
-      return ctx.cradle.locations.update(input.id, { description: input.description })
+      return ctx.cradle.places.update(input.id, { description: input.description })
     }),
 
   /**
@@ -104,7 +104,7 @@ export const places = router({
    */
   getBySlug: procedure.input(z.object({ slug: z.string() }))
     .query(async ({ ctx, input }) => {
-      const place = ctx.cradle.locations.getBySlug(input.slug)
+      const place = ctx.cradle.places.getBySlug(input.slug)
 
       if (!place) {
         throw new TRPCError({
@@ -113,7 +113,7 @@ export const places = router({
         })
       }
 
-      return ctx.cradle.locations.toModel(place)
+      return ctx.cradle.places.toModel(place)
     }),
 
   /**
@@ -122,7 +122,7 @@ export const places = router({
   getWeatherForecast: procedure
     .input(z.object({ slug: z.string() }))
     .query(async ({ ctx, input }) => {
-      const place = ctx.cradle.locations.getBySlug(input.slug)
+      const place = ctx.cradle.places.getBySlug(input.slug)
 
       if (!place) {
         throw new TRPCError({
@@ -153,7 +153,7 @@ export const places = router({
   getCurrentWeather: procedure
     .input(z.object({ slug: z.string() }))
     .query(async ({ ctx, input }) => {
-      const place = ctx.cradle.locations.getBySlug(input.slug)
+      const place = ctx.cradle.places.getBySlug(input.slug)
 
       if (!place) {
         throw new TRPCError({
@@ -187,7 +187,7 @@ export const places = router({
       date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Date must be in YYYY-MM-DD format")
     }))
     .query(async ({ ctx, input }) => {
-      const place = ctx.cradle.locations.getBySlug(input.slug)
+      const place = ctx.cradle.places.getBySlug(input.slug)
 
       if (!place) {
         throw new TRPCError({
@@ -235,7 +235,7 @@ export const places = router({
       endDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "End date must be in YYYY-MM-DD format")
     }))
     .query(async ({ ctx, input }) => {
-      const place = ctx.cradle.locations.getBySlug(input.slug)
+      const place = ctx.cradle.places.getBySlug(input.slug)
 
       if (!place) {
         throw new TRPCError({

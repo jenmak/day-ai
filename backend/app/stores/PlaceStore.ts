@@ -9,7 +9,7 @@ export class PlaceStore extends Store<PlaceStoreItem> {
   }
 
   /**
-   * Generate a URL-friendly slug from a location string
+   * Generate a URL-friendly slug from a normalized place string
    */
   static generateSlug(text: string): string {
     return text
@@ -26,7 +26,7 @@ export class PlaceStore extends Store<PlaceStoreItem> {
     return {
       ...model,
       description: item.description,
-      normalizedLocation: item.normalizedLocation,
+      normalizedPlace: item.normalizedPlace,
       slug: item.slug,
       geocodedAddress: item.geocodedAddress,
       weather: item.weather,
@@ -43,8 +43,8 @@ export class PlaceStore extends Store<PlaceStoreItem> {
     return this.getAll().find(item => item.slug === slug)
   }
 
-  getByNormalizedLocation(normalizedLocation: string): PlaceStoreItem | undefined {
-    return this.getAll().find(item => item.normalizedLocation === normalizedLocation)
+  getByNormalizedPlace(normalizedPlace: string): PlaceStoreItem | undefined {
+    return this.getAll().find(item => item.normalizedPlace === normalizedPlace)
   }
 
   /**
@@ -68,7 +68,7 @@ export class PlaceStore extends Store<PlaceStoreItem> {
    */
   createPlace(data: {
     description: string
-    normalizedLocation: string
+    normalizedPlace: string
     slug: string
     geocodedAddress: {
       latitude: number
@@ -87,7 +87,7 @@ export class PlaceStore extends Store<PlaceStoreItem> {
   }): PlaceStoreItem {
     const placeData: Omit<PlaceStoreItem, "id" | "createdAt"> = {
       description: data.description,
-      normalizedLocation: data.normalizedLocation,
+      normalizedPlace: data.normalizedPlace,
       slug: data.slug,
       geocodedAddress: data.geocodedAddress,
       weather: data.weather
@@ -109,10 +109,5 @@ export class PlaceStore extends Store<PlaceStoreItem> {
     const updatedItem = this.get(id)!
     
     return updatedItem
-  }
-
-  // Legacy methods for backward compatibility during transition
-  createLocation(data: Parameters<typeof this.createPlace>[0]) {
-    return this.createPlace(data)
   }
 }

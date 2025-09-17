@@ -1,53 +1,8 @@
 import { z } from "zod"
-import { type Weather } from "../schemas/weather"
+import { OpenMeteoResponseSchema, type Weather } from "../schemas/weather"
 import { WeatherConditionEnum } from "../schemas/weatherConditions"
 import { DateService } from "./dateService"
-
-// Open-Meteo API Response Schema
-const OpenMeteoDailySchema = z.object({
-  time: z.array(z.string()),
-  temperature_2m_max: z.array(z.number()),
-  temperature_2m_min: z.array(z.number()),
-  precipitation_probability_max: z.array(z.number()),
-  windspeed_10m_max: z.array(z.number()),
-  weathercode: z.array(z.number())
-})
-
-const OpenMeteoResponseSchema = z.object({
-  daily: OpenMeteoDailySchema
-})
-
-// Weather code mapping from Open-Meteo to our conditions
-const WEATHER_CODE_MAPPING: Record<number, keyof typeof WeatherConditionEnum> = {
-  0: "SUNNY",           // Clear sky
-  1: "SUNNY",           // Mainly clear
-  2: "PARTLY_CLOUDY",   // Partly cloudy
-  3: "CLOUDY",          // Overcast
-  45: "FOGGY",          // Fog
-  48: "FOGGY",          // Depositing rime fog
-  51: "LIGHT_SHOWERS",  // Light drizzle
-  53: "LIGHT_SHOWERS",  // Moderate drizzle
-  55: "LIGHT_SHOWERS",  // Dense drizzle
-  56: "LIGHT_SHOWERS",  // Light freezing drizzle
-  57: "LIGHT_SHOWERS",  // Dense freezing drizzle
-  61: "RAINY",          // Slight rain
-  63: "RAINY",          // Moderate rain
-  65: "RAINY",          // Heavy rain
-  66: "RAINY",          // Light freezing rain
-  67: "RAINY",          // Heavy freezing rain
-  71: "SNOWY",          // Slight snow fall
-  73: "SNOWY",          // Moderate snow fall
-  75: "SNOWY",          // Heavy snow fall
-  77: "SNOWY",          // Snow grains
-  80: "LIGHT_SHOWERS",  // Slight rain showers
-  81: "LIGHT_SHOWERS",  // Moderate rain showers
-  82: "RAINY",          // Violent rain showers
-  85: "SNOWY",          // Slight snow showers
-  86: "SNOWY",          // Heavy snow showers
-  95: "STORMY",         // Thunderstorm
-  96: "STORMY",         // Thunderstorm with slight hail
-  99: "STORMY"          // Thunderstorm with heavy hail
-}
+import { WEATHER_CODE_MAPPING } from "../consts/WeatherConsts"
 
 export interface WeatherServiceOptions {
   latitude: number
@@ -103,7 +58,6 @@ export class WeatherService {
         const maxTemp = validatedData.daily.temperature_2m_max[i]
         const minTemp = validatedData.daily.temperature_2m_min[i]
         const avgTemp = (maxTemp + minTemp) / 2
-        const celsius = this.fahrenheitToCelsius(avgTemp)
         const rainProbability = validatedData.daily.precipitation_probability_max[i]
         const windSpeed = validatedData.daily.windspeed_10m_max[i]
         const weatherCode = validatedData.daily.weathercode[i]
@@ -111,7 +65,6 @@ export class WeatherService {
         const weather: Weather = {
           date: date.toISOString(),
           degreesFahrenheit: Math.round(avgTemp),
-          degreesCelsius: Math.round(celsius),
           temperatureRange: {
             temperatureMinimum: Math.round(minTemp),
             temperatureMaximum: Math.round(maxTemp)
@@ -143,16 +96,9 @@ export class WeatherService {
   }
   
   /**
-   * Convert Fahrenheit to Celsius
-   */
-  private static fahrenheitToCelsius(fahrenheit: number): number {
-    return (fahrenheit - 32) * 5 / 9
-  }
-  
-  /**
    * Map Open-Meteo weather code to our weather condition enum
    */
   private static mapWeatherCode(code: number): keyof typeof WeatherConditionEnum {
-    return WEATHER_CODE_MAPPING[code] || "CLOUDY"
+    return WEATHER_CODE_MAPPING[code] || "SUNNY"
   }
 }

@@ -1,7 +1,6 @@
 import type { WeatherCondition } from "../schemas/weatherConditions"
 import { 
   getClothingRecommendations, 
-  // getTikTokShopClothingQuery,
   type ClothingCategory 
 } from "../rules/clothingRules"
 
@@ -17,20 +16,6 @@ export class ClothingService {
   ): ClothingCategory[] {
     return getClothingRecommendations(temperature, condition, rainProbability, windSpeed)
   }
-
-  /**
-   * Phase II:
-   * Get TikTok Shop search queries for clothing recommendations
-   */
-  // static getTikTokShopQueries(
-  //   temperature: number,
-  //   condition: WeatherCondition,
-  //   rainProbability: number,
-  //   windSpeed: number
-  // ): string[] {
-  //   return getTikTokShopClothingQuery(temperature, condition, rainProbability, windSpeed)
-  // }
-
   /**
    * Get clothing recommendations for a specific date
    */
@@ -43,7 +28,6 @@ export class ClothingService {
     }
   ): {
     categories: ClothingCategory[]
-    // searchQueries: string[]
   } {
     const categories = this.getRecommendations(
       weatherData.temperature,
@@ -52,16 +36,8 @@ export class ClothingService {
       weatherData.windSpeed
     )
 
-    // const searchQueries = this.getTikTokShopQueries(
-    //   weatherData.temperature,
-    //   weatherData.condition,
-    //   weatherData.rainProbability,
-    //   weatherData.windSpeed
-    // )
-
     return {
       categories,
-      // searchQueries
     }
   }
 

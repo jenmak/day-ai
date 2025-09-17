@@ -12,7 +12,7 @@ const initialState = {
     id: "",
     description: "",
     slug: "",
-    normalizedLocation: "",
+    normalizedPlace: "",
     geocodedAddress: {
       latitude: 0,
       longitude: 0,
@@ -34,16 +34,6 @@ export const usePlaceStore = create<PlaceState>()(
     (set) => ({
       ...initialState,
       setPlace: (place: PlaceType) => set({ place }),
-    })
-  )
-)
-
-// Legacy exports for backward compatibility
-export const useLocationStore = create<{ location: PlaceType; setLocation: (location: PlaceType) => void }>()(
-  devtools(
-    (set) => ({
-      location: initialState.place,
-      setLocation: (location: PlaceType) => set({ location }),
     })
   )
 )

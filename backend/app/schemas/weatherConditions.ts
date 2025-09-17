@@ -1,18 +1,8 @@
+import { WeatherConditionEnum } from "../consts/WeatherConsts"
 import { z } from "zod"
 
-// Weather Condition Enum
-export const WeatherConditionEnum = {
-  PARTLY_SUNNY: "PartlySunny",
-  SUNNY: "Sunny",
-  PARTLY_CLOUDY: "PartlyCloudy",
-  CLOUDY: "Cloudy",
-  RAINY: "Rainy",
-  LIGHT_SHOWERS: "LightShowers",
-  SNOWY: "Snowy",
-  STORMY: "Stormy",
-  FOGGY: "Foggy",
-  WINDY: "Windy"
-} as const
+// Re-export the enum for backward compatibility
+export { WeatherConditionEnum }
 
 export const WeatherConditionZodEnum = z.nativeEnum(WeatherConditionEnum)
 

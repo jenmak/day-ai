@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query"
 import { Place as PlaceType } from "@dayai/backend/schemas"
-import { useLocationStore } from "../stores/placeStore"
+import { usePlaceStore } from "../stores/placeStore"
 import { useEffect } from "react"
 
 interface usePlaceBySlugOptions {
@@ -9,68 +9,56 @@ interface usePlaceBySlugOptions {
   onError?: (error: any) => void
 }
 
-// const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3333"
+const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3333"
 
 export const usePlaceBySlug = (options?: usePlaceBySlugOptions) => {
-  const { slug, onSuccess, onError } = options || { slug: ''}
-  const { setLocation } = useLocationStore()
+  const { slug, onSuccess, onError } = options || { slug: '' }
+  const { setPlace } = usePlaceStore()
 
   const query = useQuery({
     queryKey: ["place", "slug", slug],
     queryFn: async (): Promise<PlaceType> => {
-      // For now, return a mock place until the backend is properly connected
-      const mockPlace: PlaceType = {
-        id: `mock-${slug}`,
-        description: slug.replace(/-/g, ' '),
-        slug: slug,
-        normalizedLocation: slug.replace(/-/g, ' '),
-        geocodedAddress: {
-          latitude: 40.7128,
-          longitude: -74.0060,
-          formattedAddress: "New York, NY 10001, US",
-          structuredAddress: {
-            city: "New York",
-            state: "NY", 
-            postalCode: "10001",
-            country: "US"
-          }
-        },
-        weather: [
-          {
-            condition: "Sunny",
-            degreesFahrenheit: 72,
-            degreesCelsius: 22,
-            temperatureRange: {
-              temperatureMinimum: 65,
-              temperatureMaximum: 78
-            },
-            rainProbabilityPercentage: 10,
-            windSpeedMph: 8,
-            clothing: ["T-shirt", "Shorts", "Sunglasses"]
-          }
-        ],
-        createdAt: new Date().toISOString()
+      if (!slug) {
+        throw new Error("Slug is required")
       }
-      return mockPlace
+      
+      try {
+        const response = await fetch(`${API_BASE_URL}/trpc/places.getBySlug?input=${encodeURIComponent(JSON.stringify({ json: { slug } }))}`)
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`)
+        }
+        
+        const data = await response.json()
+        return data.result.data.json
+      } catch (error) {
+        console.error("Error fetching place by slug:", error)
+        throw error
+      }
     },
+    enabled: !!slug, // Only run query if slug is provided
   })
 
   useEffect(() => {
     if (query.data) {
-      setLocation(query.data)
+      setPlace(query.data)
       onSuccess?.(query.data)
-    } else {
+    }
+  }, [query.data, setPlace, onSuccess])
+
+  useEffect(() => {
+    if (query.error) {
       onError?.(query.error)
     }
-  }, [query.data])
+  }, [query.error, onError])
 
   return {
     data: query.data,
     isLoading: query.isLoading,
+    isPending: query.isPending,
     error: query.error,
-    refetch: query.refetch
+    refetch: query.refetch,
+    isError: query.isError,
+    isSuccess: query.isSuccess,
   }
 }
-
-// Legacy export for backward compatibility
-export const useLocationBySlug = usePlaceBySlug

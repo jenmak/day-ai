@@ -23,9 +23,9 @@ export async function testLLMService() {
 
   for (const testCase of testCases) {
     try {
-      const result = await LLMService.normalizeLocation(testCase)
+      const result = await LLMService.normalizePlace(testCase)
       console.log(`Input: "${testCase}"`)
-      console.log(`Output: "${result.normalizedLocation}"`)
+      console.log(`Output: "${result.normalizedPlace}"`)
       console.log(`Confidence: ${(result.confidence * 100).toFixed(1)}%`)
       console.log(`Reasoning: ${result.reasoning}`)
       console.log("---")
@@ -36,7 +36,7 @@ export async function testLLMService() {
   }
 }
 
-// Test a single location description with the real OpenAI API
+// Test a single place description with the real OpenAI API
 async function testSingleLocation() {
   console.log("=== Single LLM Service Test ===\n")
   
@@ -44,9 +44,9 @@ async function testSingleLocation() {
   
   try {
     console.log(`Testing: "${testCase}"`)
-    const result = await LLMService.normalizeLocation(testCase)
+    const result = await LLMService.normalizePlace(testCase)
     console.log(`✅ Result:`)
-    console.log(`   Normalized: "${result.normalizedLocation}"`)
+    console.log(`   Normalized: "${result.normalizedPlace}"`)
     console.log(`   Confidence: ${(result.confidence * 100).toFixed(1)}%`)
     console.log(`   Reasoning: ${result.reasoning}`)
   } catch (error) {

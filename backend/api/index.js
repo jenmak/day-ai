@@ -6,14 +6,13 @@ import { config as config2 } from "dotenv";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
 
-// app/schemas/location.ts
+// app/schemas/place.ts
 import { z as z3 } from "zod";
 
 // app/schemas/weather.ts
 import { z as z2 } from "zod";
 
-// app/schemas/weatherConditions.ts
-import { z } from "zod";
+// app/consts/WeatherConsts.ts
 var WeatherConditionEnum = {
   PARTLY_SUNNY: "PartlySunny",
   SUNNY: "Sunny",
@@ -26,6 +25,67 @@ var WeatherConditionEnum = {
   FOGGY: "Foggy",
   WINDY: "Windy"
 };
+var WEATHER_CODE_MAPPING = {
+  0: "SUNNY",
+  // Clear sky
+  1: "SUNNY",
+  // Mainly clear
+  2: "PARTLY_CLOUDY",
+  // Partly cloudy
+  3: "CLOUDY",
+  // Overcast
+  45: "FOGGY",
+  // Fog
+  48: "FOGGY",
+  // Depositing rime fog
+  51: "LIGHT_SHOWERS",
+  // Light drizzle
+  53: "LIGHT_SHOWERS",
+  // Moderate drizzle
+  55: "LIGHT_SHOWERS",
+  // Dense drizzle
+  56: "LIGHT_SHOWERS",
+  // Light freezing drizzle
+  57: "LIGHT_SHOWERS",
+  // Dense freezing drizzle
+  61: "RAINY",
+  // Slight rain
+  63: "RAINY",
+  // Moderate rain
+  65: "RAINY",
+  // Heavy rain
+  66: "RAINY",
+  // Light freezing rain
+  67: "RAINY",
+  // Heavy freezing rain
+  71: "SNOWY",
+  // Slight snow fall
+  73: "SNOWY",
+  // Moderate snow fall
+  75: "SNOWY",
+  // Heavy snow fall
+  77: "SNOWY",
+  // Snow grains
+  80: "LIGHT_SHOWERS",
+  // Slight rain showers
+  81: "LIGHT_SHOWERS",
+  // Moderate rain showers
+  82: "RAINY",
+  // Violent rain showers
+  85: "SNOWY",
+  // Slight snow showers
+  86: "SNOWY",
+  // Heavy snow showers
+  95: "STORMY",
+  // Thunderstorm
+  96: "STORMY",
+  // Thunderstorm with slight hail
+  99: "STORMY"
+  // Thunderstorm with heavy hail
+};
+
+// app/schemas/weatherConditions.ts
+import { z } from "zod";
 var WeatherConditionZodEnum = z.nativeEnum(WeatherConditionEnum);
 
 // app/rules/clothingRules.ts
@@ -318,6 +378,17 @@ function getClothingRecommendations(temperature, condition, rainProbability, win
 __name(getClothingRecommendations, "getClothingRecommendations");
 
 // app/schemas/weather.ts
+var OpenMeteoDailySchema = z2.object({
+  time: z2.array(z2.string()),
+  temperature_2m_max: z2.array(z2.number()),
+  temperature_2m_min: z2.array(z2.number()),
+  precipitation_probability_max: z2.array(z2.number()),
+  windspeed_10m_max: z2.array(z2.number()),
+  weathercode: z2.array(z2.number())
+});
+var OpenMeteoResponseSchema = z2.object({
+  daily: OpenMeteoDailySchema
+});
 var TemperatureRangeSchema = z2.object({
   temperatureMinimum: z2.number(),
   temperatureMaximum: z2.number()
@@ -325,14 +396,11 @@ var TemperatureRangeSchema = z2.object({
 var WeatherSchema = z2.object({
   date: z2.string(),
   degreesFahrenheit: z2.number(),
-  degreesCelsius: z2.number(),
   temperatureRange: TemperatureRangeSchema,
   rainProbabilityPercentage: z2.number().min(0).max(100),
   windSpeedMph: z2.number(),
   condition: WeatherConditionZodEnum,
   clothing: z2.array(z2.nativeEnum(ClothingCategoryEnum))
-  // Phase II: Add ClothingSchema
-  // clothing: z.array(ClothingSchema)
 });
 
 // app/schemas/place.ts
@@ -353,7 +421,7 @@ var GeocodedAddressSchema = z3.object({
 var PlaceSchema = z3.object({
   id: z3.string(),
   description: z3.string().optional(),
-  normalizedPlace: z3.string(),
+  normalizedLocation: z3.string(),
   slug: z3.string(),
   geocodedAddress: GeocodedAddressSchema,
   weather: z3.array(WeatherSchema).optional(),
@@ -379,18 +447,6 @@ var ClothingService = class {
     return getClothingRecommendations(temperature, condition, rainProbability, windSpeed);
   }
   /**
-   * Phase II:
-   * Get TikTok Shop search queries for clothing recommendations
-   */
-  // static getTikTokShopQueries(
-  //   temperature: number,
-  //   condition: WeatherCondition,
-  //   rainProbability: number,
-  //   windSpeed: number
-  // ): string[] {
-  //   return getTikTokShopClothingQuery(temperature, condition, rainProbability, windSpeed)
-  // }
-  /**
    * Get clothing recommendations for a specific date
    */
   static getRecommendationsForDate(weatherData) {
@@ -402,7 +458,6 @@ var ClothingService = class {
     );
     return {
       categories
-      // searchQueries
     };
   }
   /**
@@ -474,14 +529,47 @@ var ClothingService = class {
   }
 };
 
+// app/consts/CityCoordinates.ts
+var CITY_COORDINATES = {
+  "new york": { lat: 40.7128, lng: -74.006 },
+  "los angeles": { lat: 34.0522, lng: -118.2437 },
+  "chicago": { lat: 41.8781, lng: -87.6298 },
+  "houston": { lat: 29.7604, lng: -95.3698 },
+  "phoenix": { lat: 33.4484, lng: -112.074 },
+  "philadelphia": { lat: 39.9526, lng: -75.1652 },
+  "san antonio": { lat: 29.4241, lng: -98.4936 },
+  "san diego": { lat: 32.7157, lng: -117.1611 },
+  "dallas": { lat: 32.7767, lng: -96.797 },
+  "san jose": { lat: 37.3382, lng: -121.8863 },
+  "austin": { lat: 30.2672, lng: -97.7431 },
+  "jacksonville": { lat: 30.3322, lng: -81.6557 },
+  "fort worth": { lat: 32.7555, lng: -97.3308 },
+  "columbus": { lat: 39.9612, lng: -82.9988 },
+  "charlotte": { lat: 35.2271, lng: -80.8431 },
+  "seattle": { lat: 47.6062, lng: -122.3321 },
+  "denver": { lat: 39.7392, lng: -104.9903 },
+  "washington": { lat: 38.9072, lng: -77.0369 },
+  "boston": { lat: 42.3601, lng: -71.0589 },
+  "detroit": { lat: 42.3314, lng: -83.0458 },
+  "nashville": { lat: 36.1627, lng: -86.7816 },
+  "portland": { lat: 45.5152, lng: -122.6784 },
+  "las vegas": { lat: 36.1699, lng: -115.1398 },
+  "baltimore": { lat: 39.2904, lng: -76.6122 },
+  "milwaukee": { lat: 43.0389, lng: -87.9065 },
+  "albuquerque": { lat: 35.0844, lng: -106.6504 },
+  "tucson": { lat: 32.2226, lng: -110.9747 },
+  "fresno": { lat: 36.7378, lng: -119.7871 },
+  "mesa": { lat: 33.4152, lng: -111.8315 }
+};
+
 // app/services/geolocationService.ts
 var GeolocationService = class {
   static {
     __name(this, "GeolocationService");
   }
   /**
-   * Geocode a location description using OpenCage API
-   * Converts location descriptions to structured address data with coordinates
+   * Geocode a place description using OpenCage API
+   * Converts place descriptions to structured address data with coordinates
    */
   static async geocodePlace(description) {
     try {
@@ -492,7 +580,7 @@ var GeolocationService = class {
       const opencageResponse = await this.callOpenCageAPI(description);
       return this.parseOpenCageResponse(opencageResponse, description);
     } catch (error) {
-      console.error("Error geocoding location:", error);
+      console.error("Error geocoding place:", error);
       console.warn("OpenCage API failed, falling back to mock implementation");
       try {
         return this.getMockGeocoding(description);
@@ -515,42 +603,11 @@ var GeolocationService = class {
     };
   }
   /**
-   * Get mock coordinates for common locations
+   * Get mock coordinates for common places
    */
   static getMockCoordinates(description) {
     const place = description.toLowerCase();
-    const cityCoordinates = {
-      "new york": { lat: 40.7128, lng: -74.006 },
-      "los angeles": { lat: 34.0522, lng: -118.2437 },
-      "chicago": { lat: 41.8781, lng: -87.6298 },
-      "houston": { lat: 29.7604, lng: -95.3698 },
-      "phoenix": { lat: 33.4484, lng: -112.074 },
-      "philadelphia": { lat: 39.9526, lng: -75.1652 },
-      "san antonio": { lat: 29.4241, lng: -98.4936 },
-      "san diego": { lat: 32.7157, lng: -117.1611 },
-      "dallas": { lat: 32.7767, lng: -96.797 },
-      "san jose": { lat: 37.3382, lng: -121.8863 },
-      "austin": { lat: 30.2672, lng: -97.7431 },
-      "jacksonville": { lat: 30.3322, lng: -81.6557 },
-      "fort worth": { lat: 32.7555, lng: -97.3308 },
-      "columbus": { lat: 39.9612, lng: -82.9988 },
-      "charlotte": { lat: 35.2271, lng: -80.8431 },
-      "seattle": { lat: 47.6062, lng: -122.3321 },
-      "denver": { lat: 39.7392, lng: -104.9903 },
-      "washington": { lat: 38.9072, lng: -77.0369 },
-      "boston": { lat: 42.3601, lng: -71.0589 },
-      "detroit": { lat: 42.3314, lng: -83.0458 },
-      "nashville": { lat: 36.1627, lng: -86.7816 },
-      "portland": { lat: 45.5152, lng: -122.6784 },
-      "las vegas": { lat: 36.1699, lng: -115.1398 },
-      "baltimore": { lat: 39.2904, lng: -76.6122 },
-      "milwaukee": { lat: 43.0389, lng: -87.9065 },
-      "albuquerque": { lat: 35.0844, lng: -106.6504 },
-      "tucson": { lat: 32.2226, lng: -110.9747 },
-      "fresno": { lat: 36.7378, lng: -119.7871 },
-      "mesa": { lat: 33.4152, lng: -111.8315 }
-    };
-    for (const [city, coords] of Object.entries(cityCoordinates)) {
+    for (const [city, coords] of Object.entries(CITY_COORDINATES)) {
       if (place.includes(city)) {
         return coords;
       }
@@ -558,7 +615,7 @@ var GeolocationService = class {
     return { lat: 40.7128, lng: -74.006 };
   }
   /**
-   * Parse structured address from location description
+   * Parse structured address from place description
    */
   static parseStructuredAddress(description) {
     const parts = description.split(",").map((part) => part.trim());
@@ -588,13 +645,13 @@ var GeolocationService = class {
       return data;
     } catch (error) {
       console.error("OpenCage API error:", error);
-      throw new Error("Failed to geocode location with OpenCage API");
+      throw new Error("Failed to geocode place with OpenCage API");
     }
   }
   /**
    * Parse OpenCage API response into our GeocodedAddress format
    */
-  static parseOpenCageResponse(response, _originalPlace) {
+  static parseOpenCageResponse(response, _originalDescription) {
     if (!response.results || response.results.length === 0) {
       throw new Error("No geocoding results found");
     }
@@ -741,8 +798,27 @@ var MOCK_MAPPINGS = {
   }
 };
 
+// app/prompts/descriptionToNormalizedPlacePrompt.ts
+var DESCRIPTION_TO_NORMALIZED_PLACE_PROMPT = /* @__PURE__ */ __name((description) => `Convert this place description to a normalized format with city and state/country.
+
+Place description: "${description}"
+
+Please respond with a JSON object containing:
+- normalizedPlace: The standardized place (e.g., "New York, NY" or "London, UK")
+- slug: A URL-friendly slug (e.g., "new-york-ny" or "london-uk")
+- confidence: A number between 0 and 1 indicating your confidence
+- reasoning: Brief explanation of your choice
+
+Examples:
+- "Gotham City" \u2192 {"normalizedPlace": "New York, NY", "slug": "new-york-ny", "confidence": 0.95, "reasoning": "Gotham City is commonly associated with New York City"}
+- "The Big Apple" \u2192 {"normalizedPlace": "New York, NY", "slug": "new-york-ny", "confidence": 0.98, "reasoning": "The Big Apple is a well-known nickname for New York City"}
+- "Home of Harvard" \u2192 {"normalizedPlace": "Cambridge, MA", "slug": "cambridge-ma", "confidence": 0.95, "reasoning": "Harvard University is located in Cambridge, Massachusetts"}
+- "Springfield" \u2192 {"normalizedPlace": "Springfield, IL", "slug": "springfield-il", "confidence": 0.85, "reasoning": "Springfield could refer to multiple cities, defaulting to Illinois state capital"}
+
+Respond only with valid JSON:`, "DESCRIPTION_TO_NORMALIZED_PLACE_PROMPT");
+
 // app/services/llmService.ts
-var LocationNormalizationSchema = z4.object({
+var PlaceNormalizationSchema = z4.object({
   slug: z4.string(),
   normalizedPlace: z4.string(),
   confidence: z4.number().min(0).max(1),
@@ -761,15 +837,14 @@ var LLMService = class {
       if (!OPENAI_API_KEY) {
         console.warn("OpenAI API key not found, falling back to mock implementation");
         const mockResponse = this.getMockNormalization(description);
-        return LocationNormalizationSchema.parse(mockResponse);
+        return PlaceNormalizationSchema.parse(mockResponse);
       }
       const openaiResponse = await this.convertDescriptionToNormalizedPlace(description);
-      return LocationNormalizationSchema.parse(openaiResponse);
+      return PlaceNormalizationSchema.parse(openaiResponse);
     } catch (error) {
-      throw new Error("Failed to normalize location from description: " + error);
+      throw new Error("Failed to normalize place from description: " + error);
     }
   }
-
   /**
    * Mock implementation for fallback when OpenAI API is unavailable
    * Used when API key is missing or API calls fail
@@ -815,109 +890,157 @@ var LLMService = class {
         throw new Error("No response from OpenAI");
       }
       const parsed = JSON.parse(response);
-      return LocationNormalizationSchema.parse(parsed);
+      return PlaceNormalizationSchema.parse(parsed);
     } catch (error) {
       console.error("OpenAI API error:", error);
       throw new Error("Failed to normalize place with OpenAI");
     }
   }
   /**
-   * Production method for calling OpenAI API for description to normalized location.
+   * Production method for calling OpenAI API for description to normalized place.
    * Converts descriptions like "Gotham City" to "New York, NY".
    */
   static async convertDescriptionToNormalizedPlace(description) {
-    const prompt = `Convert this location description to a normalized format with city and state/country.
-
-Place description: "${description}"
-
-Please respond with a JSON object containing:
-- normalizedPlace: The standardized place (e.g., "New York, NY" or "London, UK")
-- slug: A URL-friendly slug (e.g., "new-york-ny" or "london-uk")
-- confidence: A number between 0 and 1 indicating your confidence
-- reasoning: Brief explanation of your choice
-
-Examples:
-- "Gotham City" \u2192 {"normalizedPlace": "New York, NY", "slug": "new-york-ny", "confidence": 0.95, "reasoning": "Gotham City is commonly associated with New York City"}
-- "The Big Apple" \u2192 {"normalizedPlace": "New York, NY", "slug": "new-york-ny", "confidence": 0.98, "reasoning": "The Big Apple is a well-known nickname for New York City"}
-- "Home of Harvard" \u2192 {"normalizedPlace": "Cambridge, MA", "slug": "cambridge-ma", "confidence": 0.95, "reasoning": "Harvard University is located in Cambridge, Massachusetts"}
-- "Springfield" \u2192 {"normalizedPlace": "Springfield, IL", "slug": "springfield-il", "confidence": 0.85, "reasoning": "Springfield could refer to multiple cities, defaulting to Illinois state capital"}
-
-Respond only with valid JSON:`;
+    const prompt = DESCRIPTION_TO_NORMALIZED_PLACE_PROMPT(description);
     return this.createOpenAICompletion(prompt);
   }
 };
 
-// app/services/weatherService.ts
-import { z as z5 } from "zod";
-var OpenMeteoDailySchema = z5.object({
-  time: z5.array(z5.string()),
-  temperature_2m_max: z5.array(z5.number()),
-  temperature_2m_min: z5.array(z5.number()),
-  precipitation_probability_max: z5.array(z5.number()),
-  windspeed_10m_max: z5.array(z5.number()),
-  weathercode: z5.array(z5.number())
-});
-var OpenMeteoResponseSchema = z5.object({
-  daily: OpenMeteoDailySchema
-});
-var WEATHER_CODE_MAPPING = {
-  0: "SUNNY",
-  // Clear sky
-  1: "SUNNY",
-  // Mainly clear
-  2: "PARTLY_CLOUDY",
-  // Partly cloudy
-  3: "CLOUDY",
-  // Overcast
-  45: "FOGGY",
-  // Fog
-  48: "FOGGY",
-  // Depositing rime fog
-  51: "LIGHT_SHOWERS",
-  // Light drizzle
-  53: "LIGHT_SHOWERS",
-  // Moderate drizzle
-  55: "LIGHT_SHOWERS",
-  // Dense drizzle
-  56: "LIGHT_SHOWERS",
-  // Light freezing drizzle
-  57: "LIGHT_SHOWERS",
-  // Dense freezing drizzle
-  61: "RAINY",
-  // Slight rain
-  63: "RAINY",
-  // Moderate rain
-  65: "RAINY",
-  // Heavy rain
-  66: "RAINY",
-  // Light freezing rain
-  67: "RAINY",
-  // Heavy freezing rain
-  71: "SNOWY",
-  // Slight snow fall
-  73: "SNOWY",
-  // Moderate snow fall
-  75: "SNOWY",
-  // Heavy snow fall
-  77: "SNOWY",
-  // Snow grains
-  80: "LIGHT_SHOWERS",
-  // Slight rain showers
-  81: "LIGHT_SHOWERS",
-  // Moderate rain showers
-  82: "RAINY",
-  // Violent rain showers
-  85: "SNOWY",
-  // Slight snow showers
-  86: "SNOWY",
-  // Heavy snow showers
-  95: "STORMY",
-  // Thunderstorm
-  96: "STORMY",
-  // Thunderstorm with slight hail
-  99: "STORMY"
-  // Thunderstorm with heavy hail
+// app/services/dateService.ts
+var DateService = class {
+  static {
+    __name(this, "DateService");
+  }
+  /**
+   * Format a date to YYYY-MM-DD string format
+   */
+  static formatDate(date) {
+    return date.toISOString().split("T")[0];
+  }
+  /**
+   * Parse a YYYY-MM-DD string to a Date object
+   */
+  static parseDate(dateString) {
+    const date = /* @__PURE__ */ new Date(dateString + "T00:00:00.000Z");
+    if (isNaN(date.getTime())) {
+      throw new Error(`Invalid date format: ${dateString}. Expected YYYY-MM-DD format.`);
+    }
+    return date;
+  }
+  /**
+   * Get today's date in YYYY-MM-DD format
+   */
+  static getToday() {
+    return this.formatDate(/* @__PURE__ */ new Date());
+  }
+  /**
+   * Get tomorrow's date in YYYY-MM-DD format
+   */
+  static getTomorrow() {
+    const tomorrow = /* @__PURE__ */ new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    return this.formatDate(tomorrow);
+  }
+  /**
+   * Get a date N days from today in YYYY-MM-DD format
+   */
+  static getDateFromToday(days) {
+    const date = /* @__PURE__ */ new Date();
+    date.setDate(date.getDate() + days);
+    return this.formatDate(date);
+  }
+  /**
+   * Get the start of the week (Monday) for a given date
+   */
+  static getStartOfWeek(date) {
+    const startOfWeek = new Date(date);
+    const day = startOfWeek.getDay();
+    const diff = startOfWeek.getDate() - day + (day === 0 ? -6 : 1);
+    startOfWeek.setDate(diff);
+    startOfWeek.setHours(0, 0, 0, 0);
+    return startOfWeek;
+  }
+  /**
+   * Get the end of the week (Sunday) for a given date
+   */
+  static getEndOfWeek(date) {
+    const endOfWeek = new Date(date);
+    const day = endOfWeek.getDay();
+    const diff = endOfWeek.getDate() - day + 7;
+    endOfWeek.setDate(diff);
+    endOfWeek.setHours(23, 59, 59, 999);
+    return endOfWeek;
+  }
+  /**
+   * Check if a date is today
+   */
+  static isToday(date) {
+    const today = /* @__PURE__ */ new Date();
+    return this.formatDate(date) === this.formatDate(today);
+  }
+  /**
+   * Check if a date is tomorrow
+   */
+  static isTomorrow(date) {
+    const tomorrow = /* @__PURE__ */ new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    return this.formatDate(date) === this.formatDate(tomorrow);
+  }
+  /**
+   * Get the number of days between two dates
+   */
+  static getDaysDifference(startDate, endDate) {
+    const timeDiff = endDate.getTime() - startDate.getTime();
+    return Math.ceil(timeDiff / (1e3 * 3600 * 24));
+  }
+  /**
+   * Validate that a date string is in YYYY-MM-DD format
+   */
+  static isValidDateFormat(dateString) {
+    const regex = /^\d{4}-\d{2}-\d{2}$/;
+    if (!regex.test(dateString)) {
+      return false;
+    }
+    const date = /* @__PURE__ */ new Date(dateString + "T00:00:00.000Z");
+    return !isNaN(date.getTime());
+  }
+  /**
+   * Get a human-readable relative date string (e.g., "Today", "Tomorrow", "In 3 days")
+   */
+  static getRelativeDateString(date) {
+    const today = /* @__PURE__ */ new Date();
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    const todayStr = this.formatDate(today);
+    const tomorrowStr = this.formatDate(tomorrow);
+    const dateStr = this.formatDate(date);
+    if (dateStr === todayStr) {
+      return "Today";
+    } else if (dateStr === tomorrowStr) {
+      return "Tomorrow";
+    } else {
+      const daysDiff = this.getDaysDifference(today, date);
+      if (daysDiff > 0) {
+        return `In ${daysDiff} day${daysDiff === 1 ? "" : "s"}`;
+      } else {
+        return `${Math.abs(daysDiff)} day${Math.abs(daysDiff) === 1 ? "" : "s"} ago`;
+      }
+    }
+  }
+  /**
+   * Get a formatted date string for display (e.g., "Monday, January 15, 2024")
+   */
+  static getFormattedDateString(date) {
+    return date.toLocaleDateString("en-US", {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric"
+    });
+  }
 };
+
+// app/services/weatherService.ts
 var WeatherService = class {
   static {
     __name(this, "WeatherService");
@@ -929,8 +1052,8 @@ var WeatherService = class {
   static async get7DayForecast(options) {
     const { latitude, longitude, startDate = /* @__PURE__ */ new Date(), endDate } = options;
     const forecastEndDate = endDate || new Date(startDate.getTime() + 6 * 24 * 60 * 60 * 1e3);
-    const startDateStr = startDate.toISOString().split("T")[0];
-    const endDateStr = forecastEndDate.toISOString().split("T")[0];
+    const startDateStr = DateService.formatDate(startDate);
+    const endDateStr = DateService.formatDate(forecastEndDate);
     try {
       const url = new URL(this.BASE_URL);
       url.searchParams.set("latitude", latitude.toString());
@@ -955,14 +1078,12 @@ var WeatherService = class {
         const maxTemp = validatedData.daily.temperature_2m_max[i];
         const minTemp = validatedData.daily.temperature_2m_min[i];
         const avgTemp = (maxTemp + minTemp) / 2;
-        const celsius = this.fahrenheitToCelsius(avgTemp);
         const rainProbability = validatedData.daily.precipitation_probability_max[i];
         const windSpeed = validatedData.daily.windspeed_10m_max[i];
         const weatherCode = validatedData.daily.weathercode[i];
         const weather = {
           date: date.toISOString(),
           degreesFahrenheit: Math.round(avgTemp),
-          degreesCelsius: Math.round(celsius),
           temperatureRange: {
             temperatureMinimum: Math.round(minTemp),
             temperatureMaximum: Math.round(maxTemp)
@@ -990,16 +1111,10 @@ var WeatherService = class {
     return forecast[0];
   }
   /**
-   * Convert Fahrenheit to Celsius
-   */
-  static fahrenheitToCelsius(fahrenheit) {
-    return (fahrenheit - 32) * 5 / 9;
-  }
-  /**
    * Map Open-Meteo weather code to our weather condition enum
    */
   static mapWeatherCode(code) {
-    return WEATHER_CODE_MAPPING[code] || "CLOUDY";
+    return WEATHER_CODE_MAPPING[code] || "SUNNY";
   }
 };
 
@@ -1106,7 +1221,7 @@ var PlaceStore = class extends Store {
     super("places");
   }
   /**
-   * Generate a URL-friendly slug from a place string
+   * Generate a URL-friendly slug from a normalized place string
    */
   static generateSlug(text) {
     return text.toLowerCase().replace(/[^a-z0-9\s-]/g, "").replace(/\s+/g, "-").replace(/-+/g, "-").replace(/^-|-$/g, "");
@@ -1146,18 +1261,18 @@ var PlaceStore = class extends Store {
     return this.getAll().map((item) => this.toModel(item));
   }
   /**
-   * Create a complete location with all required fields
+   * Create a complete place with all required fields
    * This method should be used instead of the basic add() method for places
    */
-  createLocation(data) {
-    const locationData = {
+  createPlace(data) {
+    const placeData = {
       description: data.description,
       normalizedPlace: data.normalizedPlace,
       slug: data.slug,
       geocodedAddress: data.geocodedAddress,
       weather: data.weather
     };
-    return this.add(locationData);
+    return this.add(placeData);
   }
   /**
    * Override update method to return updated item
@@ -1176,8 +1291,9 @@ var PlaceStore = class extends Store {
 // core/container.ts
 import { asValue, createContainer } from "awilix";
 var container = createContainer();
+var placeStore = new PlaceStore();
 container.register({
-  places: asValue(new PlaceStore())
+  places: asValue(placeStore)
 });
 
 // core/trpc.ts
@@ -1197,17 +1313,16 @@ var procedure = trpc.procedure;
 
 // app/router/places.ts
 import { TRPCError } from "@trpc/server";
-import { z as z6 } from "zod";
+import { z as z5 } from "zod";
 var places = router({
   // Get place by normalized place string
-  getByNormalizedPlace: procedure.input(z6.object({ normalizedPlace: z6.string() })).query(async ({ ctx, input }) => {
-    const location = ctx.cradle.places.getByNormalizedPlace(input.normalizedPlace);
-    if (!location) {
+  getByNormalizedPlace: procedure.input(z5.object({ normalizedPlace: z5.string() })).query(async ({ ctx, input }) => {
+    const place = ctx.cradle.places.getByNormalizedPlace(input.normalizedPlace);
+    if (!place) {
       return false;
     }
-    return location;
+    return place;
   }),
-
   /**
    * Creates a place object from a description.
    * If the place already exists,
@@ -1218,10 +1333,10 @@ var places = router({
       const llmResult = await LLMService.normalizePlace(input.description);
       console.log(`LLM normalized "${input.description}" to "${llmResult.normalizedPlace}" (confidence: ${llmResult.confidence})`);
       console.log(`LLM generated slug: "${llmResult.slug}"`);
-      const existingLocation = ctx.cradle.places.getByNormalizedPlace(llmResult.normalizedPlace);
-      if (existingLocation) {
-        const updatedLocation = ctx.cradle.locations.update(existingLocation.id, { description: input.description });
-        return ctx.cradle.places.toModel(updatedLocation);
+      const existingPlace = ctx.cradle.places.getByNormalizedPlace(llmResult.normalizedPlace);
+      if (existingPlace) {
+        const updatedPlace = ctx.cradle.places.update(existingPlace.id, { description: input.description });
+        return ctx.cradle.places.toModel(updatedPlace);
       }
       const geocodedAddress = await GeolocationService.geocodePlace(llmResult.normalizedPlace);
       console.log(`Geocoded "${llmResult.normalizedPlace}" to:`, geocodedAddress);
@@ -1229,14 +1344,14 @@ var places = router({
       weatherData.forEach((weather) => {
         weather.clothing = ClothingService.getRecommendations(weather.degreesFahrenheit, weather.condition, weather.rainProbabilityPercentage, weather.windSpeedMph);
       });
-      const locationData = {
+      const placeData = {
         description: input.description,
         normalizedPlace: llmResult.normalizedPlace,
         slug: llmResult.slug,
         geocodedAddress,
         weather: weatherData
       };
-      const place = ctx.cradle.places.createPlace(locationData);
+      const place = ctx.cradle.places.createPlace(placeData);
       console.log("Place created:", place);
       const model = ctx.cradle.places.toModel(place);
       return model;
@@ -1255,7 +1370,7 @@ var places = router({
     }
   }),
   /**
-   * Updates a location with a new description.
+   * Updates a place with a new description.
    */
   update: procedure.input(UpdatePlaceSchema).mutation(async ({ ctx, input }) => {
     return ctx.cradle.places.update(input.id, { description: input.description });
@@ -1264,7 +1379,7 @@ var places = router({
    * Gets a place by slug.
    * If the place does not exist, return an error.
    */
-  getBySlug: procedure.input(z6.object({ slug: z6.string() })).query(async ({ ctx, input }) => {
+  getBySlug: procedure.input(z5.object({ slug: z5.string() })).query(async ({ ctx, input }) => {
     const place = ctx.cradle.places.getBySlug(input.slug);
     if (!place) {
       throw new TRPCError({
@@ -1275,24 +1390,9 @@ var places = router({
     return ctx.cradle.places.toModel(place);
   }),
   /**
-   * Deletes a place by id.
-   * If the place does not exist, return an error.
-   */
-  delete: procedure.input(z6.object({ id: z6.string() })).mutation(async ({ ctx, input }) => {
-    const place = ctx.cradle.places.get(input.id);
-    if (!place) {
-      throw new TRPCError({
-        code: "NOT_FOUND",
-        message: `Place not found with id: "${input.id}".`
-      });
-    }
-    ctx.cradle.places.remove(input.id);
-    return { success: true, message: "Place deleted successfully" };
-  }),
-  /**
    * Get 7-day weather forecast for a place by slug
    */
-  getWeatherForecast: procedure.input(z6.object({ slug: z6.string() })).query(async ({ ctx, input }) => {
+  getWeatherForecast: procedure.input(z5.object({ slug: z5.string() })).query(async ({ ctx, input }) => {
     const place = ctx.cradle.places.getBySlug(input.slug);
     if (!place) {
       throw new TRPCError({
@@ -1317,7 +1417,7 @@ var places = router({
   /**
    * Get current day weather for a place by slug
    */
-  getCurrentWeather: procedure.input(z6.object({ slug: z6.string() })).query(async ({ ctx, input }) => {
+  getCurrentWeather: procedure.input(z5.object({ slug: z5.string() })).query(async ({ ctx, input }) => {
     const place = ctx.cradle.places.getBySlug(input.slug);
     if (!place) {
       throw new TRPCError({
@@ -1338,6 +1438,95 @@ var places = router({
         message: "Failed to fetch current weather"
       });
     }
+  }),
+  /**
+   * Get weather for a specific date for a place by slug
+   */
+  getWeatherByDate: procedure.input(z5.object({
+    slug: z5.string(),
+    date: z5.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Date must be in YYYY-MM-DD format")
+  })).query(async ({ ctx, input }) => {
+    const place = ctx.cradle.places.getBySlug(input.slug);
+    if (!place) {
+      throw new TRPCError({
+        code: "NOT_FOUND",
+        message: `Place not found with slug: "${input.slug}".`
+      });
+    }
+    try {
+      const targetDate = new Date(input.date);
+      const forecast = await WeatherService.get7DayForecast({
+        latitude: place.geocodedAddress.latitude,
+        longitude: place.geocodedAddress.longitude,
+        startDate: targetDate,
+        endDate: targetDate
+      });
+      if (forecast.length === 0) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: `Weather data not found for date: ${input.date}`
+        });
+      }
+      return forecast[0];
+    } catch (error) {
+      console.error("Error fetching weather by date:", error);
+      if (error instanceof TRPCError) {
+        throw error;
+      }
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: "Failed to fetch weather for the specified date"
+      });
+    }
+  }),
+  /**
+   * Get weather for a date range for a place by slug
+   */
+  getWeatherByDateRange: procedure.input(z5.object({
+    slug: z5.string(),
+    startDate: z5.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Start date must be in YYYY-MM-DD format"),
+    endDate: z5.string().regex(/^\d{4}-\d{2}-\d{2}$/, "End date must be in YYYY-MM-DD format")
+  })).query(async ({ ctx, input }) => {
+    const place = ctx.cradle.places.getBySlug(input.slug);
+    if (!place) {
+      throw new TRPCError({
+        code: "NOT_FOUND",
+        message: `Place not found with slug: "${input.slug}".`
+      });
+    }
+    try {
+      const startDate = new Date(input.startDate);
+      const endDate = new Date(input.endDate);
+      if (startDate > endDate) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Start date must be before or equal to end date"
+        });
+      }
+      const daysDiff = Math.ceil((endDate.getTime() - startDate.getTime()) / (1e3 * 60 * 60 * 24));
+      if (daysDiff > 6) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Date range cannot exceed 7 days"
+        });
+      }
+      const forecast = await WeatherService.get7DayForecast({
+        latitude: place.geocodedAddress.latitude,
+        longitude: place.geocodedAddress.longitude,
+        startDate,
+        endDate
+      });
+      return forecast;
+    } catch (error) {
+      console.error("Error fetching weather by date range:", error);
+      if (error instanceof TRPCError) {
+        throw error;
+      }
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: "Failed to fetch weather for the specified date range"
+      });
+    }
   })
 });
 
@@ -1352,7 +1541,11 @@ if (process.env.NODE_ENV !== "production") {
   config2();
 }
 console.log("Starting server...");
-var app = new Hono().use(cors()).get("/", (c) => {
+var app = new Hono().use(cors({
+  origin: "http://localhost:6173",
+  allowMethods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowHeaders: ["Content-Type", "Authorization"]
+})).get("/", (c) => {
   console.log("Health check endpoint hit");
   return c.text("OK");
 }).get("/test", (c) => {
@@ -1377,34 +1570,12 @@ var index_default = app;
 if (process.env.NODE_ENV !== "production") {
   const port = process.env.PORT ? parseInt(process.env.PORT) : 3333;
   const host = process.env.HOST || "0.0.0.0";
-  const http = await import("http");
-  const server = http.createServer(async (req, res) => {
-    try {
-      const response = await app.fetch(req);
-      const headers = {};
-      response.headers.forEach((value, key) => {
-        headers[key] = value;
-      });
-      res.writeHead(response.status, headers);
-      if (response.body) {
-        const reader = response.body.getReader();
-        while (true) {
-          const { done, value } = await reader.read();
-          if (done) break;
-          res.write(value);
-        }
-        res.end();
-      } else {
-        res.end();
-      }
-    } catch (error) {
-      res.writeHead(500);
-      res.end("Internal Server Error");
-    }
+  Bun.serve({
+    port,
+    hostname: host,
+    fetch: app.fetch
   });
-  server.listen(port, host, () => {
-    console.log(`Server running at http://${host}:${port}`);
-  });
+  console.log(`Server running at http://${host}:${port}`);
 }
 export {
   index_default as default

@@ -47,11 +47,3 @@ export type GeocodedAddress = z.infer<typeof GeocodedAddressSchema>
 export type Place = z.infer<typeof PlaceSchema>
 export type CreatePlace = z.infer<typeof CreatePlaceSchema>
 export type UpdatePlace = z.infer<typeof UpdatePlaceSchema>
-
-// Legacy exports for backward compatibility during transition
-export const LocationSchema = PlaceSchema
-export const CreateLocationSchema = CreatePlaceSchema
-export const UpdateLocationSchema = UpdatePlaceSchema
-export type Location = Place
-export type CreateLocation = CreatePlace
-export type UpdateLocation = UpdatePlace
