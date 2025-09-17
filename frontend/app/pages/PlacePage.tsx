@@ -58,15 +58,18 @@ export function Place() {
       <Header />
       <div className="mt-[70px] justify-start">
       {place && (
-        <div className="flex flex-col text-center text-white">
-          <Subheading>{place.description}</Subheading>
-          <Heading>{place.normalizedLocation}</Heading>
+        <div className="flex flex-col text-center text-white mb-4 lg:fixed lg:top-[70px] lg:left-0 lg:right-0 lg:z-10  lg:py-4">
+          <Subheading className="text-white/90 font-heading">{place.description}</Subheading>
+          <Heading className="mb-4 text-white/90">{place.normalizedPlace}</Heading>
+          <h3 className="text-white text-center text-2xl font-bold text-white/60 mb-4">7 Day Outfit Forecast</h3>
         </div>
       )}
-        <div className="flex flex-col lg:flex-row gap-6 lg:gap-3">
+      <div className="flex flex-col md:items-start md:gap-6 gap-12 lg:overflow-x-auto lg:flex-row lg:justify-center lg:snap-x lg:snap-mandatory lg:gap-8 lg:px-4 lg:mt-[200px]">
         {
           place.weather.map((weather: Weather) => (
-            <WeatherCard key={weather.date.toString()} weather={weather} />
+            <div key={weather.date.toString()} className="snap-center lg:flex-shrink-0">
+              <WeatherCard weather={weather} />
+            </div>
           ))
         }
         </div>

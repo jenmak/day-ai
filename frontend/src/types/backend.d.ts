@@ -5,8 +5,8 @@ declare module '@dayai/backend' {
       create: {
         mutate: (input: { description: string }) => Promise<Place>
       }
-      getByNormalizedLocation: {
-        query: (input: { normalizedLocation: string }) => Promise<Place | false>
+      getByNormalizedPlace: {
+        query: (input: { normalizedPlace: string }) => Promise<Place | false>
       }
       getBySlug: {
         query: (input: { slug: string }) => Promise<Place>
@@ -29,8 +29,8 @@ declare module '@dayai/backend' {
       create: {
         mutate: (input: { description: string }) => Promise<Place>
       }
-      getByNormalizedLocation: {
-        query: (input: { normalizedLocation: string }) => Promise<Place | false>
+      getByNormalizedPlace: {
+        query: (input: { normalizedPlace: string }) => Promise<Place | false>
       }
       getBySlug: {
         query: (input: { slug: string }) => Promise<Place>
@@ -60,7 +60,7 @@ declare module '@dayai/backend/schemas' {
   export interface Place {
     id: string
     description?: string
-    normalizedLocation: string
+    normalizedPlace: string
     slug: string
     geocodedAddress: {
       latitude: number
@@ -85,7 +85,7 @@ declare module '@dayai/backend/schemas' {
 
   export interface Weather {
     date: string
-    condition: string
+    condition: number
     degreesFahrenheit: number
     degreesCelsius: number
     temperatureRange: {

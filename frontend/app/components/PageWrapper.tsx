@@ -20,7 +20,7 @@ export function PageWrapper({ children }: PageWrapperProps) {
 
   return (
     <div className="bg-black relative h-full w-full">
-    <div className="absolute top-0 left-0 right-0 bottom-0 z-0 flex flex-col md:flex-row h-full w-full">
+    <div className="fixed top-0 left-0 right-0 bottom-0 z-0 flex flex-col md:flex-row h-full w-full">
       {backgroundColors.map((color) => (
         <div key={color} className={`w-full h-full ${color}`}></div>
       ))}

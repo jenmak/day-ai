@@ -38,7 +38,7 @@ const Image = React.forwardRef<HTMLImageElement, ImageProps>(
     return (
       <div className={cn("relative overflow-hidden", className)}>
         {isLoading && (
-          <div className="absolute inset-0 bg-black/50 animate-pulse flex items-center justify-center">
+          <div className="absolute inset-0 animate-pulse flex items-center justify-center">
             <div className="w-8 h-8 rounded-full bg-white/20" />
           </div>
         )}
@@ -58,7 +58,7 @@ const Image = React.forwardRef<HTMLImageElement, ImageProps>(
           {...props}
         />
         {hasError && !fallback && (
-          <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
+          <div className="absolute inset-0 bg-white/50 flex items-center justify-center">
             <div className="text-white/70 text-sm">Failed to load image</div>
           </div>
         )}

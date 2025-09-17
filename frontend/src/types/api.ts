@@ -6,7 +6,7 @@ export interface Place {
   name: string
   slug: string
   address: string
-  normalizedLocation: string
+  normalizedPlace: string
   description?: string
   coordinates: {
     lat: number
@@ -33,7 +33,7 @@ export interface Location extends Place {}
 
 export interface Weather {
   date: string
-  condition: string
+  condition: number
   degreesFahrenheit: number
   degreesCelsius: number
   temperatureRange: {
