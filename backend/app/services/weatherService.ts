@@ -1,6 +1,7 @@
 import { OpenMeteoResponseSchema } from "../schemas"
 import { DateService } from "./dateService"
 import { Weather } from "../types"
+import { getTemperatureRangeCategory } from "../utils/temperatureUtils"
 
 export interface WeatherServiceOptions {
   latitude: number
@@ -67,6 +68,7 @@ export class WeatherService {
             temperatureMinimum: Math.round(minTemp),
             temperatureMaximum: Math.round(maxTemp)
           },
+          temperatureRangeCategory: getTemperatureRangeCategory(Math.round(avgTemp)),
           rainProbabilityPercentage: Math.round(rainProbability),
           windSpeedMph: Math.round(windSpeed),
           condition: weatherCode,

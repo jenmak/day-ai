@@ -658,6 +658,15 @@ config();
 var OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 
 // app/schemas/weather.ts
+var TemperatureRangeCategorySchema = z.enum([
+  "VERY_HOT",
+  "HOT",
+  "WARM",
+  "MILD",
+  "COOL",
+  "COLD",
+  "VERY_COLD"
+]);
 var OpenMeteoWeatherCodeSchema = z.number().int().min(0).max(99);
 var OpenMeteoDailySchema = z.object({
   time: z.array(z.string()),
@@ -678,6 +687,7 @@ var WeatherSchema = z.object({
   date: z.string(),
   degreesFahrenheit: z.number(),
   temperatureRange: TemperatureRangeSchema,
+  temperatureRangeCategory: TemperatureRangeCategorySchema,
   rainProbabilityPercentage: z.number().min(0).max(100),
   windSpeedMph: z.number(),
   condition: OpenMeteoWeatherCodeSchema,
@@ -706,6 +716,7 @@ var PlaceSchema = z2.object({
   slug: z2.string(),
   geocodedAddress: GeocodedAddressSchema,
   weather: z2.array(WeatherSchema).optional(),
+  temperatureRangeCategory: TemperatureRangeCategorySchema.optional(),
   createdAt: z2.date().transform((date) => date.toISOString())
 });
 var CreatePlaceSchema = z2.object({
@@ -1242,6 +1253,59 @@ var DateService = class {
   }
 };
 
+// app/utils/temperatureUtils.ts
+function getTemperatureRangeCategory(temperature) {
+  if (temperature >= TEMPERATURE_RANGES.VERY_HOT.min) {
+    return "VERY_HOT";
+  } else if (temperature >= TEMPERATURE_RANGES.HOT.min) {
+    return "HOT";
+  } else if (temperature >= TEMPERATURE_RANGES.WARM.min) {
+    return "WARM";
+  } else if (temperature >= TEMPERATURE_RANGES.MILD.min) {
+    return "MILD";
+  } else if (temperature >= TEMPERATURE_RANGES.COOL.min) {
+    return "COOL";
+  } else if (temperature >= TEMPERATURE_RANGES.COLD.min) {
+    return "COLD";
+  } else {
+    return "VERY_COLD";
+  }
+}
+__name(getTemperatureRangeCategory, "getTemperatureRangeCategory");
+function getAverageTemperatureRangeCategory(temperatures) {
+  if (temperatures.length === 0) {
+    return "MILD";
+  }
+  const rangeCounts = {
+    VERY_HOT: 0,
+    HOT: 0,
+    WARM: 0,
+    MILD: 0,
+    COOL: 0,
+    COLD: 0,
+    VERY_COLD: 0
+  };
+  temperatures.forEach((temp) => {
+    const range = getTemperatureRangeCategory(temp);
+    rangeCounts[range]++;
+  });
+  let mostCommonRange = "MILD";
+  let maxCount = 0;
+  for (const [range, count] of Object.entries(rangeCounts)) {
+    if (count > maxCount) {
+      maxCount = count;
+      mostCommonRange = range;
+    }
+  }
+  return mostCommonRange;
+}
+__name(getAverageTemperatureRangeCategory, "getAverageTemperatureRangeCategory");
+function getPlaceTemperatureRangeCategory(weatherData) {
+  const temperatures = weatherData.map((weather) => weather.degreesFahrenheit);
+  return getAverageTemperatureRangeCategory(temperatures);
+}
+__name(getPlaceTemperatureRangeCategory, "getPlaceTemperatureRangeCategory");
+
 // app/services/weatherService.ts
 var WeatherService = class {
   static {
@@ -1290,6 +1354,7 @@ var WeatherService = class {
             temperatureMinimum: Math.round(minTemp),
             temperatureMaximum: Math.round(maxTemp)
           },
+          temperatureRangeCategory: getTemperatureRangeCategory(Math.round(avgTemp)),
           rainProbabilityPercentage: Math.round(rainProbability),
           windSpeedMph: Math.round(windSpeed),
           condition: weatherCode,
@@ -1431,6 +1496,7 @@ var PlaceStore = class extends Store {
       slug: item.slug,
       geocodedAddress: item.geocodedAddress,
       weather: item.weather,
+      temperatureRangeCategory: item.temperatureRangeCategory,
       createdAt: item.createdAt
     };
   }
@@ -1540,12 +1606,14 @@ var places = router({
       weatherData.forEach((weather) => {
         weather.clothing = ClothingService.getRecommendations(weather.degreesFahrenheit, weather.condition, weather.rainProbabilityPercentage, weather.windSpeedMph);
       });
+      const temperatureRangeCategory = getPlaceTemperatureRangeCategory(weatherData);
       const placeData = {
         description: input.description,
         normalizedPlace: llmResult.normalizedPlace,
         slug: llmResult.slug,
         geocodedAddress,
-        weather: weatherData
+        weather: weatherData,
+        temperatureRangeCategory
       };
       const place = ctx.cradle.places.createPlace(placeData);
       console.log("Place created:", place);

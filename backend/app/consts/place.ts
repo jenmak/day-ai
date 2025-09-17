@@ -1,4 +1,4 @@
-import type { PlaceNormalization } from "../services/llmService"
+import type { PlaceNormalization } from "../types"
 
 // Common city coordinates
 export const CITY_COORDINATES: Record<string, { lat: number; lng: number }> = {

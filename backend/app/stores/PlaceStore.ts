@@ -30,6 +30,7 @@ export class PlaceStore extends Store<PlaceStoreItem> {
       slug: item.slug,
       geocodedAddress: item.geocodedAddress,
       weather: item.weather,
+      temperatureRangeCategory: item.temperatureRangeCategory,
       createdAt: item.createdAt
     } as Place
   }

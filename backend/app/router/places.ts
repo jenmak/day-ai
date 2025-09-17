@@ -9,6 +9,7 @@ import { WeatherService } from "../services/weatherService"
 import { procedure, router } from "../../core/trpc"
 import { TRPCError } from "@trpc/server"
 import { z } from "zod"
+import { getPlaceTemperatureRangeCategory } from "../utils/temperatureUtils"
 
 export const places = router({
   // Get place by normalized place string
@@ -57,13 +58,17 @@ export const places = router({
           weather.clothing = ClothingService.getRecommendations(weather.degreesFahrenheit, weather.condition as any, weather.rainProbabilityPercentage, weather.windSpeedMph)
         })
 
-        // 4. Save to database
+        // 4. Calculate overall temperature range category for the place
+        const temperatureRangeCategory = getPlaceTemperatureRangeCategory(weatherData)
+
+        // 5. Save to database
         const placeData = {
           description: input.description,
           normalizedPlace: llmResult.normalizedPlace,
           slug: llmResult.slug,
           geocodedAddress,
-          weather: weatherData
+          weather: weatherData,
+          temperatureRangeCategory
         }
         const place = ctx.cradle.places.createPlace(placeData)
 

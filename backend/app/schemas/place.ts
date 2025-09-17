@@ -1,5 +1,5 @@
 import { z } from "zod"
-import { WeatherSchema } from "./weather"
+import { WeatherSchema, TemperatureRangeCategorySchema } from "./weather"
 
 // Address Schema
 export const AddressSchema = z.object({
@@ -27,6 +27,7 @@ export const PlaceSchema = z.object({
   slug: z.string(),
   geocodedAddress: GeocodedAddressSchema,
   weather: z.array(WeatherSchema).optional(),
+  temperatureRangeCategory: TemperatureRangeCategorySchema.optional(),
   createdAt: z.date().transform((date) => date.toISOString())
 })
 
