@@ -57,9 +57,7 @@
 
   /* Basic colors */
   --color-white: #ffffff;
-}
 
-:root {
   --ring-color-1: rgba(255, 255, 255, 0.8);
   --ring-color-2: rgba(255, 255, 255, 0.4);
   --ring-color-3: rgba(255, 255, 255, 0.1);
@@ -68,16 +66,45 @@
   --ring-speed: 2.5s;
 
   --input-border-radius: 18px;
+  --input-height: 36px;
 }
 
-.search-input {
-  color: var(--color-white);
-  border-radius: var(--input-border-radius);  
-  background: transparent;
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  html {
+    background-color: #000000;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-family: var(--font-family-body);
+    background-color: #000000;
+    margin: 0;
+    padding: 0;
+  }
 }
 
-/** Search Input: TODO: Fix rotating gradient. */
-/* .input-container {
+@layer utilities {
+  /* Font utility classes */
+  .font-heading {
+    font-family: var(--font-family-heading);
+  }
+
+  .font-body {
+    font-family: var(--font-family-body);
+  }
+
+  .text-hero {
+    font-size: var(--font-size-hero);
+    font-weight: 800;
+    line-height: 1.1;
+    font-family: var(--font-family-heading);
+  }
+
+/* Search Input */
+
+.input-container {
   position: relative;
   width: 100%;
   border: 1px solid var(--color-white);
@@ -85,104 +112,50 @@
   outline: none;
   background: transparent;
   opacity: 1;
+  height: var(--input-height);
 }
 
-
-.input-container-loading {
-  opacity: 0.5;
-}
-
-.input-container-loading:focus-within::after {
-  opacity: 1;
-  transform: scale(1);
-  animation-play-state: running;
-}  */
-
-/* .input-container::after {
+.search-input::after {
   content: "";
   position: absolute;
   top: -2px;
   left: -2px;
   right: -2px;
   bottom: -2px;
-  inset: calc(-1 * var(--ring-size));
-  border-radius: calc(var(--input-border-radius) + var(--ring-size));
-  pointer-events: none;
-  opacity: 0;
-  transform: scale(0.98);
-  transition: opacity 120ms ease, transform 120ms ease;
-  background:
-    conic-gradient(
-      from 0deg,
-      var(--ring-color-1),
-      var(--ring-color-2),
-      var(--ring-color-3),
-      var(--ring-color-1)
-    ); */
-  /* Make a ring instead of a fill */
-  /* -webkit-mask:
-    radial-gradient(farthest-side, transparent calc(100% - var(--ring-size)), #000 calc(100% - var(--ring-size)));
-  mask:
-    radial-gradient(farthest-side, transparent calc(100% - var(--ring-size)), #000 calc(100% - var(--ring-size)));
-  animation: spin var(--ring-speed) linear infinite paused;
-  z-index: 1;
-} */
-
-/* Activate animation for keyboard focus 
-(and click focus for buttons/inputs) */
-/* .input-container:focus-within::after {
-  opacity: 1;
-  transform: scale(1);
-  animation-play-state: running;
-} */
-
-/* Ring animation */
-@keyframes spin {
-  to { transform: scale(1) rotate(360deg); }
+  background: green;
+  z-index: 0;
 }
 
-/* Reduce motion users: keep it static but visible */
-/* @media (prefers-reduced-motion: reduce) {
-  .input-container::after { animation: none; }
-} */
-
-
-
-.search-input,
-.search-input:focus,
-.search-input:focus-within {
-  border-color: transparent;
-}
-
-/* Placeholder opacity override shad/cn */
-.input-container .search-input::placeholder {
+.search-input {
+  border-width: 0;
+  position: absolute;
   color: var(--color-white);
-  opacity: .6;
-  transition: opacity 0.2s ease;
-}
-
-.input-container .search-input:focus::placeholder,
-.input-container .search-input:not(:placeholder-shown)::placeholder {
-  opacity: 0;
+  border-radius: var(--input-border-radius);  
+  background: transparent;
+  z-index: 1;
 }
 
 .search-button {
+  transition: all 0.2s ease;
   position: absolute;
   background: var(--color-white);
   opacity: .8;
-  right: 3px;
+  right: 0;
   top: 50%;
   transform: translateY(-50%);
-  width: 36px;
-  height: 36px;
+  width: var(--input-height);
+  height: var(--input-height);
   border-radius: var(--input-border-radius);
   color: var(--color-white);
-  background-color: transparent;
+  background: rgba(255, 255, 255, 0.2);
+  cursor: pointer;
 }
 
 .search-button:disabled {
-  opacity: .4;
+  opacity: .3;
+  background: transparent;
 }
+
 
 
 /** ------------------------------------------- Shadcn UI ------------------------------------------- */
@@ -326,39 +299,6 @@
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
 }
-
-@layer base {
-  * {
-    @apply border-border outline-ring/50;
-  }
-  html {
-    background-color: #000000;
-  }
-  body {
-    @apply bg-background text-foreground;
-    font-family: var(--font-family-body);
-    background-color: #000000;
-    margin: 0;
-    padding: 0;
-  }
-}
-
-@layer utilities {
-  /* Font utility classes */
-  .font-heading {
-    font-family: var(--font-family-heading);
-  }
-
-  .font-body {
-    font-family: var(--font-family-body);
-  }
-
-  .text-hero {
-    font-size: var(--font-size-hero);
-    font-weight: 800;
-    line-height: 1.1;
-    font-family: var(--font-family-heading);
-  }
   
   /* .font-heading {
     font-family: var(--font-family-heading);
@@ -449,20 +389,20 @@
   }
 
   /* Cascading fade-in animations */
-  .animate-cascade-input {
-    animation: fadeInUp 0.8s ease-out 2.2s both;
+  .animate-cascade-logo {
+    animation: fadeInUp 0.8s ease-out 0.2s both;
   }
   
   .animate-cascade-title {
-    animation: fadeInUp 0.8s ease-out 2.6s both;
-  }
-  
-  .animate-cascade-subtitle {
-    animation: fadeInUp 0.8s ease-out 2.8s both;
+    animation: fadeInUp 0.8s ease-out 0.6s both;
   }
   
   .animate-cascade-description {
-    animation: fadeInUp 0.8s ease-out 3.0s both;
+    animation: fadeInUp 0.8s ease-out 1.0s both;
+  }
+  
+  .animate-cascade-input {
+    animation: fadeInUp 0.8s ease-out 1.4s both;
   }
 
   /* Sequential card animations */

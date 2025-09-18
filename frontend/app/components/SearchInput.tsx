@@ -47,7 +47,7 @@ export function SearchInput({ onSearch, isLoading, error }: SearchInputProps) {
         </Button>
       </div>
       {error && (
-        <div className="text-[var(--color-destructive)] text-sm text-center">
+        <div className="text-[var(--color-destructive)] text-sm text-center mt-2">
           {error.message || "Failed to find location. Try again."}
         </div>
       )}
