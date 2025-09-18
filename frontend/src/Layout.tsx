@@ -3,7 +3,7 @@ import { Outlet } from "react-router"
 
 export function Layout() {
   return (
-    <div className="flex flex-col h-screen bg-black">
+    <div className="flex flex-col h-screen bg-black min-h-screen">
       <Header />
       <Outlet />
     </div>

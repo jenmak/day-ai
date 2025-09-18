@@ -7,9 +7,10 @@ import { useForm, useFormState } from "react-hook-form"
 type SearchInputProps = {
   onSearch: (searchTerm: string) => void
   isLoading?: boolean
+  error?: Error | null
 }
 
-export function SearchInput({ onSearch, isLoading }: SearchInputProps) {
+export function SearchInput({ onSearch, isLoading, error }: SearchInputProps) {
   const [searchTerm, setSearchTerm] = useState("")
   const { handleSubmit, control } = useForm()
   const { isSubmitting } = useFormState({ control})
@@ -45,6 +46,11 @@ export function SearchInput({ onSearch, isLoading }: SearchInputProps) {
           <span className="sr-only">Search</span>
         </Button>
       </div>
+      {error && (
+        <div className="text-[var(--color-destructive)] text-sm text-center">
+          {error.message || "Failed to find location. Try again."}
+        </div>
+      )}
     </form> 
   )
 }

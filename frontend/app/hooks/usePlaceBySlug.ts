@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query"
 import { Place as PlaceType } from "@dayai/backend/schemas"
 import { usePlaceStore } from "../stores/placeStore"
-import { useEffect, useRef } from "react"
+import { useEffect } from "react"
 
 interface usePlaceBySlugOptions {
   slug: string
@@ -15,19 +15,6 @@ export const usePlaceBySlug = (options?: usePlaceBySlugOptions) => {
   const { slug, onSuccess, onError } = options || { slug: '' }
   const { setPlace } = usePlaceStore()
   
-  // Use refs to store the latest callback functions to avoid stale closures
-  const onSuccessRef = useRef(onSuccess)
-  const onErrorRef = useRef(onError)
-  
-  // Update refs when callbacks change
-  useEffect(() => {
-    onSuccessRef.current = onSuccess
-  }, [onSuccess])
-  
-  useEffect(() => {
-    onErrorRef.current = onError
-  }, [onError])
-
   const query = useQuery({
     queryKey: ["place", "slug", slug],
     queryFn: async (): Promise<PlaceType> => {
@@ -49,22 +36,19 @@ export const usePlaceBySlug = (options?: usePlaceBySlugOptions) => {
         throw error
       }
     },
-    enabled: !!slug, // Only run query if slug is provided
+    enabled: !!slug,
   })
 
-  // Handle success with stable dependencies
   useEffect(() => {
     if (query.data) {
       setPlace(query.data)
-      console.log("query.data", query.data)
-      onSuccessRef.current?.(query.data)
+      onSuccess?.(query.data)
     }
   }, [query.data, setPlace])
 
-  // Handle error with stable dependencies
   useEffect(() => {
     if (query.error) {
-      onErrorRef.current?.(query.error)
+      onError?.(query.error)
     }
   }, [query.error])
 

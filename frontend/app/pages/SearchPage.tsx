@@ -1,7 +1,7 @@
 import { useCreatePlace } from "../hooks/useCreatePlace"
 import { Label } from "../../src/components/ui/label"
 import { Image } from "../../src/components/ui/image"
-import logoImage from "../images/drip-drop-city-logo.png"
+const logoImage = "/images/drip-drop-city-logo.png"
 import { SearchInput } from "../components/SearchInput"
 
 export function Search() {
@@ -16,18 +16,14 @@ export function Search() {
       <Image 
         src={logoImage} 
         alt="Drip Drop City Logo" 
-        className="w-48 h-48 mx-auto object-contain"
+        className="w-48 h-48 mx-auto object-contain animate-cascade-title"
         loading="lazy"
       />
-      <h1 className="text-hero font-heading text-white text-center mb-4">Drip Drop City</h1>
-      <Label className="text-white text-center font-light mb-2 leading-6">Describe your location and we'll recommend some weather appropriate outfits for the week.</Label>
-      <SearchInput onSearch={handleSearch} isLoading={isLoading} />
-      {/* TODO: style error message:
-        {error && (
-        <div className="text-red-500 text-sm text-center">
-          Error: {error.message || "Failed to find location"}
-        </div>
-      )} */}
+      <h1 className="text-hero font-heading text-white text-center mb-4 animate-cascade-subtitle">Drip Drop City</h1>
+      <Label className="text-white text-center font-light mb-2 leading-6 animate-cascade-description">Describe your location and we'll recommend some weather appropriate outfits for the week.</Label>
+      <div className="animate-cascade-input">
+        <SearchInput onSearch={handleSearch} isLoading={isLoading} error={error} />
+      </div>
     </div>
   )
 }

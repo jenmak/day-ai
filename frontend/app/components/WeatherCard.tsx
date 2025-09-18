@@ -12,10 +12,10 @@ export const WeatherCard = ({ weather }: { weather: Weather }) => {
   const isToday = dayOfWeek === 'Today'
 
   return (
-    <Card className={`${isToday && 'outline outline-white outline-2' || 'outline-none'} text-white bg-white/30 backdrop-blur-sm
+    <Card className={`text-white bg-white/50 backdrop-blur-sm
       ${isToday ? CARD_WIDTH_DESKTOP_TODAY : CARD_WIDTH_DESKTOP} ${CARD_HEIGHT_DESKTOP} ${CARD_WIDTH_TABLET} ${CARD_HEIGHT_TABLET} ${CARD_WIDTH_MOBILE} ${CARD_HEIGHT_MOBILE}`}>
       <CardHeader>
-        <CardTitle className="font-body font-thin">{getDate(weather.date)}</CardTitle>
+        <CardTitle className="font-body font-thin text-white">{getDate(weather.date)}</CardTitle>
         <CardDescription className="font-body font-thin text-white">{dayOfWeek}</CardDescription>
         <CardContent>
           <Image src={getWeatherImage(weather.condition)} alt={`Weather condition ${weather.condition}`} />

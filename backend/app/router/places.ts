@@ -6,6 +6,7 @@ import { ClothingService } from "../services/clothingService"
 import { GeolocationService } from "../services/geolocationService"
 import { LLMService } from "../services/llmService"
 import { WeatherService } from "../services/weatherService"
+import { DateService } from "../services/dateService"
 import { procedure, router } from "../../core/trpc"
 import { TRPCError } from "@trpc/server"
 import { z } from "zod"
@@ -108,6 +109,7 @@ export const places = router({
   /**
    * Gets a place by slug.
    * If the place does not exist, return an error.
+   * If today is not the first day in weather data, fetches fresh weather data starting from today.
    */
   getBySlug: procedure.input(z.object({ slug: z.string() }))
     .query(async ({ ctx, input }) => {
@@ -118,6 +120,49 @@ export const places = router({
           code: "NOT_FOUND",
           message: `Place not found with slug: "${input.slug}".`
         })
+      }
+
+      // Check if we need to update weather data
+      if (place.weather && place.weather.length > 0 && place.geocodedAddress) {
+        const today = DateService.getToday() // YYYY-MM-DD format
+        const firstWeatherDate = place.weather[0].date
+
+        // If today is not the first day in weather data, fetch fresh weather data
+        if (firstWeatherDate !== today) {
+          try {
+            console.log(`Weather data is outdated. First date: ${firstWeatherDate}, Today: ${today}. Fetching fresh data.`)
+            
+            // Fetch fresh 7-day weather data starting from today
+            const freshWeatherData = await WeatherService.get7DayForecast({
+              latitude: place.geocodedAddress.latitude,
+              longitude: place.geocodedAddress.longitude,
+              startDate: new Date()
+            })
+
+            // Get clothing recommendations for the fresh weather data
+            freshWeatherData.forEach((weather) => {
+              weather.clothing = ClothingService.getRecommendations(
+                weather.degreesFahrenheit, 
+                weather.condition as any, 
+                weather.rainProbabilityPercentage, 
+                weather.windSpeedMph
+              )
+            })
+
+            // Update the place with fresh weather data
+            const updatedPlace = ctx.cradle.places.update(place.id, {
+              weather: freshWeatherData,
+              temperatureRangeCategory: getPlaceTemperatureRangeCategory(freshWeatherData)
+            })
+
+            const model = ctx.cradle.places.toModel(updatedPlace)
+            return ensureTemperatureRangeCategory(model)
+          } catch (error) {
+            console.error("Error fetching fresh weather data:", error)
+            // If weather update fails, return the existing place data
+            console.log("Falling back to existing weather data")
+          }
+        }
       }
 
       const model = ctx.cradle.places.toModel(place)

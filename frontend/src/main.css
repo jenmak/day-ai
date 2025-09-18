@@ -25,6 +25,8 @@
   --color-cold-4: var(--color-cold-maya-blue);
   --color-cold-5: var(--color-cold-prussian-blue);
 
+  --color-destructive: var(--color-hot-coquelicot);
+
   /* Hot weather colors */
   --color-hot-amber: #F3B700;
   --color-hot-orange: #FAA300;
@@ -46,11 +48,13 @@
   --color-cold-maya-blue: #55C1FF;
   --color-cold-prussian-blue: #102E4A;
 
-  /* Profile colors */
-  --color-eggplant: #533b4d;
-  --color-pale-dogwood: #C1ABA6;
-  --color-champagne: #FAE3C6;
-  
+  /* Monochrome gray colors */
+  --color-gray-1: #F8F9FA;
+  --color-gray-2: #DEE2E6;
+  --color-gray-3: #ADB5BD;
+  --color-gray-4: #495057;
+  --color-gray-5: #212529;
+
   /* Basic colors */
   --color-white: #ffffff;
 }
@@ -66,8 +70,14 @@
   --input-border-radius: 18px;
 }
 
+.search-input {
+  color: var(--color-white);
+  border-radius: var(--input-border-radius);  
+  background: transparent;
+}
+
 /** Search Input: TODO: Fix rotating gradient. */
-.input-container {
+/* .input-container {
   position: relative;
   width: 100%;
   border: 1px solid var(--color-white);
@@ -77,9 +87,6 @@
   opacity: 1;
 }
 
-.search-input:focus::placeholder {
-  opacity: 0;
-}
 
 .input-container-loading {
   opacity: 0.5;
@@ -89,7 +96,7 @@
   opacity: 1;
   transform: scale(1);
   animation-play-state: running;
-} 
+}  */
 
 /* .input-container::after {
   content: "";
@@ -135,15 +142,11 @@
 }
 
 /* Reduce motion users: keep it static but visible */
-@media (prefers-reduced-motion: reduce) {
+/* @media (prefers-reduced-motion: reduce) {
   .input-container::after { animation: none; }
-}
+} */
 
-.search-input {
-  color: var(--color-white);
-  border-radius: var(--input-border-radius);  
-  background: transparent;
-}
+
 
 .search-input,
 .search-input:focus,
@@ -151,9 +154,16 @@
   border-color: transparent;
 }
 
-.search-input::placeholder {
+/* Placeholder opacity override shad/cn */
+.input-container .search-input::placeholder {
   color: var(--color-white);
   opacity: .6;
+  transition: opacity 0.2s ease;
+}
+
+.input-container .search-input:focus::placeholder,
+.input-container .search-input:not(:placeholder-shown)::placeholder {
+  opacity: 0;
 }
 
 .search-button {
@@ -321,9 +331,15 @@
   * {
     @apply border-border outline-ring/50;
   }
+  html {
+    background-color: #000000;
+  }
   body {
     @apply bg-background text-foreground;
     font-family: var(--font-family-body);
+    background-color: #000000;
+    margin: 0;
+    padding: 0;
   }
 }
 
@@ -426,6 +442,57 @@
   .animate-slide-up {
     animation: slideUp 0.3s ease-out;
   }
+
+  /* Background transition animation */
+  .animate-background-transition {
+    animation: backgroundFadeIn 2.0s ease-out 0s both;
+  }
+
+  /* Cascading fade-in animations */
+  .animate-cascade-input {
+    animation: fadeInUp 0.8s ease-out 2.2s both;
+  }
+  
+  .animate-cascade-title {
+    animation: fadeInUp 0.8s ease-out 2.6s both;
+  }
+  
+  .animate-cascade-subtitle {
+    animation: fadeInUp 0.8s ease-out 2.8s both;
+  }
+  
+  .animate-cascade-description {
+    animation: fadeInUp 0.8s ease-out 3.0s both;
+  }
+
+  /* Sequential card animations */
+  .animate-card-1 {
+    animation: cardSlideIn 0.6s ease-out 3.2s both;
+  }
+  
+  .animate-card-2 {
+    animation: cardSlideIn 0.6s ease-out 3.3s both;
+  }
+  
+  .animate-card-3 {
+    animation: cardSlideIn 0.6s ease-out 3.4s both;
+  }
+  
+  .animate-card-4 {
+    animation: cardSlideIn 0.6s ease-out 3.5s both;
+  }
+  
+  .animate-card-5 {
+    animation: cardSlideIn 0.6s ease-out 3.6s both;
+  }
+  
+  .animate-card-6 {
+    animation: cardSlideIn 0.6s ease-out 3.7s both;
+  }
+  
+  .animate-card-7 {
+    animation: cardSlideIn 0.6s ease-out 3.8s both;
+  }
   
   @keyframes fadeIn {
     from { opacity: 0; }
@@ -440,6 +507,37 @@
     to { 
       opacity: 1;
       transform: translateY(0);
+    }
+  }
+
+  @keyframes cardSlideIn {
+    from { 
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to { 
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes fadeInUp {
+    from { 
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to { 
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes backgroundFadeIn {
+    from { 
+      opacity: 0;
+    }
+    to { 
+      opacity: 1;
     }
   }
   
