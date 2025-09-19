@@ -2,28 +2,10 @@
 @import "tw-animate-css";
 
 :root {
-  /* Font families */
+  /* Fonts */
   --font-family-heading: 'Cormorant Garamond', serif;
   --font-family-body: 'Poppins', sans-serif;
-
-  /* Aliases */
-  --color-hot-1: var(--color-hot-amber);
-  --color-hot-2: var(--color-hot-orange);
-  --color-hot-3: var(--color-hot-fulvous);
-  --color-hot-4: var(--color-hot-pantone-orange);
-  --color-hot-5: var(--color-hot-coquelicot);
-  --color-cool-1: var(--color-cool-aquamarine);
-  --color-cool-2: var(--color-cool-cyan);
-  --color-cool-3: var(--color-cool-skyblue);
-  --color-cool-4: var(--color-cool-blue);
-  --color-cool-5: var(--color-cool-crayola-blue);
-  --color-cold-1: var(--color-cold-indigo);
-  --color-cold-2: var(--color-cold-slate-blue);
-  --color-cold-3: var(--color-cold-cornflower-blue);
-  --color-cold-4: var(--color-cold-maya-blue);
-  --color-cold-5: var(--color-cold-prussian-blue);
-
-  --color-destructive: var(--color-hot-coquelicot);
+  --font-size-hero: 3rem;
 
   /* Hot weather colors */
   --color-hot-amber: #F3B700;
@@ -57,10 +39,27 @@
   --color-white: #ffffff;
   --color-black: #000000;
 
+  /* Aliases */
+  --color-hot-1: var(--color-hot-amber);
+  --color-hot-2: var(--color-hot-orange);
+  --color-hot-3: var(--color-hot-fulvous);
+  --color-hot-4: var(--color-hot-pantone-orange);
+  --color-hot-5: var(--color-hot-coquelicot);
+  --color-cool-1: var(--color-cool-aquamarine);
+  --color-cool-2: var(--color-cool-cyan);
+  --color-cool-3: var(--color-cool-skyblue);
+  --color-cool-4: var(--color-cool-blue);
+  --color-cool-5: var(--color-cool-crayola-blue);
+  --color-cold-1: var(--color-cold-indigo);
+  --color-cold-2: var(--color-cold-slate-blue);
+  --color-cold-3: var(--color-cold-cornflower-blue);
+  --color-cold-4: var(--color-cold-maya-blue);
+  --color-cold-5: var(--color-cold-prussian-blue);
+  --color-destructive: var(--color-hot-coquelicot);
+
   --background: var(--color-black);
 
-  --font-size-hero: 3rem;
-
+  /* Rings */
   --ring-color-1: var(--color-gray-1);
   --ring-color-2: var(--color-gray-3);
   --ring-color-3: var(--color-gray-5);
@@ -68,6 +67,7 @@
   --ring-radius: calc(infinity * 1px);
   --ring-speed: 2s;
 
+  /* Input */
   --input-border-radius: 18px;
   --input-height: 36px;
   --input-width: 325px;
@@ -287,19 +287,21 @@
 }
 
 .search-input {
-  width: 100%;
-  height: 100%;
+  width: var(--input-width);
+  height: var(--input-height);
   border: none;
-  background-color: var(--background);
   color: var(--color-white);
-  padding: 0 15px;
+  padding: 8px;
   border-radius: var(--input-border-radius);
   box-sizing: border-box;
   outline: none;
+  top: 0;
+  left: 0;
+  position: absolute;
 }
 
 .search-input:focus {
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
 }
 
 .search-button {

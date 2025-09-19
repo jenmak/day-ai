@@ -33,12 +33,11 @@ export function SearchInput({ onSearch, className, backgroundColor }: SearchInpu
     }
   }
 
-
   return (
     <form onSubmit={handleSubmit(handleSearch)}>
       <div className={`input-container ${isLoading || isSubmitting ? "input-container-loading" : ""} ${className}`}>
         <Input
-          className={`search-input focus-visible:ring-0 ${backgroundColor ? `bg-[${backgroundColor}]` : "bg-transparent"}`}
+          className={`search-input focus-visible:ring-0 ${backgroundColor || "bg-black"}`}
           placeholder="ie. Gotham"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
