@@ -1,5 +1,5 @@
-import { Input } from "../../src/components/ui/input"
-import { Button } from "../../src/components/ui/button"
+import { Input } from "./shadcn/input"
+import { Button } from "./shadcn/button"
 import { ChevronRight } from "lucide-react"
 import { useState } from "react"
 import { useForm, useFormState } from "react-hook-form"
@@ -8,31 +8,36 @@ type SearchInputProps = {
   onSearch: (searchTerm: string) => void
   isLoading?: boolean
   error?: Error | null
+  className?: string
+  backgroundColor?: string
 }
 
-export function SearchInput({ onSearch, isLoading, error }: SearchInputProps) {
-  const [searchTerm, setSearchTerm] = useState("")
+export function SearchInput({ onSearch, isLoading, className, backgroundColor }: SearchInputProps) {
+  // Hooks.
   const { handleSubmit, control } = useForm()
   const { isSubmitting } = useFormState({ control})
-  
+
+  // Local state.
+  const [searchTerm, setSearchTerm] = useState("")
+
+  // Handlers.
   const handleSearch = () => {
     if (searchTerm.trim()) {
       onSearch(searchTerm.trim())
     }
   }
-
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') {
       handleSearch()
     }
   }
 
-  // TODO: Fix snake loading state.
+
   return (
     <form onSubmit={handleSubmit(handleSearch)}>
-      <div className={`input-container input-container-loading min-w-[350px] ${(isLoading || isSubmitting) && 'input-container-loading'}`}>
+      <div className={`input-container input-container-loading ${className}`}>
         <Input
-          className="search-input focus-visible:ring-0"
+          className={`search-input focus-visible:ring-0 ${backgroundColor ? `bg-[${backgroundColor}]` : "bg-transparent"}`}
           placeholder="ie. Gotham"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
@@ -46,12 +51,8 @@ export function SearchInput({ onSearch, isLoading, error }: SearchInputProps) {
           <ChevronRight className="h-4 w-4" />
           <span className="sr-only">Search</span>
         </Button>
+        <div className="rotating-ring"></div>
       </div>
-      {error && (
-        <div className="text-[var(--color-destructive)] text-sm text-center mt-2">
-          {error.message || "Failed to find location. Try again."}
-        </div>
-      )}
     </form> 
   )
 }

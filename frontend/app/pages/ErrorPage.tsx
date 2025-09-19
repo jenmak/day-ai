@@ -1,43 +1,44 @@
 import { PageWrapper } from "../components/PageWrapper"
-import { Header } from "../components/Header"
-import { Heading } from "../components/Heading"
-import { Subheading } from "../components/Subheading"
-import { Button } from "../../src/components/ui/button"
-import { useNavigate } from "react-router"
-import { Search, MapPin, HelpCircle } from "lucide-react"
+// import { Heading } from "../components/typography/Heading"
+// import { Subheading } from "../components/typography/Subheading"
+// import { Button } from "../components/shadcn/button"
+// import { useNavigate } from "react-router"
+// import { Search, MapPin, HelpCircle } from "lucide-react"
 
-export function NoLocationFoundPage() {
-  const navigate = useNavigate()
 
-  const handleTryAgain = () => {
-    navigate("/")
-  }
+type ErrorPageProps = {
+  message?: string
+}
+
+export function ErrorPage({ message }: ErrorPageProps) {
+
 
   return (
     <PageWrapper>
-      <Header />
-      <div className="mt-[70px] flex flex-col items-center justify-center min-h-[calc(100vh-70px)] px-4">
-        <div className="text-center text-white max-w-2xl">
+      <div>{message}</div>
+      {/* <Header /> */}
+      {/* <div className="mt-[70px] flex flex-col items-center justify-center min-h-[calc(100vh-70px)] px-4">
+        <div className="text-center text-white max-w-2xl"> */}
           {/* Icon */}
-          <div className="mb-8">
+          {/* <div className="mb-8">
             <div className="mx-auto w-24 h-24 bg-gray-800 rounded-full flex items-center justify-center">
               <MapPin className="w-12 h-12 text-gray-400" />
             </div>
-          </div>
+          </div> */}
 
           {/* Main heading */}
-          <Heading className="mb-4">
+          {/* <Heading className="mb-4">
             Location Not Found
-          </Heading>
+          </Heading> */}
 
           {/* Subheading */}
-          <Subheading className="mb-8 text-gray-300">
+          {/* <Subheading className="mb-8 text-gray-300">
             We couldn't identify a specific location from your description. 
             Try being more specific or use a different description.
-          </Subheading>
+          </Subheading> */}
 
           {/* Help text */}
-          <div className="mb-8 p-6 bg-gray-800/50 rounded-lg border border-gray-700">
+          {/* <div className="mb-8 p-6 bg-gray-800/50 rounded-lg border border-gray-700">
             <div className="flex items-start gap-3">
               <HelpCircle className="w-5 h-5 text-blue-400 mt-0.5 flex-shrink-0" />
               <div className="text-left">
@@ -52,18 +53,18 @@ export function NoLocationFoundPage() {
                 </ul>
               </div>
             </div>
-          </div>
+          </div> */}
 
           {/* Action button */}
-          <Button 
-            onClick={handleTryAgain}
+          {/* <Button 
+            // onClick={handleTryAgain}
             className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 text-lg"
           >
             <Search className="w-5 h-5 mr-2" />
             Try Another Search
-          </Button>
-        </div>
-      </div>
+          </Button> */}
+        {/* </div> */}
+      {/* </div> */}
     </PageWrapper>
   )
 }

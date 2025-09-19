@@ -1,8 +1,6 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
-/* @custom-variant dark (&:is(.dark *)); */
-
 :root {
   /* Font families */
   --font-family-heading: 'Cormorant Garamond', serif;
@@ -61,6 +59,8 @@
 
   --background: var(--color-black);
 
+  --font-size-hero: 3rem;
+
   --ring-color-1: var(--color-gray-1);
   --ring-color-2: var(--color-gray-3);
   --ring-color-3: var(--color-gray-5);
@@ -70,6 +70,15 @@
 
   --input-border-radius: 18px;
   --input-height: 36px;
+  --input-width: 325px;
+}
+
+.font-heading {
+  font-family: var(--font-family-heading);
+}
+
+.font-body {
+  font-family: var(--font-family-body);
 }
 
 @property --angle {
@@ -85,16 +94,11 @@
 }
 
 @layer base {
-  * {
-    @apply border-border outline-ring/50;
-  }
   html {
-    background-color: #000000;
+    background-color: var(--background);
   }
   body {
-    @apply bg-background text-foreground;
-    font-family: var(--font-family-body);
-    background-color: #000000;
+    background-color: var(--background);
     margin: 0;
     padding: 0;
   }
@@ -116,66 +120,149 @@
     line-height: 1.1;
     font-family: var(--font-family-heading);
   }
+}
+
+/** ------------------------------------------- Keyframes ------------------------------------------- */
+
+@keyframes backgroundFadeIn {
+  from { 
+    opacity: 0;
+  }
+  to { 
+    opacity: 1;
+  }
+}
+
+@keyframes rotate {
+  to {
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
+}
+
+@keyframes fadeInUp {
+  from { 
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to { 
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/** ------------------------------------------- Animations ------------------------------------------- */
+
+.animate-background-transition {
+  animation: backgroundFadeIn 2.0s ease-out 0s both;
+}
+
+/* Cascading fade-in animations */
+.animate-cascade-logo {
+  animation: fadeInUp 0.8s ease-out 0.2s both;
+}
+
+.animate-cascade-title {
+  animation: fadeInUp 0.8s ease-out 0.6s both;
+}
+
+.animate-cascade-description {
+  animation: fadeInUp 0.8s ease-out 1.0s both;
+}
+
+.animate-cascade-input {
+  animation: fadeInUp 0.8s ease-out 1.4s both;
+}
+
+/* Sequential card animations */
+.animate-card-1 {
+  animation: cardSlideIn 0.6s ease-out 3.2s both;
+}
+
+.animate-card-2 {
+  animation: cardSlideIn 0.6s ease-out 3.3s both;
+}
+
+.animate-card-3 {
+  animation: cardSlideIn 0.6s ease-out 3.4s both;
+}
+
+.animate-card-4 {
+  animation: cardSlideIn 0.6s ease-out 3.5s both;
+}
+
+.animate-card-5 {
+  animation: cardSlideIn 0.6s ease-out 3.6s both;
+}
+
+.animate-card-6 {
+  animation: cardSlideIn 0.6s ease-out 3.7s both;
+}
+
+.animate-card-7 {
+  animation: cardSlideIn 0.6s ease-out 3.8s both;
+}
+
+
+/** ------------------------------------------- Components ------------------------------------------- */
 
 /* Search Input */
 
 .input-container {
-  position: relative; /* Establish a positioning context */
-  min-width: 350px;
+  position: relative;
+  width: var(--input-width);
   height: var(--input-height);
   padding: 8px;
   border-radius: var(--input-border-radius);
-  width: 100%;
-  outline: 1px solid var(--color-white);
+  /* outline: 1px solid var(--color-white); */
   background: transparent;
 }
+/* 
+.input-container-loading {
+  outline: none;
+} */
 
-.input-container::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  background: conic-gradient(
-    from var(--angle),
-    var(--ring-color-1),
-    var(--ring-color-2),
-    var(--ring-color-3),
-    var(--ring-color-1)
-  );
-  animation: rotate 4s linear infinite;
-  z-index: -1;
-}
-
-/* Rotating gradient border around the input container */
-.input-container-loading::before {
-  top: --var(--ring-size);
-  left: --var(--ring-size);
-  right: --var(--ring-size);
-  bottom: --var(--ring-size);
-  border-radius: calc(var(--input-border-radius) + var(--ring-size));
-  background: conic-gradient(
-    from 0deg,
-    var(--ring-color-1),
-    var(--ring-color-2),
-    var(--ring-color-3),
-    var(--ring-color-1)
-  );
-  animation: rotate-gradient var(--ring-speed) linear infinite;
-  pointer-events: none;
-  z-index: -1;
-}
-
-.input-container-loading::after {
-  content: "";
+.rotating-ring {
   position: absolute;
   top: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
+  width: var(--input-width);
+  height: var(--input-height);
   border-radius: var(--input-border-radius);
+  overflow: hidden;
+  z-index: -1;
+}
+
+.rotating-ring::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: calc(var(--input-width) + 12px);
+  height: calc(var(--input-height) + 12px);
+  background: conic-gradient(
+    from 0deg,
+    transparent 0deg,
+    transparent 90deg,
+    transparent 180deg,
+    var(--color-white) 270deg,
+    transparent 360deg
+  );
+  animation: rotate 2s linear infinite;
+}
+
+/* Mask */
+.rotating-ring::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: calc(var(--input-width) - 6px);
+  height: calc(var(--input-height) - 6px);
   background: var(--background);
-  pointer-events: none;
-  z-index: 0;
+  border-radius: calc(var(--input-border-radius) - 3px);
+  z-index: 1;
 }
 
 .search-input {
@@ -216,7 +303,7 @@
 
 /** ------------------------------------------- Shadcn UI ------------------------------------------- */
 
-:root {
+/* :root {
   --radius: 0.625rem;
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
@@ -248,9 +335,9 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
-}
+} */
 
-.dark {
+/* .dark {
   --background: oklch(0.145 0 0);
   --foreground: oklch(0.985 0 0);
   --card: oklch(0.205 0 0);
@@ -282,9 +369,9 @@
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.439 0 0);
-}
+} */
 
-@theme inline {
+/* @theme inline {
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
@@ -293,19 +380,19 @@
   --color-brand: oklch(0.646 0.222 41.116);
   --color-brand-light: oklch(0.8 0.15 41.116);
   --color-weather-sunny: oklch(0.9 0.2 60);
-  --color-weather-rainy: oklch(0.6 0.15 240);
+  --color-weather-rainy: oklch(0.6 0.15 240); */
   
 
-  
+
   /* Custom spacing */
-  --spacing-xs: 0.25rem;
+  /* --spacing-xs: 0.25rem;
   --spacing-sm: 0.5rem;
   --spacing-md: 1rem;
   --spacing-lg: 1.5rem;
-  --spacing-xl: 2rem;
+  --spacing-xl: 2rem; */
   
   /* Custom typography */
-  --font-size-hero: 3rem;
+  /* 
   --font-size-title: 2rem;
   --font-size-subtitle: 1.25rem;
   --color-background: var(--background);
@@ -338,183 +425,9 @@
   --color-sidebar-accent: var(--sidebar-accent);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
-  --color-sidebar-ring: var(--sidebar-ring);
-}
+  --color-sidebar-ring: var(--sidebar-ring); */
+/* } */
   
-  /* .font-heading {
-    font-family: var(--font-family-heading);
-  }
-  
-  .font-body {
-    font-family: var(--font-family-body);
-  } */
-  
-  /* Custom utility classes for DayAI */
-  /* 
-  .text-title {
-    font-size: var(--font-size-title);
-    font-weight: 700;
-    line-height: 1.2;
-    font-family: var(--font-family-heading);
-  }
-  
-  .text-subtitle {
-    font-size: var(--font-size-subtitle);
-    font-weight: 600;
-    line-height: 1.3;
-    font-family: var(--font-family-heading);
-  }
-  
-  .bg-brand {
-    background-color: var(--color-brand);
-  }
-  
-  .text-brand {
-    color: var(--color-brand);
-  } */
-  
-  
-  /* Gradient utilities */
-  .bg-gradient-profile {
-    background: linear-gradient(45deg, var(--color-eggplant), var(--color-pale-dogwood), var(--color-champagne));
-  }
-  
-  /* .weather-card {
-    @apply bg-card border border-border rounded-lg p-6 shadow-sm;
-  }
-  
-  .weather-sunny {
-    background-color: var(--color-weather-sunny);
-  }
-  
-  .weather-rainy {
-    background-color: var(--color-weather-rainy);
-  } */
-  
-  /* Custom animations */
-  .animate-fade-in {
-    animation: fadeIn 0.5s ease-in-out;
-  }
-  
-  .animate-slide-up {
-    animation: slideUp 0.3s ease-out;
-  }
 
+  
   /* Background transition animation */
-  .animate-background-transition {
-    animation: backgroundFadeIn 2.0s ease-out 0s both;
-  }
-
-  /* Cascading fade-in animations */
-  .animate-cascade-logo {
-    animation: fadeInUp 0.8s ease-out 0.2s both;
-  }
-  
-  .animate-cascade-title {
-    animation: fadeInUp 0.8s ease-out 0.6s both;
-  }
-  
-  .animate-cascade-description {
-    animation: fadeInUp 0.8s ease-out 1.0s both;
-  }
-  
-  .animate-cascade-input {
-    animation: fadeInUp 0.8s ease-out 1.4s both;
-  }
-
-  /* Sequential card animations */
-  .animate-card-1 {
-    animation: cardSlideIn 0.6s ease-out 3.2s both;
-  }
-  
-  .animate-card-2 {
-    animation: cardSlideIn 0.6s ease-out 3.3s both;
-  }
-  
-  .animate-card-3 {
-    animation: cardSlideIn 0.6s ease-out 3.4s both;
-  }
-  
-  .animate-card-4 {
-    animation: cardSlideIn 0.6s ease-out 3.5s both;
-  }
-  
-  .animate-card-5 {
-    animation: cardSlideIn 0.6s ease-out 3.6s both;
-  }
-  
-  .animate-card-6 {
-    animation: cardSlideIn 0.6s ease-out 3.7s both;
-  }
-  
-  .animate-card-7 {
-    animation: cardSlideIn 0.6s ease-out 3.8s both;
-  }
-  
-  @keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-  }
-  
-  @keyframes slideUp {
-    from { 
-      opacity: 0;
-      transform: translateY(20px);
-    }
-    to { 
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-
-  @keyframes cardSlideIn {
-    from { 
-      opacity: 0;
-      transform: translateY(20px);
-    }
-    to { 
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-
-  @keyframes fadeInUp {
-    from { 
-      opacity: 0;
-      transform: translateY(30px);
-    }
-    to { 
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-
-  @keyframes backgroundFadeIn {
-    from { 
-      opacity: 0;
-    }
-    to { 
-      opacity: 1;
-    }
-  }
-
-    /* Keyframes animation for the rotation */
-  @keyframes rotate {
-    from {
-      transform: rotate(0deg);
-    }
-    to {
-      transform: rotate(360deg);
-    }
-  }
-
-  /* Rotating gradient border animation */
-  @keyframes rotate-gradient {
-    0% { 
-      transform: rotate(0deg);
-    }
-    100% { 
-      transform: rotate(360deg);
-    }
-  }
-}

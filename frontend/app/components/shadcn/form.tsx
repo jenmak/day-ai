@@ -11,8 +11,8 @@ import {
   type FieldValues
 } from "react-hook-form"
 
-import { Label } from "@/components/ui/label"
-import { cn } from "@/lib/utils"
+import { Label } from "./label"
+import { cn } from "../../utils/classNames"
 
 // https://ui.shadcn.com/docs/components/form
 // https://react-hook-form.com/

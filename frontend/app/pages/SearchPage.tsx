@@ -1,6 +1,6 @@
 import { useCreatePlace } from "../hooks/useCreatePlace"
-import { Label } from "../../src/components/ui/label"
-import { Image } from "../../src/components/ui/image"
+import { Label } from "../components/shadcn/label"
+import { Image } from "../components/shadcn/image"
 const logoImage = "/images/drip-drop-city-logo.png"
 import { SearchInput } from "../components/SearchInput"
 
@@ -12,7 +12,7 @@ export function Search() {
   }
 
   return (
-    <div className="flex flex-col gap-4 p-9 justify-center items-center h-full container mx-auto md:max-w-[400px]">
+    <div className="flex flex-col h-screen min-h-screen gap-4 p-9 justify-center items-center h-full container mx-auto md:max-w-[400px]">
       <Image 
         src={logoImage} 
         alt="Drip Drop City Logo" 
@@ -20,9 +20,9 @@ export function Search() {
         loading="lazy"
       />
       <h1 className="text-hero font-heading text-white text-center mb-4 animate-cascade-title">Drip Drop City</h1>
-      <Label className="text-white text-center font-light mb-2 leading-6 animate-cascade-description">Describe your location and we'll recommend some weather appropriate outfits for the week.</Label>
+      <Label className="text-white text-center font-light mb-2 leading-6 animate-cascade-description font-body">Describe your location and we'll recommend some weather appropriate outfits for the week.</Label>
       <div className="animate-cascade-input">
-        <SearchInput onSearch={handleSearch} isLoading={isLoading} error={error} />
+        <SearchInput className="w-[275px]" backgroundColor="black" onSearch={handleSearch} isLoading={isLoading} error={error} />
       </div>
     </div>
   )
