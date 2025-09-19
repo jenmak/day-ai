@@ -27,9 +27,10 @@ export function SearchInput({ onSearch, isLoading, error }: SearchInputProps) {
     }
   }
 
+  // TODO: Fix snake loading state.
   return (
     <form onSubmit={handleSubmit(handleSearch)}>
-      <div className={`input-container min-w-[350px] ${(isLoading || isSubmitting) && 'input-container-loading'}`}>
+      <div className={`input-container input-container-loading min-w-[350px] ${(isLoading || isSubmitting) && 'input-container-loading'}`}>
         <Input
           className="search-input focus-visible:ring-0"
           placeholder="ie. Gotham"

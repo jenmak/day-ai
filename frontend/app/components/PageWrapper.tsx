@@ -26,7 +26,7 @@ export function PageWrapper({ children }: PageWrapperProps) {
         <div key={`${color}-${index}`} className={`w-full h-full ${color} transition-colors duration-500`}></div>
       ))}
     </div>
-    <div className="absolute top-0 left-0 right-0 bottom-0 z-1 flex flex-col gap-4 p-4 justify-start items-center">
+    <div className="absolute top-0 left-0 right-0 bottom-0 z-1 p-4">
       {children}
       </div>
     </div>

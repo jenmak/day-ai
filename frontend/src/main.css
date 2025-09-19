@@ -57,16 +57,31 @@
 
   /* Basic colors */
   --color-white: #ffffff;
+  --color-black: #000000;
 
-  --ring-color-1: rgba(255, 255, 255, 0.8);
-  --ring-color-2: rgba(255, 255, 255, 0.4);
-  --ring-color-3: rgba(255, 255, 255, 0.1);
+  --background: var(--color-black);
+
+  --ring-color-1: var(--color-gray-1);
+  --ring-color-2: var(--color-gray-3);
+  --ring-color-3: var(--color-gray-5);
   --ring-size: 3px;
   --ring-radius: calc(infinity * 1px);
-  --ring-speed: 2.5s;
+  --ring-speed: 2s;
 
   --input-border-radius: 18px;
   --input-height: 36px;
+}
+
+@property --angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+
+@keyframes rotate {
+  to {
+    --angle: 360deg;
+  }
 }
 
 @layer base {
@@ -105,41 +120,85 @@
 /* Search Input */
 
 .input-container {
-  position: relative;
-  width: 100%;
-  border: 1px solid var(--color-white);
-  border-radius: var(--input-border-radius);
-  outline: none;
-  background: transparent;
-  opacity: 1;
+  position: relative; /* Establish a positioning context */
+  min-width: 350px;
   height: var(--input-height);
+  padding: 8px;
+  border-radius: var(--input-border-radius);
+  width: 100%;
+  outline: 1px solid var(--color-white);
+  background: transparent;
 }
 
-.search-input::after {
+.input-container::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: conic-gradient(
+    from var(--angle),
+    var(--ring-color-1),
+    var(--ring-color-2),
+    var(--ring-color-3),
+    var(--ring-color-1)
+  );
+  animation: rotate 4s linear infinite;
+  z-index: -1;
+}
+
+/* Rotating gradient border around the input container */
+.input-container-loading::before {
+  top: --var(--ring-size);
+  left: --var(--ring-size);
+  right: --var(--ring-size);
+  bottom: --var(--ring-size);
+  border-radius: calc(var(--input-border-radius) + var(--ring-size));
+  background: conic-gradient(
+    from 0deg,
+    var(--ring-color-1),
+    var(--ring-color-2),
+    var(--ring-color-3),
+    var(--ring-color-1)
+  );
+  animation: rotate-gradient var(--ring-speed) linear infinite;
+  pointer-events: none;
+  z-index: -1;
+}
+
+.input-container-loading::after {
   content: "";
   position: absolute;
-  top: -2px;
-  left: -2px;
-  right: -2px;
-  bottom: -2px;
-  background: green;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: var(--input-border-radius);
+  background: var(--background);
+  pointer-events: none;
   z-index: 0;
 }
 
 .search-input {
-  border-width: 0;
-  position: absolute;
+  width: 100%;
+  height: 100%;
+  border: none;
+  background-color: var(--background);
   color: var(--color-white);
-  border-radius: var(--input-border-radius);  
-  background: transparent;
-  z-index: 1;
+  padding: 0 15px;
+  border-radius: var(--input-border-radius);
+  box-sizing: border-box;
+  outline: none;
+}
+
+.search-input:focus {
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
 }
 
 .search-button {
   transition: all 0.2s ease;
   position: absolute;
-  background: var(--color-white);
-  opacity: .8;
+  background: transparent;
+  opacity: 1;
   right: 0;
   top: 50%;
   transform: translateY(-50%);
@@ -147,7 +206,6 @@
   height: var(--input-height);
   border-radius: var(--input-border-radius);
   color: var(--color-white);
-  background: rgba(255, 255, 255, 0.2);
   cursor: pointer;
 }
 
@@ -156,13 +214,10 @@
   background: transparent;
 }
 
-
-
 /** ------------------------------------------- Shadcn UI ------------------------------------------- */
 
 :root {
   --radius: 0.625rem;
-  --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.145 0 0);
@@ -235,20 +290,6 @@
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
   
-  /* --color-primary: oklch(0.205 0 0);
-  --color-primary-foreground: oklch(0.985 0 0);
-  --color-secondary: oklch(0.97 0 0);
-  --color-secondary-foreground: oklch(0.205 0 0);
-  --color-muted: oklch(0.97 0 0);
-  --color-muted-foreground: oklch(0.556 0 0);
-  --color-accent: oklch(0.97 0 0);
-  --color-accent-foreground: oklch(0.205 0 0);
-  --color-destructive: oklch(0.577 0.245 27.325);
-  --color-border: oklch(0.922 0 0);
-  --color-input: oklch(0.922 0 0);
-  --color-ring: oklch(0.708 0 0); */
-
-
   --color-brand: oklch(0.646 0.222 41.116);
   --color-brand-light: oklch(0.8 0.15 41.116);
   --color-weather-sunny: oklch(0.9 0.2 60);
@@ -332,30 +373,6 @@
     color: var(--color-brand);
   } */
   
-  /* Custom color utilities */
-  /* .bg-eggplant {
-    background-color: var(--color-eggplant);
-  }
-  
-  .text-eggplant {
-    color: var(--color-eggplant);
-  }
-  
-  .bg-pale-dogwood {
-    background-color: var(--color-pale-dogwood);
-  }
-  
-  .text-pale-dogwood {
-    color: var(--color-pale-dogwood);
-  }
-  
-  .bg-champagne {
-    background-color: var(--color-champagne);
-  }
-  
-  .text-champagne {
-    color: var(--color-champagne);
-  } */
   
   /* Gradient utilities */
   .bg-gradient-profile {
@@ -480,12 +497,6 @@
       opacity: 1;
     }
   }
-  
-  /* Rainbow ring animation for loading states */
-  @keyframes rainbow-spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-  }
 
     /* Keyframes animation for the rotation */
   @keyframes rotate {
@@ -497,4 +508,13 @@
     }
   }
 
+  /* Rotating gradient border animation */
+  @keyframes rotate-gradient {
+    0% { 
+      transform: rotate(0deg);
+    }
+    100% { 
+      transform: rotate(360deg);
+    }
+  }
 }

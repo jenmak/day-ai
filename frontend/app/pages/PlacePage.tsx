@@ -10,10 +10,14 @@ import { Heading } from "../components/Heading"
 import { NoLocationFoundPage } from "./NoLocationFoundPage"
 import { NO_SPECIFIC_LOCATION_FOUND, UNKNOWN } from "../consts/EmptyLocation"
 import { useEffect } from "react"
+import { CARD_LIST_WIDTH_DESKTOP, CARD_WIDTH_DESKTOP, CARD_WIDTH_DESKTOP_TODAY } from "../consts/Card"
+import { getDayOfWeek } from "../utils/getDayOfWeek"
 
 export function Place() {
 
   const { slug } = useParams()
+
+  /** CONSOLIDATE ALL ERROR HANDLING */
 
   if (!slug) {
     return (
@@ -58,27 +62,24 @@ export function Place() {
     )
   }
 
+  /** CONSOLIDATE ALL ERROR HANDLING */
+
+
   return (
     <PageWrapper>
-      <Header />
-      <div className="mt-[70px] justify-start">
-      {place && (
-        <div className="flex flex-col text-center text-white mb-4 lg:fixed lg:top-[70px] lg:left-0 lg:right-0 lg:z-10  lg:py-4">
-          <Subheading className="text-white/90 font-heading animate-cascade-title">{place.description}</Subheading>
-          <Heading className="mb-4 text-white/90 animate-cascade-subtitle">{place.normalizedPlace}</Heading>
-          <h3 className="text-white text-center text-2xl font-bold text-white/60 mb-4 animate-cascade-description">7 Day Outfit Forecast</h3>
-        </div>
-      )}
-      <div className="flex flex-col md:items-start md:gap-6 gap-12 lg:overflow-x-auto lg:flex-row lg:justify-center lg:snap-x lg:snap-mandatory lg:gap-8 lg:px-4 lg:mt-[200px]">
-        {
-          place.weather.map((weather: Weather, index: number) => (
-            <div key={weather.date.toString()} className={`snap-center lg:flex-shrink-0 animate-card-${index + 1}`}>
-              <WeatherCard weather={weather} />
+      <div className="flex flex-col gap-4">
+        <Header />
+        <div className="pt-[70px]">
+          {place && (
+            <div className="flex flex-col text-center text-white mb-8 p-4 bg-white/50 backdrop-blur-sm rounded-lg shadow-md max-w-2xl mx-auto">
+              <Subheading className="text-black/90 font-heading">{place.description}</Subheading>
+              <Heading className="mb-4 text-black/90">{place.normalizedPlace}</Heading>
+              <h2 className="text-center text-3xl font-bold text-black/60 mb-4">7 Day Outfit Forecast</h2>
             </div>
-          ))
-        }
+          )}
         </div>
       </div>
+        <WeatherCard weather={place.weather[0]} />
     </PageWrapper>
   )
 }
