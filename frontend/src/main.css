@@ -213,13 +213,34 @@
   height: var(--input-height);
   padding: 8px;
   border-radius: var(--input-border-radius);
-  /* outline: 1px solid var(--color-white); */
+  outline: 1px solid var(--color-white);
   background: transparent;
 }
-/* 
-.input-container-loading {
+
+.input-container:active,
+.input-container:focus,
+.input-container:focus-within {
+  outline: 2px solid var(--color-white);
+}
+
+.input-container.input-container-loading {
   outline: none;
-} */
+}
+
+.input-container .rotating-ring,
+.input-container .rotating-ring::after,
+.input-container .rotating-ring::before {
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s ease, visibility 0.2s ease;
+}
+
+.input-container-loading .rotating-ring,
+.input-container-loading .rotating-ring::after,
+.input-container-loading .rotating-ring::before {
+  opacity: 1;
+  visibility: visible;
+}
 
 .rotating-ring {
   position: absolute;
