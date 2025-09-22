@@ -71,6 +71,18 @@
   --input-border-radius: 18px;
   --input-height: 36px;
   --input-width: 325px;
+
+  /* Place */
+  --place-search-input-height: 68px;
+
+  /* Weather Cards */
+  --weather-card-width: 375px;
+  --weather-card-height: 300px;
+  --weather-card-gap: 2rem;
+
+  /* Weather Cards - Mobile */
+  --weather-card-width--mobile: 250px;
+  --weather-card-height--mobile: 275px;
 }
 
 .font-heading {
@@ -202,8 +214,76 @@
   animation: cardSlideIn 0.6s ease-out 3.8s both;
 }
 
-
 /** ------------------------------------------- Components ------------------------------------------- */
+
+/* Weather Card */
+
+.weather {
+  width: var(--weather-card-width);
+}
+
+.weather-card {
+  width: var(--weather-card-width);
+  height: var(--weather-card-height);
+}
+
+.weather-cards-scroll-container {
+  width: 100%;
+  overflow-x: auto;
+  margin-top: calc(var(--place-search-input-height) + 16px);
+  padding-left: calc((100vw - var(--weather-card-width)) / 2);
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: row;
+}
+
+.weather-cards-spacer {
+  width: calc((100vw - var(--weather-card-width)) / 2);
+  flex-shrink: 0;
+}
+
+.weather-cards-container {
+  display: flex;
+  flex-direction: row;
+  gap: var(--weather-card-gap);
+}
+
+.weather-cards-container > *:last-child {
+  margin-left: calc(-1 * var(--weather-card-gap));
+}
+
+/* Weather Cards - Mobile */
+
+@media screen and (max-width: 768px) {
+  .weather {
+    width: var(--weather-card-width--mobile);
+  }
+
+  .weather-card { 
+    width: var(--weather-card-width--mobile);
+    height: var(--weather-card-height--mobile);
+  }
+
+  .weather-cards-scroll-container {
+    padding-left: calc((100vw - var(--weather-card-width--mobile)) / 2);
+  }
+
+  .weather-cards-spacer {
+    width: calc((100vw - var(--weather-card-width--mobile)) / 2);
+  }
+}
+
+/* Background Colors */
+
+.background-colors {
+  gap: 0 !important;
+}
+
+.background-color {
+  flex: 1 1 0;
+  min-width: 0;
+  min-height: 0;
+}
 
 /* Search Input */
 
@@ -290,8 +370,7 @@
   width: var(--input-width);
   height: var(--input-height);
   border: none;
-  color: var(--color-white);
-  padding: 8px;
+  padding: 8px 16px;
   border-radius: var(--input-border-radius);
   box-sizing: border-box;
   outline: none;
@@ -302,6 +381,11 @@
 
 .search-input:focus {
   box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+}
+
+.search-input::placeholder {
+  color: var(--placeholder-color, var(--color-white));
+  opacity: .6
 }
 
 .search-button {
@@ -315,7 +399,7 @@
   width: var(--input-height);
   height: var(--input-height);
   border-radius: var(--input-border-radius);
-  color: var(--color-white);
+  color: var(--text-color, var(--color-white));
   cursor: pointer;
 }
 
@@ -450,7 +534,3 @@
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring); */
 /* } */
-  
-
-  
-  /* Background transition animation */

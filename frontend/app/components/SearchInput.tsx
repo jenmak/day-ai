@@ -3,19 +3,29 @@ import { Button } from "./shadcn/button"
 import { ChevronRight } from "lucide-react"
 import { useState } from "react"
 import { useForm, useFormState } from "react-hook-form"
+import { ReactCSSProperties } from "../types/CustomProperties"
 
 type SearchInputProps = {
   onSearch: (searchTerm: string) => void
   error?: Error | null
   className?: string
   backgroundColor?: string
+  placeholderColor?: string
+  textColor?: string
+  isLoading?: boolean
 }
 
-export function SearchInput({ onSearch, className, backgroundColor }: SearchInputProps) {
+export function SearchInput({
+    onSearch,
+    className,
+    isLoading,
+    backgroundColor,
+    placeholderColor = 'white',
+    textColor = 'white' }: SearchInputProps) {
   // Hooks.
   const { handleSubmit, control } = useForm()
   const { isSubmitting } = useFormState({ control })
-  const [isLoading, setIsLoading] = useState(false)
+  const [isDataLoading, setIsDataLoading] = useState(isLoading)
 
   // Local state.
   const [searchTerm, setSearchTerm] = useState("")
@@ -23,7 +33,7 @@ export function SearchInput({ onSearch, className, backgroundColor }: SearchInpu
   // Handlers.
   const handleSearch = () => {
     if (searchTerm.trim()) {
-      setIsLoading(true)
+      setIsDataLoading(true)
       onSearch(searchTerm.trim())
     }
   }
@@ -35,7 +45,13 @@ export function SearchInput({ onSearch, className, backgroundColor }: SearchInpu
 
   return (
     <form onSubmit={handleSubmit(handleSearch)}>
-      <div className={`input-container ${isLoading || isSubmitting ? "input-container-loading" : ""} ${className}`}>
+      <div 
+        className={`input-container ${isDataLoading || isSubmitting ? "input-container-loading" : ""} ${className}`}
+        style={{
+          '--placeholder-color': placeholderColor,
+          '--text-color': textColor
+        } as ReactCSSProperties}
+      >
         <Input
           className={`search-input focus-visible:ring-0 ${backgroundColor || "bg-black"}`}
           placeholder="ie. Gotham"
@@ -45,7 +61,7 @@ export function SearchInput({ onSearch, className, backgroundColor }: SearchInpu
         />
         <Button 
           type="submit"
-          disabled={isLoading || isSubmitting || !searchTerm.trim()} 
+          disabled={isDataLoading || isSubmitting || !searchTerm.trim()} 
           className="search-button"
         >
           <ChevronRight className="h-4 w-4" />
