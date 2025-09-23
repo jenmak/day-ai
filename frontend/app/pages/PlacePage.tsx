@@ -10,8 +10,9 @@ import { Heading } from "../components/typography/Heading"
 import { Subheading } from "../components/typography/Subheading"
 import { WeatherCard } from "../components/WeatherCard"
 
+const RING_BACKGROUND_COLOR = 'white'
 const TEXT_COLOR = 'black'
-const BACKGROUND_COLOR = 'bg-white/70'
+const BACKGROUND_COLOR = 'white'
 
 export function Place() {
   // Hooks.
@@ -47,6 +48,7 @@ export function Place() {
           backgroundColor={BACKGROUND_COLOR}
           textColor={TEXT_COLOR}
           placeholderColor={TEXT_COLOR}
+          ringBackgroundColor={RING_BACKGROUND_COLOR}
           isLoading={isLoading} />
       </div>
       <div className="flex flex-row justify-center mt-17 h-full">

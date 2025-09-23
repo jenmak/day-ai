@@ -22,7 +22,7 @@ export function Search() {
       <h1 className="text-hero font-heading text-white text-center mb-4 animate-cascade-title">Drip Drop City</h1>
       <Label className="text-white text-center font-light mb-2 leading-6 animate-cascade-description font-body">Describe your location and we'll recommend some weather appropriate outfits for the week.</Label>
       <div className="animate-cascade-input">
-        <SearchInput className="w-[275px]" backgroundColor="bg-black" textColor="white" onSearch={handleSearch} isLoading={isLoading} error={error} />
+        <SearchInput className="w-[275px]" ringBackgroundColor="black" backgroundColor="black" textColor="white" onSearch={handleSearch} isLoading={isLoading} error={error} />
       </div>
     </div>
   )

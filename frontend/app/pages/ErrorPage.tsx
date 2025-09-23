@@ -7,7 +7,7 @@ type ErrorPageProps = {
   message?: string
 }
 
-const BACKGROUND_COLOR = 'bg-white/70'
+const BACKGROUND_COLOR = 'white'
 const TEXT_COLOR = 'black'
 
 export function ErrorPage({ message = 'An error occurred. Please try again.' }: ErrorPageProps) {
