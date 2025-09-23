@@ -5,10 +5,22 @@ import { getDayOfWeek } from "../utils/getDayOfWeek"
 import { getWeatherImage } from "../utils/getWeatherImage"
 import { Image } from "./shadcn/image"
 import { getWeatherCondition } from "../utils/getWeatherCondition"
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./shadcn/tooltip"
 
 export const WeatherCard = ({ weather }: { weather: Weather }) => {
 
   const dayOfWeek = getDayOfWeek(weather.date)
+
+  const weatherConditionWithTooltip = () => <TooltipProvider>
+  <Tooltip>
+    <TooltipTrigger asChild>
+      <span className="truncate flex-1 text-left cursor-help">{getWeatherCondition(weather.condition)}</span>
+    </TooltipTrigger>
+    <TooltipContent>
+      <p>{getWeatherCondition(weather.condition)}</p>
+    </TooltipContent>
+  </Tooltip>
+</TooltipProvider>
 
   return (
     <div className="weather">
@@ -20,7 +32,7 @@ export const WeatherCard = ({ weather }: { weather: Weather }) => {
       </div>
       {/* Weather condition and temperature */}
       <h2 className={`text-center text-lg md:text-2xl font-bold mb-4 text-white flex flex-row justify-between weather`}>
-        <span className="truncate flex-1 text-left">{getWeatherCondition(weather.condition)}</span>
+        {weatherConditionWithTooltip()}
         <div className="flex flex-row justify-center flex-shrink-0 ml-4">
           <p className="font-body font-normal text-white/80">{weather.temperatureRange.temperatureMinimum}</p>
           <p className="font-body font-thin">/</p>
@@ -49,6 +61,7 @@ export const WeatherCard = ({ weather }: { weather: Weather }) => {
           </div>
           </div>
         </CardHeader>
+        {/* Clothing list */}
         <CardContent className={`absolute bottom-4 right-0 text-black w-full z-20`}>
           <ul className="list-inside text-right">
             {weather.clothing.map((item: string) => (
