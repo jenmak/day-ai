@@ -75,14 +75,14 @@
   /* Place */
   --place-search-input-height: 68px;
 
-  /* Weather Cards */
-  --weather-card-width: 375px;
-  --weather-card-height: 300px;
-  --weather-card-gap: 2rem;
+  /* Cards */
+  --card-width: 325px;
+  --card-height: 275px;
+  --card-gap: 2rem;
 
-  /* Weather Cards - Mobile */
-  --weather-card-width--mobile: 250px;
-  --weather-card-height--mobile: 275px;
+  /* Cards - Mobile */
+  --card-width--mobile: 250px;
+  --card-height--mobile: 275px;
 }
 
 .font-heading {
@@ -216,60 +216,75 @@
 
 /** ------------------------------------------- Components ------------------------------------------- */
 
+/* Place Card */
+
+.place-card {
+  width: var(--card-width);
+  height: var(--card-height);
+  margin-right: calc((100vw - var(--card-width)) / 2 - var(--card-width) / 2);
+}
+
 /* Weather Card */
 
 .weather {
-  width: var(--weather-card-width);
+  width: var(--card-width);
 }
 
-.weather-card {
-  width: var(--weather-card-width);
-  height: var(--weather-card-height);
+.card {
+  width: var(--card-width);
+  height: var(--card-height);
 }
 
-.weather-cards-scroll-container {
+.cards-scroll-container {
   width: 100%;
   overflow-x: auto;
-  margin-top: calc(var(--place-search-input-height) + 16px);
-  padding-left: calc((100vw - var(--weather-card-width)) / 2);
+  position: fixed;
+  left: 0;
+  padding-left: calc((100vw - var(--card-width)) / 2);
   box-sizing: border-box;
   display: flex;
   flex-direction: row;
 }
 
-.weather-cards-spacer {
-  width: calc((100vw - var(--weather-card-width)) / 2);
+.cards-spacer {
+  width: calc((100vw - var(--card-width)) / 2);
   flex-shrink: 0;
 }
 
-.weather-cards-container {
+.cards-container {
   display: flex;
   flex-direction: row;
-  gap: var(--weather-card-gap);
+  gap: var(--card-gap);
 }
 
-.weather-cards-container > *:last-child {
-  margin-left: calc(-1 * var(--weather-card-gap));
+.cards-container > *:last-child {
+  margin-left: calc(-1 * var(--card-gap));
 }
 
 /* Weather Cards - Mobile */
 
 @media screen and (max-width: 768px) {
   .weather {
-    width: var(--weather-card-width--mobile);
+    width: var(--card-width--mobile);
   }
 
-  .weather-card { 
-    width: var(--weather-card-width--mobile);
-    height: var(--weather-card-height--mobile);
+  .card { 
+    width: var(--card-width--mobile);
+    height: var(--card-height--mobile);
   }
 
-  .weather-cards-scroll-container {
-    padding-left: calc((100vw - var(--weather-card-width--mobile)) / 2);
+  .cards-scroll-container {
+    padding-left: calc((100vw - var(--card-width--mobile)) / 2);
   }
 
-  .weather-cards-spacer {
-    width: calc((100vw - var(--weather-card-width--mobile)) / 2);
+  .cards-spacer {
+    width: calc((100vw - var(--card-width--mobile)) / 2);
+  }
+
+  .place-card {
+    width: var(--card-width--mobile);
+    height: var(--card-height--mobile);
+    margin-right: calc((100vw - var(--card-width--mobile)) / 2 - var(--card-width--mobile) / 3);
   }
 }
 
@@ -361,7 +376,7 @@
   transform: translate(-50%, -50%);
   width: calc(var(--input-width) - 6px);
   height: calc(var(--input-height) - 6px);
-  background: var(--background);
+  background: var(--input-background-color);
   border-radius: calc(var(--input-border-radius) - 3px);
   z-index: 1;
 }
@@ -369,6 +384,7 @@
 .search-input {
   width: var(--input-width);
   height: var(--input-height);
+  color: var(--input-text-color, var(--color-white));
   border: none;
   padding: 8px 16px;
   border-radius: var(--input-border-radius);
@@ -384,7 +400,7 @@
 }
 
 .search-input::placeholder {
-  color: var(--placeholder-color, var(--color-white));
+  color: var(--input-placeholder-color, var(--color-white));
   opacity: .6
 }
 
@@ -407,130 +423,3 @@
   opacity: .3;
   background: transparent;
 }
-
-/** ------------------------------------------- Shadcn UI ------------------------------------------- */
-
-/* :root {
-  --radius: 0.625rem;
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
-} */
-
-/* .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.269 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.371 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.439 0 0);
-} */
-
-/* @theme inline {
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
-  
-  --color-brand: oklch(0.646 0.222 41.116);
-  --color-brand-light: oklch(0.8 0.15 41.116);
-  --color-weather-sunny: oklch(0.9 0.2 60);
-  --color-weather-rainy: oklch(0.6 0.15 240); */
-  
-
-
-  /* Custom spacing */
-  /* --spacing-xs: 0.25rem;
-  --spacing-sm: 0.5rem;
-  --spacing-md: 1rem;
-  --spacing-lg: 1.5rem;
-  --spacing-xl: 2rem; */
-  
-  /* Custom typography */
-  /* 
-  --font-size-title: 2rem;
-  --font-size-subtitle: 1.25rem;
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-card: var(--card);
-  --color-card-foreground: var(--card-foreground);
-  --color-popover: var(--popover);
-  --color-popover-foreground: var(--popover-foreground);
-  --color-primary: var(--primary);
-  --color-primary-foreground: var(--primary-foreground);
-  --color-secondary: var(--secondary);
-  --color-secondary-foreground: var(--secondary-foreground);
-  --color-muted: var(--muted);
-  --color-muted-foreground: var(--muted-foreground);
-  --color-accent: var(--accent);
-  --color-accent-foreground: var(--accent-foreground);
-  --color-destructive: var(--destructive);
-  --color-border: var(--border);
-  --color-input: var(--input);
-  --color-ring: var(--ring);
-  --color-chart-1: var(--chart-1);
-  --color-chart-2: var(--chart-2);
-  --color-chart-3: var(--chart-3);
-  --color-chart-4: var(--chart-4);
-  --color-chart-5: var(--chart-5);
-  --color-sidebar: var(--sidebar);
-  --color-sidebar-foreground: var(--sidebar-foreground);
-  --color-sidebar-primary: var(--sidebar-primary);
-  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-  --color-sidebar-accent: var(--sidebar-accent);
-  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-  --color-sidebar-border: var(--sidebar-border);
-  --color-sidebar-ring: var(--sidebar-ring); */
-/* } */

@@ -6,26 +6,19 @@ import { useState, useEffect } from "react"
 import { SearchInput } from "../components/SearchInput"
 import { useCreatePlace } from "../hooks/useCreatePlace"
 import { getPlaceErrorState } from "../utils/placeErrorHandler"
-// import { Heading } from "../components/typography/Heading"
-// import { Subheading } from "../components/typography/Subheading"
-// import { getBackgroundColors } from "../utils/getBackgroundColors"
-// import { TemperatureRangeCategory } from "../consts/Temperature"
+import { Heading } from "../components/typography/Heading"
+import { Subheading } from "../components/typography/Subheading"
 import { WeatherCard } from "../components/WeatherCard"
-// import { getColorVariable } from "../utils/getColorVariable"
+
+const TEXT_COLOR = 'black'
+const BACKGROUND_COLOR = 'bg-white/70'
 
 export function Place() {
   // Hooks.
   const { slug } = useParams()
   const { data: place, isLoading, error } = usePlaceBySlug({ slug: slug || "" })
   const { createPlace } = useCreatePlace()
-  
-  // Get background colors based on place temperature category
-  // const backgroundColors = place?.temperatureRangeCategory 
-  //   ? getBackgroundColors(place.temperatureRangeCategory as keyof typeof TemperatureRangeCategory)
-  //   : []
-  // const textColor = backgroundColors.length > 0 ? getColorVariable(backgroundColors[4]) : 'var(--color-white)'
-  const textColor = 'black'
-  const backgroundColor = 'bg-white/70'
+
   // Local state.
   const [errorMessage, setErrorMessage] = useState<string>("")
 
@@ -41,36 +34,42 @@ export function Place() {
   }
 
   // Show error page if there's an error message
-  if (errorMessage && !place) {
+  if (errorMessage) {
     return <ErrorPage message={errorMessage} />
   }
 
   return (
     <PageWrapper>
       {/* Header with search input and place info. */}
-      <div className="fixed flex flex-col py-4 left-0 right-0 z-10 items-center gap-4 bg-white/30">
+      <div className="fixed flex flex-col py-4 left-0 right-0 z-10 items-center">
         <SearchInput
           onSearch={createPlace}
-          backgroundColor={backgroundColor}
-          textColor={textColor}
-          placeholderColor={textColor}
+          backgroundColor={BACKGROUND_COLOR}
+          textColor={TEXT_COLOR}
+          placeholderColor={TEXT_COLOR}
           isLoading={isLoading} />
-        {/* {place && (
-          <div className={`${backgroundColors[4]} bg-opacity-30 p-6 rounded-lg text-white max-w-[350px] shadow-md flex flex-col gap-4 items-center text-white`}>
-            <h2 className="text-3xl md:text-2xl font-bold text-white">7 Day Outfit Forecast</h2>
-            <hr className="border-white border w-full" />
-            <Subheading className="font-heading">{place.description}</Subheading>
-            <Heading className="font-body">{place.normalizedPlace}</Heading>
-          </div>
-        )} */}
       </div>
-      {/* Weather cards. */}
-      <div className="weather-cards-scroll-container">
-        <div className="weather-cards-container">
-          {place?.weather?.map((weather) => (
-            <WeatherCard key={weather.date} weather={weather} />
-          ))}
-          <div className="weather-cards-spacer"></div>
+      <div className="flex flex-row justify-center mt-17 h-full">
+        <div className="cards-scroll-container">
+          <div className="cards-container items-end">
+            {/* Header with place info. */}
+            {place && (
+              <div className="place-card card bg-white bg-opacity-30 p-6 rounded-lg text-black max-w-[350px] shadow-md flex flex-col gap-4 text-center items-center justify-center">
+                <h2 className="text-2xl font-bold">7 Day Outfit Forecast</h2>
+                <hr className="border-black border w-full" />
+                <div className="flex items-center justify-center gap-2 w-full flex-col items-center justify-center">
+                  <Subheading className="font-heading">{place.description}</Subheading>
+                  <Heading className="font-body">{place.normalizedPlace}</Heading>
+                </div>
+              </div>
+            )}
+
+            {/* Weather cards. */}
+            {place?.weather?.map((weather) => (
+              <WeatherCard key={weather.date} weather={weather} />
+            ))}
+            <div className="cards-spacer"></div>
+          </div>
         </div>
       </div>
 

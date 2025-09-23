@@ -12,6 +12,7 @@ export function App() {
       <Route path="/" element={<Search />} />
       <Route path="/:slug" element={<Place />} />
       <Route path="/error" element={<ErrorPage />} />
+      <Route path="/unknown" element={<ErrorPage />} />
     </Routes>
   )
 }

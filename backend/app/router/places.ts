@@ -42,6 +42,22 @@ export const places = router({
         console.log(`LLM normalized "${input.description}" to "${llmResult.normalizedPlace}" (confidence: ${llmResult.confidence})`)
         console.log(`LLM generated slug: "${llmResult.slug}"`)
 
+        // 1a. Handle unknown/not found/not applicable locations
+        if (llmResult.slug === "no-specific-location-found" || llmResult.slug === "unknown" || llmResult.slug === "not-applicable") {
+          const placeData = {
+            description: input.description,
+            normalizedPlace: llmResult.normalizedPlace,
+            slug: llmResult.slug,
+            geocodedAddress: null,
+            weather: [],
+            temperatureRangeCategory: null
+          }
+          const place = ctx.cradle.places.add(placeData)
+          console.log("Place created for error location:", place)
+          const model = ctx.cradle.places.toModel(place)
+          return model
+        }
+
         // 1b. Check if location already exists, and return it if so.
         const existingPlace = ctx.cradle.places.getByNormalizedPlace(llmResult.normalizedPlace)
 

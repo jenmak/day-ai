@@ -28,7 +28,7 @@ export const WeatherCard = ({ weather }: { weather: Weather }) => {
         </div>
       </h2>
       {/* Weather card */}
-      <Card className={`relative text-black bg-white/60 backdrop-blur-sm rounded-lg shadow-md outline-none border-none overflow-hidden weather-card`}>
+      <Card className={`relative text-black bg-white/60 backdrop-blur-sm rounded-lg shadow-md outline-none border-none overflow-hidden card`}>
         <CardHeader className="relative text-black z-20">
           <div className="absolute top-0 left-3 md:top-3 md:left-5 flex flex-col gap-4">
             <div className="flex flex-col items-start">

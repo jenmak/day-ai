@@ -1,4 +1,4 @@
-import { NO_SPECIFIC_LOCATION_FOUND, UNKNOWN } from "../consts/EmptyLocation"
+import { NO_SPECIFIC_LOCATION_FOUND, UNKNOWN, NOT_APPLICABLE } from "../consts/EmptyLocation"
 import { Place } from "@dayai/backend/schemas"
 
 export interface PlaceErrorState {
@@ -22,6 +22,13 @@ export function getPlaceErrorState(
   if (slug === NO_SPECIFIC_LOCATION_FOUND || slug === UNKNOWN) {
     return {
       errorMessage: "The location you searched for was not found. Please try a different location.",
+      hasError: true
+    }
+  }
+
+  if (slug === NOT_APPLICABLE) {
+    return {
+      errorMessage: "This location is not applicable for weather data. Please try a different location.",
       hasError: true
     }
   }

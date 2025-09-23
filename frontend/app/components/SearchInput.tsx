@@ -8,6 +8,7 @@ import { ReactCSSProperties } from "../types/CustomProperties"
 type SearchInputProps = {
   onSearch: (searchTerm: string) => void
   error?: Error | null
+  placeholder?: string
   className?: string
   backgroundColor?: string
   placeholderColor?: string
@@ -19,6 +20,7 @@ export function SearchInput({
     onSearch,
     className,
     isLoading,
+    placeholder = 'ie. Gotham',
     backgroundColor,
     placeholderColor = 'white',
     textColor = 'white' }: SearchInputProps) {
@@ -48,20 +50,21 @@ export function SearchInput({
       <div 
         className={`input-container ${isDataLoading || isSubmitting ? "input-container-loading" : ""} ${className}`}
         style={{
-          '--placeholder-color': placeholderColor,
-          '--text-color': textColor
+          '--input-background-color': backgroundColor,
+          '--input-placeholder-color': placeholderColor,
+          '--input-text-color': textColor
         } as ReactCSSProperties}
       >
         <Input
           className={`search-input focus-visible:ring-0 ${backgroundColor || "bg-black"}`}
-          placeholder="ie. Gotham"
+          placeholder={placeholder}
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           onKeyDown={handleKeyPress}
         />
-        <Button 
+        <Button
           type="submit"
-          disabled={isDataLoading || isSubmitting || !searchTerm.trim()} 
+          disabled={isDataLoading || isSubmitting || !searchTerm.trim()}
           className="search-button"
         >
           <ChevronRight className="h-4 w-4" />
