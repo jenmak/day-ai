@@ -1,5 +1,5 @@
-import { CITY_COORDINATES } from "../consts/place"
 import { type Address, type GeocodedAddress } from "../types"
+// import { CONFIG, ENV } from "../config"
 // import { ERROR_MESSAGES } from "../errors"
 // import { CacheStore } from "../../core/CacheStore"
 // import { CacheUtils } from "../../core/cacheUtils"
@@ -114,13 +114,43 @@ export class GeolocationService {
     const place = description.toLowerCase()
 
     // Try to find a matching city
-    for (const [city, coords] of Object.entries(CITY_COORDINATES)) {
+    for (const [city, coords] of Object.entries({
+      "new york": { lat: 40.7128, lng: -74.006 },
+      "los angeles": { lat: 34.0522, lng: -118.2437 },
+      chicago: { lat: 41.8781, lng: -87.6298 },
+      houston: { lat: 29.7604, lng: -95.3698 },
+      phoenix: { lat: 33.4484, lng: -112.074 },
+      philadelphia: { lat: 39.9526, lng: -75.1652 },
+      "san antonio": { lat: 29.4241, lng: -98.4936 },
+      "san diego": { lat: 32.7157, lng: -117.1611 },
+      dallas: { lat: 32.7767, lng: -96.797 },
+      "san jose": { lat: 37.3382, lng: -121.8863 },
+      austin: { lat: 30.2672, lng: -97.7431 },
+      jacksonville: { lat: 30.3322, lng: -81.6557 },
+      "fort worth": { lat: 32.7555, lng: -97.3308 },
+      columbus: { lat: 39.9612, lng: -82.9988 },
+      charlotte: { lat: 35.2271, lng: -80.8431 },
+      seattle: { lat: 47.6062, lng: -122.3321 },
+      denver: { lat: 39.7392, lng: -104.9903 },
+      washington: { lat: 38.9072, lng: -77.0369 },
+      boston: { lat: 42.3601, lng: -71.0589 },
+      detroit: { lat: 42.3314, lng: -83.0458 },
+      nashville: { lat: 36.1627, lng: -86.7816 },
+      portland: { lat: 45.5152, lng: -122.6784 },
+      "las vegas": { lat: 36.1699, lng: -115.1398 },
+      baltimore: { lat: 39.2904, lng: -76.6122 },
+      milwaukee: { lat: 43.0389, lng: -87.9065 },
+      albuquerque: { lat: 35.0844, lng: -106.6504 },
+      tucson: { lat: 32.2226, lng: -110.9747 },
+      fresno: { lat: 36.7378, lng: -119.7871 },
+      mesa: { lat: 33.4152, lng: -111.8315 }
+    })) {
       if (place.includes(city)) {
-        return coords
+        return coords as { lat: number; lng: number }
       }
     }
 
-    // Default to New York if no match found
+    // Default to configured default coordinates if no match found
     return { lat: 40.7128, lng: -74.006 }
   }
 

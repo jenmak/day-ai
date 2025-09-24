@@ -1,8 +1,9 @@
 import OpenAI from "openai"
-import { MOCK_MAPPINGS, OPENAI_API_KEY } from "../consts"
+import { MOCK_MAPPINGS } from "../consts"
 import { DESCRIPTION_TO_NORMALIZED_PLACE_PROMPT } from "../prompts/descriptionToNormalizedPlacePrompt"
 import { PlaceNormalizationSchema } from "../schemas"
 import { PlaceNormalization } from "../types"
+// import { CONFIG, ENV } from "../config"
 // import { ERROR_MESSAGES } from "../errors"
 
 export class LLMService {
@@ -13,7 +14,7 @@ export class LLMService {
   static async normalizePlace(description: string): Promise<PlaceNormalization> {
     try {
       // Check if OpenAI API key is available
-      if (!OPENAI_API_KEY) {
+      if (!process.env.OPENAI_API_KEY) {
         console.warn("OpenAI API key not found, falling back to mock implementation")
         const mockResponse = this.getMockNormalization(description)
         return PlaceNormalizationSchema.parse(mockResponse)
@@ -60,7 +61,7 @@ export class LLMService {
 
   private static async createOpenAICompletion(prompt: string): Promise<PlaceNormalization> {
     const openai = new OpenAI({
-      apiKey: OPENAI_API_KEY
+      apiKey: process.env.OPENAI_API_KEY
     })
 
     try {

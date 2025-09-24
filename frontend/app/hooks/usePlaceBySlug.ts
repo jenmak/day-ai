@@ -1,6 +1,7 @@
 import { Place as PlaceType } from "@dripdropcity/backend/types"
 import { useQuery } from "@tanstack/react-query"
 import { useEffect } from "react"
+import { ENV } from "../config"
 import { ERROR_MESSAGES } from "../errors"
 import { usePlaceStore } from "../stores/placeStore"
 
@@ -9,8 +10,6 @@ interface usePlaceBySlugOptions {
   onSuccess?: (place: PlaceType) => void
   onError?: (error: Error) => void
 }
-
-const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3333"
 
 export const usePlaceBySlug = (options?: usePlaceBySlugOptions) => {
   const { slug, onSuccess, onError } = options || { slug: "" }
@@ -25,7 +24,7 @@ export const usePlaceBySlug = (options?: usePlaceBySlugOptions) => {
 
       try {
         const response = await fetch(
-          `${API_BASE_URL}/trpc/places.getBySlug?input=${encodeURIComponent(JSON.stringify({ json: { slug } }))}`
+          `${ENV.BACKEND_URL}/trpc/places.getBySlug?input=${encodeURIComponent(JSON.stringify({ json: { slug } }))}`
         )
 
         if (!response.ok) {

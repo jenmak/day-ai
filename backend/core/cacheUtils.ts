@@ -1,3 +1,4 @@
+import { CONFIG } from "../app/config"
 import { CacheStore } from "./CacheStore"
 
 /**
@@ -102,11 +103,5 @@ export class CacheUtils {
   /**
    * Cache TTL constants (in minutes)
    */
-  static TTL = {
-    WEATHER: 30, // 30 minutes - weather changes frequently
-    GEOCODE: 24 * 60, // 24 hours - locations rarely change
-    LLM: 7 * 24 * 60, // 7 days - LLM responses are stable
-    PLACE: 60, // 1 hour - place data changes moderately
-    MOCK: 60 // 1 hour - mock data should be short-lived
-  } as const
+  static TTL = CONFIG.CACHE.TTL
 }

@@ -2,9 +2,9 @@ import { trpcServer } from "@hono/trpc-server"
 import { config } from "dotenv"
 import { Hono } from "hono"
 import { cors } from "hono/cors"
+import { CONFIG, ENV } from "../app/config.js"
 import { appRouter } from "../app/router/index.js"
 import { createContext } from "../core/trpc.js"
-// import { ERROR_MESSAGES } from "../app/errors.js"
 
 // Load environment variables from .env file (only in development)
 if (process.env.NODE_ENV !== "production") {
@@ -16,7 +16,9 @@ console.log("Starting server...")
 const app = new Hono()
   .use(
     cors({
-      origin: "http://localhost:6173",
+      origin: ENV.IS_PRODUCTION
+        ? CONFIG.SERVER.PRODUCTION_FRONTEND_URL
+        : CONFIG.SERVER.FRONTEND_URL,
       allowMethods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
       allowHeaders: ["Content-Type", "Authorization"]
     })
@@ -32,7 +34,10 @@ const app = new Hono()
   .onError((err, c) => {
     console.error("Error:", err)
     console.error("Error stack:", err.stack)
-    return c.json({ error: "Internal Server Error", message: err.message }, 500)
+    return c.json(
+      { error: "Internal Server Error", message: err.message },
+      CONFIG.SERVER.HTTP_STATUS.INTERNAL_SERVER_ERROR
+    )
   })
 
 // Configure TRPC
@@ -48,7 +53,7 @@ try {
         error: "Internal Server Error",
         message: error instanceof Error ? error.message : "Unknown error"
       },
-      500
+      CONFIG.SERVER.HTTP_STATUS.INTERNAL_SERVER_ERROR
     )
   })
 }
@@ -57,9 +62,9 @@ try {
 export default app
 
 // For local development (Bun compatible)
-if (process.env.NODE_ENV !== "production") {
-  const port = process.env.PORT ? parseInt(process.env.PORT) : 3333
-  const host = process.env.HOST || "0.0.0.0"
+if (ENV.IS_DEVELOPMENT) {
+  const port = ENV.PORT
+  const host = ENV.HOST
 
   Bun.serve({
     port,

@@ -2,6 +2,7 @@ import type { AppRouter } from "@dripdropcity/backend"
 import { QueryClient } from "@tanstack/react-query"
 import { createTRPCClient, httpBatchLink, loggerLink } from "@trpc/client"
 import superjson from "superjson"
+import { ENV } from "./config"
 
 export const queryClient = new QueryClient({
   defaultOptions: {
@@ -15,7 +16,7 @@ export const trpcClient = createTRPCClient<AppRouter>({
   links: [
     loggerLink(),
     httpBatchLink({
-      url: import.meta.env.VITE_API_URL || "http://localhost:3333",
+      url: ENV.BACKEND_URL,
       transformer: superjson
     })
   ]

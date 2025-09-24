@@ -7,7 +7,8 @@
     ".": "./app/index.ts",
     "./schemas": "./app/schemas/index.ts",
     "./types": "./app/types/index.ts",
-    "./errors": "./app/errors.ts"
+    "./errors": "./app/errors.ts",
+    "./config": "./app/config.ts"
   },
   "scripts": {
     "dev": "bun run --hot src/index.ts",

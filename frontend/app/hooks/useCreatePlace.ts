@@ -1,11 +1,9 @@
 import { Place as PlaceType } from "@dripdropcity/backend/types"
 import { useMutation } from "@tanstack/react-query"
 import { useNavigate } from "react-router"
-import { usePlaceStore } from "../stores/placeStore"
-
-const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3333"
-
+import { ENV } from "../config"
 import { ERROR_MESSAGES } from "../errors"
+import { usePlaceStore } from "../stores/placeStore"
 
 interface useCreatePlaceOptions {
   onSuccess?: (place: PlaceType) => void
@@ -23,7 +21,7 @@ export const useCreatePlace = (options?: useCreatePlaceOptions) => {
         throw new Error(ERROR_MESSAGES.USER.VALIDATION_ERROR)
       }
 
-      const response = await fetch(`${API_BASE_URL}/trpc/places.create`, {
+      const response = await fetch(`${ENV.BACKEND_URL}/trpc/places.create`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json"

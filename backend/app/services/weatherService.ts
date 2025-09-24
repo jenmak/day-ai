@@ -2,6 +2,7 @@ import { OpenMeteoResponseSchema } from "../schemas"
 import { Weather } from "../types"
 import { getTemperatureRangeCategory } from "../utils/temperatureUtils"
 import { DateService } from "./dateService"
+// import { CONFIG } from "../config"
 // import { ERROR_MESSAGES } from "../errors"
 // import { CacheStore } from "../../core/CacheStore"
 // import { CacheUtils } from "../../core/cacheUtils"
@@ -24,8 +25,10 @@ export class WeatherService {
     const { latitude, longitude, startDate = new Date(), endDate } = options
     // const { cache } = options
 
-    // Calculate end date (7 days from start date)
-    const forecastEndDate = endDate || new Date(startDate.getTime() + 6 * 24 * 60 * 60 * 1000)
+    // Calculate end date (default forecast days from start date)
+    const daysToAdd = 7 - 1
+    const forecastEndDate =
+      endDate || new Date(startDate.getTime() + daysToAdd * 24 * 60 * 60 * 1000)
 
     // Format dates for API using DateService
     const startDateStr = DateService.formatDate(startDate)
