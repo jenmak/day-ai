@@ -7,6 +7,11 @@
   --font-family-body: "Poppins", sans-serif;
   --font-size-hero: 3rem;
 
+  /* Input dimensions */
+  --input-width: 275px;
+  --input-height: 48px;
+  --input-border-radius: 24px;
+
   /* Hot weather colors */
   --color-hot-amber: #f3b700;
   --color-hot-orange: #faa300;
@@ -284,9 +289,9 @@
   outline: none;
 }
 
-.input-container .rotating-ring,
-.input-container .rotating-ring::after,
-.input-container .rotating-ring::before {
+.rotating-ring,
+.rotating-ring::after,
+.rotating-ring::before {
   opacity: 0;
   visibility: hidden;
   transition:
@@ -301,6 +306,11 @@
   visibility: visible;
 }
 
+.input-container-loading .search-input {
+  opacity: 0;
+  visibility: hidden;
+}
+
 .rotating-ring {
   position: absolute;
   top: 0;
@@ -309,7 +319,7 @@
   height: var(--input-height);
   border-radius: var(--input-border-radius);
   overflow: hidden;
-  z-index: -1;
+  z-index: 1;
 }
 
 /* Animated ring */
@@ -326,10 +336,11 @@
     transparent 0deg,
     transparent 90deg,
     transparent 180deg,
-    var(--color-white) 270deg,
+    var(--input-ring-color, var(--color-white)) 270deg,
     transparent 360deg
   );
   animation: rotate 2s linear infinite;
+  z-index: 2;
 }
 
 /* Mask */
@@ -341,9 +352,9 @@
   transform: translate(-50%, -50%);
   width: calc(var(--input-width) - 6px);
   height: calc(var(--input-height) - 6px);
-  background: var(--input-ring-background-color);
+  background: var(--input-ring-background-color, var(--color-white));
   border-radius: calc(var(--input-border-radius) - 3px);
-  z-index: 1;
+  z-index: 3;
 }
 
 .search-input {
@@ -381,7 +392,7 @@
   width: var(--input-height);
   height: var(--input-height);
   border-radius: var(--input-border-radius);
-  color: var(--text-color, var(--color-white));
+  color: var(--input-text-color, var(--color-white));
   cursor: pointer;
 }
 

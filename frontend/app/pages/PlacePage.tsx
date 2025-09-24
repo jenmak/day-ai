@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react"
 import { useParams } from "react-router"
+import { Weather } from "../api"
 import { PageWrapper } from "../components/PageWrapper"
 import { SearchInput } from "../components/SearchInput"
 import { Heading } from "../components/typography/Heading"
@@ -10,9 +11,10 @@ import { usePlaceBySlug } from "../hooks/usePlaceBySlug"
 import { getPlaceErrorState } from "../utils/getPlaceErrorState"
 import { ErrorPage } from "./ErrorPage"
 
-const RING_BACKGROUND_COLOR = "white"
 const TEXT_COLOR = "black"
 const BACKGROUND_COLOR = "white"
+const RING_COLOR = "black"
+const RING_BACKGROUND_COLOR = "white"
 
 export function Place() {
   // Hooks.
@@ -42,6 +44,7 @@ export function Place() {
           backgroundColor={BACKGROUND_COLOR}
           textColor={TEXT_COLOR}
           placeholderColor={TEXT_COLOR}
+          ringColor={RING_COLOR}
           ringBackgroundColor={RING_BACKGROUND_COLOR}
           isLoading={isLoading}
         />
@@ -62,7 +65,7 @@ export function Place() {
             )}
 
             {/* Weather cards. */}
-            {place?.weather?.map((weather: any) => (
+            {place?.weather?.map((weather: Weather) => (
               <WeatherCard key={weather.date} weather={weather} />
             ))}
             <div className="cards-spacer"></div>

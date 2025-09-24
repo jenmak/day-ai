@@ -1,9 +1,9 @@
-import { Input } from "./shadcn/input"
-import { Button } from "./shadcn/button"
 import { ChevronRight } from "lucide-react"
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { useForm, useFormState } from "react-hook-form"
 import { ReactCSSProperties } from "../types/CustomProperties"
+import { Button } from "./shadcn/button"
+import { Input } from "./shadcn/input"
 
 type SearchInputProps = {
   onSearch: (searchTerm: string) => void
@@ -11,6 +11,7 @@ type SearchInputProps = {
   placeholder?: string
   className?: string
   ringBackgroundColor?: string
+  ringColor?: string
   backgroundColor?: string
   placeholderColor?: string
   textColor?: string
@@ -25,17 +26,12 @@ export function SearchInput({
   backgroundColor,
   placeholderColor = "white",
   textColor = "white",
-  ringBackgroundColor = "white"
+  ringBackgroundColor = "black",
+  ringColor = "white"
 }: SearchInputProps) {
   // Hooks.
   const { handleSubmit, control } = useForm()
   const { isSubmitting } = useFormState({ control })
-  const [isDataLoading, setIsDataLoading] = useState(isLoading)
-
-  // Sync loading state with prop changes
-  useEffect(() => {
-    setIsDataLoading(isLoading)
-  }, [isLoading])
 
   // Local state.
   const [searchTerm, setSearchTerm] = useState("")
@@ -43,8 +39,8 @@ export function SearchInput({
   // Handlers.
   const handleSearch = () => {
     if (searchTerm.trim()) {
-      setIsDataLoading(true)
       onSearch(searchTerm.trim())
+      setSearchTerm("") // Clear input after search
     }
   }
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -56,13 +52,14 @@ export function SearchInput({
   return (
     <form onSubmit={handleSubmit(handleSearch)}>
       <div
-        className={`input-container ${isDataLoading || isSubmitting ? "input-container-loading" : ""} ${className}`}
+        className={`input-container ${isLoading || isSubmitting ? "input-container-loading" : ""} ${className}`}
         style={
           {
             "--input-ring-background-color": ringBackgroundColor,
             "--input-background-color": backgroundColor,
             "--input-placeholder-color": placeholderColor,
-            "--input-text-color": textColor
+            "--input-text-color": textColor,
+            "--input-ring-color": ringColor
           } as ReactCSSProperties
         }
       >
@@ -75,7 +72,7 @@ export function SearchInput({
         />
         <Button
           type="submit"
-          disabled={isDataLoading || isSubmitting || !searchTerm.trim()}
+          disabled={isLoading || isSubmitting || !searchTerm.trim()}
           className="search-button"
         >
           <ChevronRight className="h-4 w-4" />

@@ -32,11 +32,11 @@ export interface Weather {
   date: string
   condition: number
   degreesFahrenheit: number
-  degreesCelsius: number
   temperatureRange: {
     temperatureMinimum: number
     temperatureMaximum: number
   }
+  temperatureRangeCategory: string
   rainProbabilityPercentage: number
   windSpeedMph: number
   clothing: string[]
