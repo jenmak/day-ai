@@ -289,14 +289,8 @@ export const ENV = {
     return process.env.PRODUCTION_BACKEND_URL || CONFIG.SERVER.PRODUCTION_BACKEND_URL
   },
 
-  // API Keys
-  get OPENAI_API_KEY() {
-    return process.env.OPENAI_API_KEY || ""
-  },
-
-  get OPENCAGE_API_KEY() {
-    return process.env.OPENCAGE_API_KEY || ""
-  },
+  // Note: API keys are backend-only and managed securely
+  // Frontend should never access API keys directly
 
   // Server Configuration
   get PORT() {
@@ -339,15 +333,8 @@ export const ENV = {
 export function validateConfig(): { isValid: boolean; errors: string[] } {
   const errors: string[] = []
 
-  // Validate required environment variables in production
-  if (ENV.IS_PRODUCTION) {
-    if (!ENV.OPENAI_API_KEY) {
-      errors.push("OPENAI_API_KEY is required in production")
-    }
-    if (!ENV.OPENCAGE_API_KEY) {
-      errors.push("OPENCAGE_API_KEY is required in production")
-    }
-  }
+  // Note: API key validation is now handled by ApiKeyManager
+  // This validation is moved to the security module
 
   // Validate port ranges
   if (ENV.PORT < 1 || ENV.PORT > 65535) {

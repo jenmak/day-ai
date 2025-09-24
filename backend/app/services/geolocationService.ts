@@ -1,3 +1,4 @@
+import { apiKeys, getApiKeyWithFallback } from "../security/apiKeys"
 import { type Address, type GeocodedAddress } from "../types"
 // import { CONFIG, ENV } from "../config"
 // import { ERROR_MESSAGES } from "../errors"
@@ -48,8 +49,8 @@ export class GeolocationService {
     // }
     try {
       // Check if OpenCage API key is available
-      if (!process.env.OPENCAGE_API_KEY) {
-        console.warn("OpenCage API key not found, falling back to mock implementation")
+      if (!apiKeys.isOpenCageAvailable()) {
+        console.warn("OpenCage API key not available, falling back to mock implementation")
         const mockResult = this.getMockGeocoding(description)
 
         // Cache mock result for 1 hour
@@ -172,7 +173,10 @@ export class GeolocationService {
    * Call OpenCage Geocoding API
    */
   private static async callOpenCageAPI(description: string): Promise<OpenCageResponse> {
-    const apiKey = process.env.OPENCAGE_API_KEY
+    const apiKey = getApiKeyWithFallback("opencage", "Failed to get OpenCage API key")
+    if (!apiKey) {
+      throw new Error("OpenCage API key not available")
+    }
     const encodedPlace = encodeURIComponent(description)
     const url = `https://api.opencagedata.com/geocode/v1/json?q=${encodedPlace}&key=${apiKey}&limit=1&no_annotations=1`
 

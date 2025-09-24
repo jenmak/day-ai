@@ -4,6 +4,13 @@ import { Hono } from "hono"
 import { cors } from "hono/cors"
 import { CONFIG, ENV } from "../app/config.js"
 import { appRouter } from "../app/router/index.js"
+import { apiKeys } from "../app/security/apiKeys.js"
+import {
+  checkForEnvLeaks,
+  logEnvironmentConfig,
+  sanitizeErrorMessage,
+  validateEnvironmentVariables
+} from "../app/security/envValidation.js"
 import { createContext } from "../core/trpc.js"
 
 // Load environment variables from .env file (only in development)
@@ -12,6 +19,36 @@ if (process.env.NODE_ENV !== "production") {
 }
 
 console.log("Starting server...")
+
+// Initialize API key manager
+console.log("🔐 Initializing API key manager...")
+apiKeys.refreshKeys()
+
+// Validate environment variables
+console.log("🔍 Validating environment variables...")
+const envValidation = validateEnvironmentVariables()
+if (!envValidation.isValid) {
+  console.error("❌ Environment validation failed:")
+  envValidation.errors.forEach((error) => console.error(`  - ${error}`))
+  process.exit(1)
+}
+
+// Check for environment variable leaks
+const envLeaks = checkForEnvLeaks()
+if (envLeaks.length > 0) {
+  console.error("🚨 Environment variable leaks detected:")
+  envLeaks.forEach((leak) => console.error(`  - ${leak}`))
+  process.exit(1)
+}
+
+// Log warnings
+if (envValidation.warnings.length > 0) {
+  console.warn("⚠️  Environment warnings:")
+  envValidation.warnings.forEach((warning) => console.warn(`  - ${warning}`))
+}
+
+// Log environment configuration safely
+logEnvironmentConfig()
 
 // CORS configuration
 const corsConfig = {
@@ -72,10 +109,15 @@ const app = new Hono()
     })
   })
   .onError((err, c) => {
+    // Sanitize error message to prevent API key exposure
+    const sanitizedMessage = sanitizeErrorMessage(err)
+
     console.error("Error:", err)
     console.error("Error stack:", err.stack)
+    console.error("Sanitized message:", sanitizedMessage)
+
     return c.json(
-      { error: "Internal Server Error", message: err.message },
+      { error: "Internal Server Error", message: sanitizedMessage },
       CONFIG.SERVER.HTTP_STATUS.INTERNAL_SERVER_ERROR
     )
   })

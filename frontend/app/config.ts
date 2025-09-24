@@ -27,7 +27,7 @@ export const CONFIG = {
     CORS_ORIGINS: {
       DEVELOPMENT: [
         "http://localhost:6173",
-        "http://localhost:3000", 
+        "http://localhost:3000",
         "http://localhost:5173",
         "http://127.0.0.1:3000",
         "http://127.0.0.1:5173",
@@ -39,21 +39,21 @@ export const CONFIG = {
         "https://www.dripdropcity.com"
       ]
     },
-    
+
     // CORS settings
     CORS_SETTINGS: {
       CREDENTIALS: true,
-      ALLOWED_METHODS: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
+      ALLOWED_METHODS: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"] as string[],
       ALLOWED_HEADERS: [
-        "Content-Type", 
-        "Authorization", 
+        "Content-Type",
+        "Authorization",
         "X-Requested-With",
         "Accept",
         "Origin",
         "Access-Control-Request-Method",
         "Access-Control-Request-Headers"
-      ],
-      EXPOSE_HEADERS: ["Content-Length", "X-Foo", "X-Bar"],
+      ] as string[],
+      EXPOSE_HEADERS: ["Content-Length", "X-Foo", "X-Bar"] as string[],
       MAX_AGE: 86400, // 24 hours
       OPTIONS_SUCCESS_STATUS: 200
     },
@@ -289,14 +289,8 @@ export const ENV = {
     return process.env.PRODUCTION_BACKEND_URL || CONFIG.SERVER.PRODUCTION_BACKEND_URL
   },
 
-  // API Keys
-  get OPENAI_API_KEY() {
-    return process.env.OPENAI_API_KEY || ""
-  },
-
-  get OPENCAGE_API_KEY() {
-    return process.env.OPENCAGE_API_KEY || ""
-  },
+  // Note: API keys are backend-only and managed securely
+  // Frontend should never access API keys directly
 
   // Server Configuration
   get PORT() {
@@ -320,16 +314,16 @@ export const ENV = {
   get ENABLE_CACHING() {
     return process.env.ENABLE_CACHING !== "false"
   },
-  
+
   get ENABLE_MOCK_SERVICES() {
     return process.env.ENABLE_MOCK_SERVICES === "true"
   },
-  
+
   // CORS Configuration
   get ADDITIONAL_CORS_ORIGINS() {
-    return process.env.ADDITIONAL_CORS_ORIGINS?.split(",").map(origin => origin.trim()) || []
+    return process.env.ADDITIONAL_CORS_ORIGINS?.split(",").map((origin) => origin.trim()) || []
   },
-  
+
   get DISABLE_CORS() {
     return process.env.DISABLE_CORS === "true"
   }
@@ -339,15 +333,8 @@ export const ENV = {
 export function validateConfig(): { isValid: boolean; errors: string[] } {
   const errors: string[] = []
 
-  // Validate required environment variables in production
-  if (ENV.IS_PRODUCTION) {
-    if (!ENV.OPENAI_API_KEY) {
-      errors.push("OPENAI_API_KEY is required in production")
-    }
-    if (!ENV.OPENCAGE_API_KEY) {
-      errors.push("OPENCAGE_API_KEY is required in production")
-    }
-  }
+  // Note: API key validation is now handled by ApiKeyManager
+  // This validation is moved to the security module
 
   // Validate port ranges
   if (ENV.PORT < 1 || ENV.PORT > 65535) {

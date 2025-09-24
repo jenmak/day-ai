@@ -3,8 +3,9 @@ import { config } from "dotenv"
 // Load environment variables
 config()
 
-export const OPENAI_API_KEY = process.env.OPENAI_API_KEY
+// Note: OPENAI_API_KEY is now managed securely through ApiKeyManager
+// Direct access to process.env.OPENAI_API_KEY is not allowed for security
 
 export * from "./clothing"
-export * from "./weather"
 export * from "./place"
+export * from "./weather"
