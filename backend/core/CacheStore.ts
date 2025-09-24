@@ -8,12 +8,16 @@ export interface CacheEntry extends StoreItem {
 }
 
 export class CacheStore extends Store<CacheEntry> {
+  constructor() {
+    super("cache")
+  }
+
   /**
    * Get cached value by key, checking expiration
    */
   async getCached<T>(key: string): Promise<T | null> {
     const entry = this.get(key)
-    
+
     if (!entry) {
       return null
     }
@@ -21,10 +25,10 @@ export class CacheStore extends Store<CacheEntry> {
     // Check if cache entry has expired
     const now = new Date()
     const expiresAt = new Date(entry.expiresAt)
-    
+
     if (now > expiresAt) {
       console.log(`Cache entry expired for key: ${key}`)
-      this.delete(key)
+      this.remove(key)
       return null
     }
 
@@ -35,11 +39,7 @@ export class CacheStore extends Store<CacheEntry> {
   /**
    * Set cache entry with TTL
    */
-  async setCache<T>(
-    key: string, 
-    value: T, 
-    ttlMinutes: number
-  ): Promise<void> {
+  async setCache<T>(key: string, value: T, ttlMinutes: number): Promise<void> {
     const now = new Date()
     const expiresAt = new Date(now.getTime() + ttlMinutes * 60 * 1000)
 
@@ -65,7 +65,7 @@ export class CacheStore extends Store<CacheEntry> {
    * Delete cache entry by key
    */
   async deleteCache(key: string): Promise<void> {
-    this.delete(key)
+    this.remove(key)
     console.log(`Cache deleted for key: ${key}`)
   }
 
@@ -84,7 +84,7 @@ export class CacheStore extends Store<CacheEntry> {
     }
 
     for (const key of expiredKeys) {
-      this.delete(key)
+      this.remove(key)
     }
 
     if (expiredKeys.length > 0) {
@@ -146,4 +146,3 @@ export class CacheStore extends Store<CacheEntry> {
     }
   }
 }
-

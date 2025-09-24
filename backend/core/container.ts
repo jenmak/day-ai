@@ -1,20 +1,16 @@
-import { PlaceStore } from "../app/stores/PlaceStore"
-import { CacheStore } from "./CacheStore"
 import { asValue, createContainer } from "awilix"
+import { PlaceStore } from "../app/stores/PlaceStore"
 
 type Cradle = {
   places: PlaceStore
-  cache: CacheStore
 }
 
 const container = createContainer<Cradle>()
 
 const placeStore = new PlaceStore()
-const cacheStore = new CacheStore()
 
 container.register({
-  places: asValue(placeStore),
-  cache: asValue(cacheStore)
+  places: asValue(placeStore)
 })
 
 export { container }

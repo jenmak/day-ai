@@ -1,6 +1,6 @@
+import { Weather } from "@dripdropcity/backend/types"
 import { useEffect, useState } from "react"
 import { useParams } from "react-router"
-import { Weather } from "../api"
 import { PageWrapper } from "../components/PageWrapper"
 import { SearchInput } from "../components/SearchInput"
 import { Heading } from "../components/typography/Heading"

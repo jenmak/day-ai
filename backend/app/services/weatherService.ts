@@ -1,16 +1,16 @@
 import { OpenMeteoResponseSchema } from "../schemas"
-import { DateService } from "./dateService"
 import { Weather } from "../types"
 import { getTemperatureRangeCategory } from "../utils/temperatureUtils"
-import { CacheStore } from "../../core/CacheStore"
-import { CacheUtils } from "../../core/cacheUtils"
+import { DateService } from "./dateService"
+// import { CacheStore } from "../../core/CacheStore"
+// import { CacheUtils } from "../../core/cacheUtils"
 
 export interface WeatherServiceOptions {
   latitude: number
   longitude: number
   startDate?: Date
   endDate?: Date
-  cache?: CacheStore
+  // cache?: CacheStore
 }
 
 export class WeatherService {
@@ -20,7 +20,8 @@ export class WeatherService {
    * Get 7-day weather forecast for given coordinates
    */
   static async get7DayForecast(options: WeatherServiceOptions): Promise<Weather[]> {
-    const { latitude, longitude, startDate = new Date(), endDate, cache } = options
+    const { latitude, longitude, startDate = new Date(), endDate } = options
+    // const { cache } = options
 
     // Calculate end date (7 days from start date)
     const forecastEndDate = endDate || new Date(startDate.getTime() + 6 * 24 * 60 * 60 * 1000)
@@ -30,21 +31,21 @@ export class WeatherService {
     const endDateStr = DateService.formatDate(forecastEndDate)
 
     // Generate cache key using utility
-    const cacheKey = CacheUtils.generateCacheKeys.weather(
-      latitude,
-      longitude,
-      startDateStr,
-      endDateStr
-    )
+    // const cacheKey = CacheUtils.generateCacheKeys.weather(
+    //   latitude,
+    //   longitude,
+    //   startDateStr,
+    //   endDateStr
+    // )
 
     // Check cache first if cache store is provided
-    if (cache) {
-      const cached = await cache.getCached<Weather[]>(cacheKey)
-      if (cached) {
-        console.log("Weather data served from cache")
-        return cached
-      }
-    }
+    // if (cache) {
+    //   const cached = await cache.getCached<Weather[]>(cacheKey)
+    //   if (cached) {
+    //     console.log("Weather data served from cache")
+    //     return cached
+    //   }
+    // }
 
     try {
       const url = new URL(this.BASE_URL)
@@ -104,9 +105,9 @@ export class WeatherService {
       console.log(`Successfully fetched ${weatherForecast.length} days of weather data`)
 
       // Cache the result if cache store is provided (30 minutes TTL)
-      if (cache) {
-        await cache.setCache(cacheKey, weatherForecast, CacheUtils.TTL.WEATHER)
-      }
+      // if (cache) {
+      //   await cache.setCache(cacheKey, weatherForecast, CacheUtils.TTL.WEATHER)
+      // }
 
       return weatherForecast
     } catch (error) {
@@ -121,11 +122,11 @@ export class WeatherService {
    * Get current day weather (today's forecast)
    */
   static async getCurrentDayWeather(
-    latitude: number, 
-    longitude: number, 
-    cache?: CacheStore
+    latitude: number,
+    longitude: number
+    // cache?: CacheStore
   ): Promise<Weather> {
-    const forecast = await this.get7DayForecast({ latitude, longitude, cache })
+    const forecast = await this.get7DayForecast({ latitude, longitude })
     return forecast[0] // First day is today
   }
 }

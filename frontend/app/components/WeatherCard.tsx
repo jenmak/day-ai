@@ -1,10 +1,10 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./shadcn/card"
-import { Weather } from "../api"
+import { Weather } from "@dripdropcity/backend/types"
 import { getDate } from "../utils/getDate"
 import { getDayOfWeek } from "../utils/getDayOfWeek"
-import { getWeatherImage } from "../utils/getWeatherImage"
-import { Image } from "./shadcn/image"
 import { getWeatherCondition } from "../utils/getWeatherCondition"
+import { getWeatherImage } from "../utils/getWeatherImage"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./shadcn/card"
+import { Image } from "./shadcn/image"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./shadcn/tooltip"
 
 export const WeatherCard = ({ weather }: { weather: Weather }) => {
