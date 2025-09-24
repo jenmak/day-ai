@@ -6,8 +6,8 @@ import { usePlaceStore } from "../stores/placeStore"
 const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3333"
 
 interface useCreatePlaceOptions {
-  onSuccess?: (place: any) => void
-  onError?: (error: any) => void
+  onSuccess?: (place: PlaceType) => void
+  onError?: (error: Error) => void
 }
 
 export const useCreatePlace = (options?: useCreatePlaceOptions) => {
@@ -21,28 +21,24 @@ export const useCreatePlace = (options?: useCreatePlaceOptions) => {
         throw new Error("Place description is required")
       }
 
-      try {
-        const response = await fetch(`${API_BASE_URL}/trpc/places.create`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({
-            json: {
-              description: description
-            }
-          })
+      const response = await fetch(`${API_BASE_URL}/trpc/places.create`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          json: {
+            description: description
+          }
         })
+      })
 
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`)
-        }
-
-        const data = await response.json()
-        return data.result.data.json
-      } catch (error) {
-        throw error
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`)
       }
+
+      const data = await response.json()
+      return data.result.data.json
     },
     onSuccess: (data: PlaceType) => {
       console.log(

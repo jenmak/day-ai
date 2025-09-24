@@ -1,4 +1,5 @@
 import { WeatherService } from "../services/weatherService"
+import { Weather } from "../types"
 
 // Test the weather service with New York City coordinates
 export async function testWeatherService() {
@@ -19,13 +20,13 @@ export async function testWeatherService() {
 
     console.log(`✅ Successfully fetched ${forecast.length} days of weather data:\n`)
 
-    forecast.forEach((weather: any, index: number) => {
+    forecast.forEach((weather: Weather, index: number) => {
       const date = new Date(weather.date)
       const dayName = date.toLocaleDateString("en-US", { weekday: "long" })
       const dateStr = date.toLocaleDateString("en-US", { month: "short", day: "numeric" })
 
       console.log(`${index === 0 ? "Today" : dayName} (${dateStr}):`)
-      console.log(`  Temperature: ${weather.degreesFahrenheit}°F (${weather.degreesCelsius}°C)`)
+      console.log(`  Temperature: ${weather.degreesFahrenheit}°F`)
       console.log(
         `  Range: ${weather.temperatureRange.temperatureMinimum}°F - ${weather.temperatureRange.temperatureMaximum}°F`
       )

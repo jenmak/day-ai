@@ -8,7 +8,7 @@ export interface PlaceErrorState {
 
 export function getPlaceErrorState(
   slug: string | undefined,
-  error: any,
+  error: Error | null,
   isLoading: boolean,
   place: Place | undefined
 ): PlaceErrorState {

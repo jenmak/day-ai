@@ -6,7 +6,7 @@ import { usePlaceStore } from "../stores/placeStore"
 interface usePlaceBySlugOptions {
   slug: string
   onSuccess?: (place: PlaceType) => void
-  onError?: (error: any) => void
+  onError?: (error: Error) => void
 }
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3333"

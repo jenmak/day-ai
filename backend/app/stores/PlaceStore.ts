@@ -1,5 +1,5 @@
-import type { Place } from "../types"
 import { Store, type StoreItem } from "../../core/Store"
+import type { Place, Weather } from "../types"
 
 export interface PlaceStoreItem extends StoreItem, Omit<Place, "id" | "createdAt"> {}
 
@@ -83,7 +83,7 @@ export class PlaceStore extends Store<PlaceStoreItem> {
         streetNumber?: string
       }
     }
-    weather?: any[]
+    weather?: Weather[]
   }): PlaceStoreItem {
     const placeData: Omit<PlaceStoreItem, "id" | "createdAt"> = {
       description: data.description,

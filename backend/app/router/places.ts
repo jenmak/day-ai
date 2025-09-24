@@ -7,6 +7,7 @@ import { DateService } from "../services/dateService"
 import { GeolocationService } from "../services/geolocationService"
 import { LLMService } from "../services/llmService"
 import { WeatherService } from "../services/weatherService"
+import { OpenMeteoWeatherCode } from "../types"
 import {
   ensureTemperatureRangeCategory,
   getPlaceTemperatureRangeCategory
@@ -70,7 +71,7 @@ export const places = router({
       weatherData.forEach((weather) => {
         weather.clothing = ClothingService.getRecommendations(
           weather.degreesFahrenheit,
-          weather.condition as any,
+          weather.condition as OpenMeteoWeatherCode,
           weather.rainProbabilityPercentage,
           weather.windSpeedMph
         )
@@ -156,7 +157,7 @@ export const places = router({
           freshWeatherData.forEach((weather) => {
             weather.clothing = ClothingService.getRecommendations(
               weather.degreesFahrenheit,
-              weather.condition as any,
+              weather.condition as OpenMeteoWeatherCode,
               weather.rainProbabilityPercentage,
               weather.windSpeedMph
             )

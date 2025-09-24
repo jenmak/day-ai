@@ -1,4 +1,5 @@
 import { TEMPERATURE_RANGES } from "../consts/weather"
+import { Place } from "../types"
 
 // Type for temperature range categories
 export type TemperatureRangeCategory = keyof typeof TEMPERATURE_RANGES
@@ -89,7 +90,7 @@ export function getPlaceTemperatureRangeCategory(
  * @param model - The place model
  * @returns The place model with the temperature range category
  */
-export function ensureTemperatureRangeCategory(model: any) {
+export function ensureTemperatureRangeCategory(model: Place) {
   if (!model.temperatureRangeCategory && model.weather && model.weather.length > 0) {
     model.temperatureRangeCategory = getPlaceTemperatureRangeCategory(model.weather)
   }

@@ -1,9 +1,9 @@
+import { trpcServer } from "@hono/trpc-server"
 import { config } from "dotenv"
 import { Hono } from "hono"
 import { cors } from "hono/cors"
 import { appRouter } from "../app/router/index.js"
 import { createContext } from "../core/trpc.js"
-import { trpcServer } from "@hono/trpc-server"
 
 // Load environment variables from .env file (only in development)
 if (process.env.NODE_ENV !== "production") {
@@ -39,10 +39,16 @@ try {
   console.log("Loading TRPC components...")
   app.use("/trpc/*", trpcServer({ router: appRouter, createContext }))
   console.log("TRPC server configured")
-} catch (error: any) {
+} catch (error: Error | unknown) {
   console.error("Failed to load TRPC components:", error)
   app.get("/trpc/*", (c) => {
-    return c.json({ error: "TRPC not available", message: error.message }, 500)
+    return c.json(
+      {
+        error: "TRPC not available",
+        message: error instanceof Error ? error.message : "Unknown error"
+      },
+      500
+    )
   })
 }
 
