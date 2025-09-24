@@ -24,7 +24,39 @@ export const CONFIG = {
     PRODUCTION_BACKEND_URL: "https://dripdropcity-backend.vercel.app",
 
     // CORS configuration
-    CORS_ORIGINS: ["http://localhost:6173", "https://dripdropcity-frontend.vercel.app"],
+    CORS_ORIGINS: {
+      DEVELOPMENT: [
+        "http://localhost:6173",
+        "http://localhost:3000",
+        "http://localhost:5173",
+        "http://127.0.0.1:3000",
+        "http://127.0.0.1:5173",
+        "http://127.0.0.1:6173"
+      ],
+      PRODUCTION: [
+        "https://dripdropcity-frontend.vercel.app",
+        "https://dripdropcity.com",
+        "https://www.dripdropcity.com"
+      ]
+    },
+
+    // CORS settings
+    CORS_SETTINGS: {
+      CREDENTIALS: true,
+      ALLOWED_METHODS: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"] as string[],
+      ALLOWED_HEADERS: [
+        "Content-Type",
+        "Authorization",
+        "X-Requested-With",
+        "Accept",
+        "Origin",
+        "Access-Control-Request-Method",
+        "Access-Control-Request-Headers"
+      ] as string[],
+      EXPOSE_HEADERS: ["Content-Length", "X-Foo", "X-Bar"] as string[],
+      MAX_AGE: 86400, // 24 hours
+      OPTIONS_SUCCESS_STATUS: 200
+    },
 
     // HTTP status codes
     HTTP_STATUS: {
@@ -291,6 +323,15 @@ export const ENV = {
 
   get ENABLE_MOCK_SERVICES() {
     return process.env.ENABLE_MOCK_SERVICES === "true"
+  },
+
+  // CORS Configuration
+  get ADDITIONAL_CORS_ORIGINS() {
+    return process.env.ADDITIONAL_CORS_ORIGINS?.split(",").map((origin) => origin.trim()) || []
+  },
+
+  get DISABLE_CORS() {
+    return process.env.DISABLE_CORS === "true"
   }
 } as const
 

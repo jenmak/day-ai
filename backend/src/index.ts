@@ -13,16 +13,46 @@ if (process.env.NODE_ENV !== "production") {
 
 console.log("Starting server...")
 
+// CORS configuration
+const corsConfig = {
+  origin: (origin: string, c: any) => {
+    // Allow all origins in development if CORS is disabled
+    if (ENV.DISABLE_CORS && ENV.IS_DEVELOPMENT) {
+      console.log(`CORS: Disabled - allowing all origins`)
+      return origin
+    }
+
+    // Get allowed origins based on environment
+    const baseOrigins = ENV.IS_PRODUCTION
+      ? CONFIG.SERVER.CORS_ORIGINS.PRODUCTION
+      : CONFIG.SERVER.CORS_ORIGINS.DEVELOPMENT
+
+    // Add additional origins from environment variables
+    const allowedOrigins = [...baseOrigins, ...ENV.ADDITIONAL_CORS_ORIGINS]
+
+    // Check if origin is allowed
+    const isAllowed = allowedOrigins.includes(origin)
+
+    // Log CORS decisions in development
+    if (ENV.IS_DEVELOPMENT) {
+      console.log(`CORS: Origin "${origin}" ${isAllowed ? "allowed" : "blocked"}`)
+      if (!isAllowed) {
+        console.log(`CORS: Allowed origins: ${allowedOrigins.join(", ")}`)
+      }
+    }
+
+    return isAllowed ? origin : null
+  },
+  credentials: CONFIG.SERVER.CORS_SETTINGS.CREDENTIALS,
+  allowMethods: CONFIG.SERVER.CORS_SETTINGS.ALLOWED_METHODS,
+  allowHeaders: CONFIG.SERVER.CORS_SETTINGS.ALLOWED_HEADERS,
+  exposeHeaders: CONFIG.SERVER.CORS_SETTINGS.EXPOSE_HEADERS,
+  maxAge: CONFIG.SERVER.CORS_SETTINGS.MAX_AGE,
+  optionsSuccessStatus: CONFIG.SERVER.CORS_SETTINGS.OPTIONS_SUCCESS_STATUS
+}
+
 const app = new Hono()
-  .use(
-    cors({
-      origin: ENV.IS_PRODUCTION
-        ? CONFIG.SERVER.PRODUCTION_FRONTEND_URL
-        : CONFIG.SERVER.FRONTEND_URL,
-      allowMethods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-      allowHeaders: ["Content-Type", "Authorization"]
-    })
-  )
+  .use(cors(corsConfig))
   .get("/", (c) => {
     console.log("Health check endpoint hit")
     return c.text("OK")
@@ -30,6 +60,16 @@ const app = new Hono()
   .get("/test", (c) => {
     console.log("Test endpoint hit")
     return c.json({ message: "Test successful", timestamp: new Date().toISOString() })
+  })
+  .get("/cors-test", (c) => {
+    console.log("CORS test endpoint hit")
+    const origin = c.req.header("Origin")
+    return c.json({
+      message: "CORS test successful",
+      origin,
+      timestamp: new Date().toISOString(),
+      corsEnabled: !ENV.DISABLE_CORS
+    })
   })
   .onError((err, c) => {
     console.error("Error:", err)
