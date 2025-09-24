@@ -3,6 +3,7 @@ import { useMutation } from "@tanstack/react-query"
 import { useNavigate } from "react-router"
 import { ENV } from "../config"
 import { ERROR_MESSAGES } from "../errors"
+import { SearchInputSchema, validateInput } from "../schemas/validation"
 import { usePlaceStore } from "../stores/placeStore"
 
 interface useCreatePlaceOptions {
@@ -17,8 +18,10 @@ export const useCreatePlace = (options?: useCreatePlaceOptions) => {
 
   const createPlaceMutation = useMutation({
     mutationFn: async (description: string): Promise<PlaceType> => {
-      if (!description.trim()) {
-        throw new Error(ERROR_MESSAGES.USER.VALIDATION_ERROR)
+      // Validate input before sending request
+      const validationResult = validateInput(SearchInputSchema, { query: description })
+      if (!validationResult.success) {
+        throw new Error(validationResult.errors?.[0]?.message || "Invalid input")
       }
 
       const response = await fetch(`${ENV.BACKEND_URL}/trpc/places.create`, {

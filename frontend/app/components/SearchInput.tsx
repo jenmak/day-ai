@@ -1,6 +1,8 @@
 import { ChevronRight } from "lucide-react"
 import { useState } from "react"
 import { useForm, useFormState } from "react-hook-form"
+import { useValidation } from "../hooks/useValidation"
+import { SearchInputSchema } from "../schemas/validation"
 import { ReactCSSProperties } from "../types/CustomProperties"
 import { Button } from "./shadcn/button"
 import { Input } from "./shadcn/input"
@@ -16,6 +18,7 @@ type SearchInputProps = {
   placeholderColor?: string
   textColor?: string
   isLoading?: boolean
+  showValidationErrors?: boolean
 }
 
 export function SearchInput({
@@ -27,26 +30,46 @@ export function SearchInput({
   placeholderColor = "white",
   textColor = "white",
   ringBackgroundColor = "black",
-  ringColor = "white"
+  ringColor = "white",
+  showValidationErrors = true
 }: SearchInputProps) {
   // Hooks.
   const { handleSubmit, control } = useForm()
   const { isSubmitting } = useFormState({ control })
+
+  // Validation hook
+  const { errors, isValid, isTouched, setValue, validate, handleChange, handleBlur } =
+    useValidation({
+      schema: SearchInputSchema,
+      initialValue: { query: "" },
+      validateOnChange: false,
+      validateOnBlur: true
+    })
 
   // Local state.
   const [searchTerm, setSearchTerm] = useState("")
 
   // Handlers.
   const handleSearch = () => {
-    if (searchTerm.trim()) {
+    const validationResult = validate()
+    if (validationResult.success && searchTerm.trim()) {
       onSearch(searchTerm.trim())
       setSearchTerm("") // Clear input after search
+      setValue({ query: "" }) // Clear validation state
     }
   }
+
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === "Enter") {
+      e.preventDefault()
       handleSearch()
     }
+  }
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value
+    setSearchTerm(value)
+    handleChange({ query: value })
   }
 
   return (
@@ -67,12 +90,13 @@ export function SearchInput({
           className="search-input focus-visible:ring-0"
           placeholder={placeholder}
           value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
+          onChange={handleInputChange}
           onKeyDown={handleKeyPress}
+          onBlur={handleBlur}
         />
         <Button
           type="submit"
-          disabled={isLoading || isSubmitting || !searchTerm.trim()}
+          disabled={isLoading || isSubmitting || !searchTerm.trim() || !isValid}
           className="search-button"
         >
           <ChevronRight className="h-4 w-4" />
@@ -80,6 +104,18 @@ export function SearchInput({
         </Button>
         <div className="rotating-ring"></div>
       </div>
+
+      {/* Validation Error Display */}
+      {showValidationErrors && isTouched && errors.length > 0 && (
+        <div className="mt-2 text-sm text-red-400">
+          {errors.map((error, index) => (
+            <div key={index} className="flex items-center gap-1">
+              <span>⚠️</span>
+              <span>{error.message}</span>
+            </div>
+          ))}
+        </div>
+      )}
     </form>
   )
 }

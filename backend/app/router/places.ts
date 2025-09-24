@@ -1,7 +1,7 @@
 import { TRPCError } from "@trpc/server"
-import { z } from "zod"
 import { procedure, router } from "../../core/trpc"
-import { CreatePlaceSchema, UpdatePlaceSchema } from "../schemas/place"
+import { CreatePlaceSchema, GetPlaceBySlugSchema, UpdatePlaceSchema } from "../schemas/place"
+import { validateInput } from "../schemas/validation"
 import { ClothingService } from "../services/clothingService"
 import { DateService } from "../services/dateService"
 import { GeolocationService } from "../services/geolocationService"
@@ -22,8 +22,11 @@ export const places = router({
    */
   create: procedure.input(CreatePlaceSchema).mutation(async ({ ctx, input }) => {
     try {
+      // Validate input with enhanced validation
+      const validatedInput = validateInput(CreatePlaceSchema, input)
+
       // 1. Use LLM to normalize the location description
-      const llmResult = await LLMService.normalizePlace(input.description)
+      const llmResult = await LLMService.normalizePlace(validatedInput.description)
       console.log(
         `LLM normalized "${input.description}" to "${llmResult.normalizedPlace}" (confidence: ${llmResult.confidence})`
       )
@@ -125,63 +128,77 @@ export const places = router({
    * If the place does not exist, returns an error.
    * If today is not the first day in weather data, fetches fresh weather data starting from today.
    */
-  getBySlug: procedure.input(z.object({ slug: z.string() })).query(async ({ ctx, input }) => {
-    const place = ctx.cradle.places.getBySlug(input.slug)
+  getBySlug: procedure.input(GetPlaceBySlugSchema).query(async ({ ctx, input }) => {
+    try {
+      // Validate input with enhanced validation
+      const validatedInput = validateInput(GetPlaceBySlugSchema, input)
 
-    if (!place) {
-      throw new TRPCError({
-        code: "NOT_FOUND",
-        message: `Place not found with slug: "${input.slug}".`
-      })
-    }
+      const place = ctx.cradle.places.getBySlug(validatedInput.slug)
 
-    // Check if we need to update weather data
-    if (place.weather && place.weather.length > 0 && place.geocodedAddress) {
-      const today = DateService.getToday() // YYYY-MM-DD format
-      const firstWeatherDate = place.weather[0].date
+      if (!place) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: `Place not found with slug: "${input.slug}".`
+        })
+      }
 
-      // If today is not the first day in weather data, fetch fresh weather data
-      if (firstWeatherDate !== today) {
-        try {
-          console.log(
-            `Weather data is outdated. First date: ${firstWeatherDate}, Today: ${today}. Fetching fresh data.`
-          )
+      // Check if we need to update weather data
+      if (place.weather && place.weather.length > 0 && place.geocodedAddress) {
+        const today = DateService.getToday() // YYYY-MM-DD format
+        const firstWeatherDate = place.weather[0].date
 
-          // Fetch fresh 7-day weather data starting from today
-          const freshWeatherData = await WeatherService.get7DayForecast({
-            latitude: place.geocodedAddress.latitude,
-            longitude: place.geocodedAddress.longitude,
-            startDate: new Date()
-          })
-
-          // Get clothing recommendations for the fresh weather data
-          freshWeatherData.forEach((weather) => {
-            weather.clothing = ClothingService.getRecommendations(
-              weather.degreesFahrenheit,
-              weather.condition as OpenMeteoWeatherCode,
-              weather.rainProbabilityPercentage,
-              weather.windSpeedMph
+        // If today is not the first day in weather data, fetch fresh weather data
+        if (firstWeatherDate !== today) {
+          try {
+            console.log(
+              `Weather data is outdated. First date: ${firstWeatherDate}, Today: ${today}. Fetching fresh data.`
             )
-          })
 
-          // Update the place with fresh weather data
-          const updatedPlace = ctx.cradle.places.update(place.id, {
-            weather: freshWeatherData,
-            temperatureRangeCategory: getPlaceTemperatureRangeCategory(freshWeatherData)
-          })
+            // Fetch fresh 7-day weather data starting from today
+            const freshWeatherData = await WeatherService.get7DayForecast({
+              latitude: place.geocodedAddress.latitude,
+              longitude: place.geocodedAddress.longitude,
+              startDate: new Date()
+            })
 
-          const model = ctx.cradle.places.toModel(updatedPlace)
-          return ensureTemperatureRangeCategory(model)
-        } catch (error) {
-          console.error("Error fetching fresh weather data:", error)
-          // If weather update fails, return the existing place data
-          console.log("Falling back to existing weather data")
+            // Get clothing recommendations for the fresh weather data
+            freshWeatherData.forEach((weather) => {
+              weather.clothing = ClothingService.getRecommendations(
+                weather.degreesFahrenheit,
+                weather.condition as OpenMeteoWeatherCode,
+                weather.rainProbabilityPercentage,
+                weather.windSpeedMph
+              )
+            })
+
+            // Update the place with fresh weather data
+            const updatedPlace = ctx.cradle.places.update(place.id, {
+              weather: freshWeatherData,
+              temperatureRangeCategory: getPlaceTemperatureRangeCategory(freshWeatherData)
+            })
+
+            const model = ctx.cradle.places.toModel(updatedPlace)
+            return ensureTemperatureRangeCategory(model)
+          } catch (error) {
+            console.error("Error fetching fresh weather data:", error)
+            // If weather update fails, return the existing place data
+            console.log("Falling back to existing weather data")
+          }
         }
       }
-    }
 
-    const model = ctx.cradle.places.toModel(place)
-    return ensureTemperatureRangeCategory(model)
+      const model = ctx.cradle.places.toModel(place)
+      return ensureTemperatureRangeCategory(model)
+    } catch (error) {
+      if (error instanceof TRPCError) {
+        throw error
+      }
+      console.error("Error getting place by slug:", error)
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: "Failed to get place"
+      })
+    }
   })
 
   // /**
@@ -211,5 +228,5 @@ export const places = router({
   //     metrics,
   //     timestamp: new Date().toISOString()
   //   }
-  // })
+  // }),
 })
