@@ -1,6 +1,7 @@
 import { Place as PlaceType } from "@dripdropcity/backend/types"
 import { useQuery } from "@tanstack/react-query"
 import { useEffect } from "react"
+import { ERROR_MESSAGES } from "../errors"
 import { usePlaceStore } from "../stores/placeStore"
 
 interface usePlaceBySlugOptions {
@@ -19,7 +20,7 @@ export const usePlaceBySlug = (options?: usePlaceBySlugOptions) => {
     queryKey: ["place", "slug", slug],
     queryFn: async (): Promise<PlaceType> => {
       if (!slug) {
-        throw new Error("Slug is required")
+        throw new Error(ERROR_MESSAGES.USER.VALIDATION_ERROR)
       }
 
       try {
@@ -28,7 +29,11 @@ export const usePlaceBySlug = (options?: usePlaceBySlugOptions) => {
         )
 
         if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`)
+          const errorMessage =
+            response.status >= 500
+              ? ERROR_MESSAGES.USER.SERVER_ERROR
+              : ERROR_MESSAGES.USER.NETWORK_ERROR
+          throw new Error(`${errorMessage} (HTTP ${response.status})`)
         }
 
         const data = await response.json()

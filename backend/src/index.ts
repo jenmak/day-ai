@@ -4,6 +4,7 @@ import { Hono } from "hono"
 import { cors } from "hono/cors"
 import { appRouter } from "../app/router/index.js"
 import { createContext } from "../core/trpc.js"
+// import { ERROR_MESSAGES } from "../app/errors.js"
 
 // Load environment variables from .env file (only in development)
 if (process.env.NODE_ENV !== "production") {
@@ -44,7 +45,7 @@ try {
   app.get("/trpc/*", (c) => {
     return c.json(
       {
-        error: "TRPC not available",
+        error: "Internal Server Error",
         message: error instanceof Error ? error.message : "Unknown error"
       },
       500

@@ -5,6 +5,8 @@ import { usePlaceStore } from "../stores/placeStore"
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3333"
 
+import { ERROR_MESSAGES } from "../errors"
+
 interface useCreatePlaceOptions {
   onSuccess?: (place: PlaceType) => void
   onError?: (error: Error) => void
@@ -18,7 +20,7 @@ export const useCreatePlace = (options?: useCreatePlaceOptions) => {
   const createPlaceMutation = useMutation({
     mutationFn: async (description: string): Promise<PlaceType> => {
       if (!description.trim()) {
-        throw new Error("Place description is required")
+        throw new Error(ERROR_MESSAGES.USER.VALIDATION_ERROR)
       }
 
       const response = await fetch(`${API_BASE_URL}/trpc/places.create`, {
@@ -34,7 +36,11 @@ export const useCreatePlace = (options?: useCreatePlaceOptions) => {
       })
 
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`)
+        const errorMessage =
+          response.status >= 500
+            ? ERROR_MESSAGES.USER.SERVER_ERROR
+            : ERROR_MESSAGES.USER.NETWORK_ERROR
+        throw new Error(`${errorMessage} (HTTP ${response.status})`)
       }
 
       const data = await response.json()

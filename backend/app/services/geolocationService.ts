@@ -1,5 +1,6 @@
 import { CITY_COORDINATES } from "../consts/place"
 import { type Address, type GeocodedAddress } from "../types"
+// import { ERROR_MESSAGES } from "../errors"
 // import { CacheStore } from "../../core/CacheStore"
 // import { CacheUtils } from "../../core/cacheUtils"
 
@@ -173,7 +174,7 @@ export class GeolocationService {
     _originalDescription: string
   ): GeocodedAddress {
     if (!response.results || response.results.length === 0) {
-      throw new Error("No geocoding results found")
+      throw new Error("Failed to geocode place with OpenCage API")
     }
 
     const result = response.results[0]

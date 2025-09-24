@@ -6,7 +6,8 @@
   "exports": {
     ".": "./app/index.ts",
     "./schemas": "./app/schemas/index.ts",
-    "./types": "./app/types/index.ts"
+    "./types": "./app/types/index.ts",
+    "./errors": "./app/errors.ts"
   },
   "scripts": {
     "dev": "bun run --hot src/index.ts",

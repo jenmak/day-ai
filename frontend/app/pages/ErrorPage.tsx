@@ -1,6 +1,6 @@
-import { Heading } from "../components/typography/Heading"
 import { PageWrapper } from "../components/PageWrapper"
 import { SearchInput } from "../components/SearchInput"
+import { Heading } from "../components/typography/Heading"
 import { useCreatePlace } from "../hooks/useCreatePlace"
 
 type ErrorPageProps = {
@@ -10,7 +10,9 @@ type ErrorPageProps = {
 const BACKGROUND_COLOR = "white"
 const TEXT_COLOR = "black"
 
-export function ErrorPage({ message = "An error occurred. Please try again." }: ErrorPageProps) {
+import { ERROR_MESSAGES } from "../errors"
+
+export function ErrorPage({ message = ERROR_MESSAGES.USER.GENERIC_ERROR }: ErrorPageProps) {
   const { createPlace, isLoading } = useCreatePlace()
 
   return (
