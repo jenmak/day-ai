@@ -1,4 +1,3 @@
-import { Weather } from "@dripdropcity/backend/types"
 import { useEffect, useState } from "react"
 import { useParams } from "react-router"
 import { PageWrapper } from "../components/PageWrapper"
@@ -8,6 +7,7 @@ import { Subheading } from "../components/typography/Subheading"
 import { WeatherCard } from "../components/WeatherCard"
 import { useCreatePlace } from "../hooks/useCreatePlace"
 import { usePlaceBySlug } from "../hooks/usePlaceBySlug"
+import { Weather } from "../types/backend"
 import { getPlaceErrorState } from "../utils/getPlaceErrorState"
 import { ErrorPage } from "./ErrorPage"
 

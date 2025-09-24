@@ -1,5 +1,5 @@
-import { Place } from "@dripdropcity/backend/types"
 import { ERROR_MESSAGES, ERROR_SLUGS, ErrorUtils } from "../errors"
+import { Place } from "../types/backend"
 
 export interface PlaceErrorState {
   errorMessage: string

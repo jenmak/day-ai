@@ -1,9 +1,9 @@
-import { Place as PlaceType } from "@dripdropcity/backend/types"
 import { useQuery } from "@tanstack/react-query"
 import { useEffect } from "react"
 import { ENV } from "../config"
 import { ERROR_MESSAGES } from "../errors"
 import { usePlaceStore } from "../stores/placeStore"
+import { Place as PlaceType } from "../types/backend"
 
 interface usePlaceBySlugOptions {
   slug: string

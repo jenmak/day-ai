@@ -1,5 +1,5 @@
-// Re-export error constants from shared module
-export { ERROR_SLUGS as ERROR_SLUGS } from "../../../shared/errors"
+// Re-export error constants from local errors module
+export { ERROR_SLUGS as ERROR_SLUGS } from "../errors"
 
 // Legacy exports for backward compatibility
 export const NO_SPECIFIC_LOCATION_FOUND = "no-specific-location-found"

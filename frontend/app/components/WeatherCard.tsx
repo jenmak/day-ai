@@ -1,4 +1,4 @@
-import { Weather } from "@dripdropcity/backend/types"
+import { Weather } from "../types/backend"
 import { getDate } from "../utils/getDate"
 import { getDayOfWeek } from "../utils/getDayOfWeek"
 import { getWeatherCondition } from "../utils/getWeatherCondition"

@@ -7,6 +7,7 @@
     ".": "./app/index.ts",
     "./schemas": "./app/schemas/index.ts",
     "./types": "./app/types/index.ts",
+    "./types-only": "./app/types-only.ts",
     "./errors": "./app/errors.ts",
     "./config": "./app/config.ts"
   },
@@ -34,10 +35,8 @@
     "#app/*": "./app/*",
     "#core/*": "./core/*"
   },
-  "devDepen": {
-    "@types/node": "^24.3.3"
-  },
   "devDependencies": {
+    "@types/node": "^24.3.3",
     "esbuild": "^0.25.9"
   }
 }

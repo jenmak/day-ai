@@ -1,10 +1,10 @@
-import { Place as PlaceType } from "@dripdropcity/backend/types"
 import { useMutation } from "@tanstack/react-query"
 import { useNavigate } from "react-router"
 import { ENV } from "../config"
 import { ERROR_MESSAGES } from "../errors"
 import { SearchInputSchema, validateInput } from "../schemas/validation"
 import { usePlaceStore } from "../stores/placeStore"
+import { Place as PlaceType } from "../types/backend"
 
 interface useCreatePlaceOptions {
   onSuccess?: (place: PlaceType) => void

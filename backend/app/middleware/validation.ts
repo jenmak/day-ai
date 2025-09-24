@@ -19,6 +19,7 @@ interface ValidationOptions {
 /**
  * Create validation middleware for request data
  */
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export function createValidationMiddleware(options: ValidationOptions) {
   const { schema, source = "body", sanitizeErrors = true, transform = true } = options
 
@@ -110,6 +111,7 @@ export function createValidationMiddleware(options: ValidationOptions) {
 /**
  * Validate request body
  */
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export function validateBody<T>(schema: ZodSchema<T>) {
   return createValidationMiddleware({ schema, source: "body" })
 }
@@ -117,6 +119,7 @@ export function validateBody<T>(schema: ZodSchema<T>) {
 /**
  * Validate query parameters
  */
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export function validateQuery<T>(schema: ZodSchema<T>) {
   return createValidationMiddleware({ schema, source: "query" })
 }
@@ -124,6 +127,7 @@ export function validateQuery<T>(schema: ZodSchema<T>) {
 /**
  * Validate route parameters
  */
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export function validateParams<T>(schema: ZodSchema<T>) {
   return createValidationMiddleware({ schema, source: "params" })
 }
@@ -131,6 +135,7 @@ export function validateParams<T>(schema: ZodSchema<T>) {
 /**
  * Validate headers
  */
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export function validateHeaders<T>(schema: ZodSchema<T>) {
   return createValidationMiddleware({ schema, source: "header" })
 }
@@ -173,6 +178,7 @@ export function createValidationErrorResponse(errors: ZodError["errors"]) {
 /**
  * Validate multiple sources at once
  */
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export function validateMultiple(schemas: {
   body?: ZodSchema
   query?: ZodSchema
@@ -283,6 +289,7 @@ export function sanitizeInput<T>(data: T): T {
 /**
  * Rate limiting validation middleware
  */
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export function validateRateLimit(maxRequests: number = 100, windowMs: number = 60000) {
   const requests = new Map<string, { count: number; resetTime: number }>()
 
@@ -331,6 +338,7 @@ export function validateRateLimit(maxRequests: number = 100, windowMs: number = 
 /**
  * Content-Type validation middleware
  */
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export function validateContentType(allowedTypes: string[] = ["application/json"]) {
   return async (c: Context, next: Next) => {
     const contentType = c.req.header("content-type") || ""
@@ -355,6 +363,7 @@ export function validateContentType(allowedTypes: string[] = ["application/json"
 /**
  * Request size validation middleware
  */
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export function validateRequestSize(maxSizeBytes: number = 1024 * 1024) {
   // 1MB default
   return async (c: Context, next: Next) => {

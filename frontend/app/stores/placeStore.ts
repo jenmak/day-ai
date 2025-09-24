@@ -1,6 +1,6 @@
-import { Place, Weather } from "@dripdropcity/backend/types"
 import { create } from "zustand"
 import { devtools } from "zustand/middleware"
+import { Place, Weather } from "../types/backend"
 
 interface PlaceState {
   place: {
