@@ -1,8 +1,7 @@
-import { z } from "zod"
 import OpenAI from "openai"
+import { MOCK_MAPPINGS, OPENAI_API_KEY } from "../consts"
 import { DESCRIPTION_TO_NORMALIZED_PLACE_PROMPT } from "../prompts/descriptionToNormalizedPlacePrompt"
 import { PlaceNormalizationSchema } from "../schemas"
-import { OPENAI_API_KEY, MOCK_MAPPINGS } from "../consts"
 import { PlaceNormalization } from "../types"
 
 export class LLMService {
@@ -60,7 +59,7 @@ export class LLMService {
 
   private static async createOpenAICompletion(prompt: string): Promise<PlaceNormalization> {
     const openai = new OpenAI({
-      apiKey: OPENAI_API_KEY,
+      apiKey: OPENAI_API_KEY
     })
 
     try {
@@ -97,7 +96,9 @@ export class LLMService {
    * Production method for calling OpenAI API for description to normalized place.
    * Converts descriptions like "Gotham City" to "New York, NY".
    */
-  private static async convertDescriptionToNormalizedPlace(description: string): Promise<PlaceNormalization> {
+  private static async convertDescriptionToNormalizedPlace(
+    description: string
+  ): Promise<PlaceNormalization> {
     const prompt = DESCRIPTION_TO_NORMALIZED_PLACE_PROMPT(description)
     return this.createOpenAICompletion(prompt)
   }

@@ -1,6 +1,6 @@
 # Vercel Deployment Guide
 
-This guide will help you deploy both the frontend and backend of your DayAI application to Vercel.
+This guide will help you deploy both the frontend and backend of your Drip Drop application to Vercel.
 
 ## Prerequisites
 
@@ -146,26 +146,22 @@ Your frontend will make requests to your backend API. Make sure:
 ### Common Issues
 
 1. **Build Failures**:
-
    - Check that all dependencies are in `package.json`
    - Ensure build commands are correct
    - Check for TypeScript errors with `bun run build:full`
 
 2. **Environment Variables**:
-
    - Make sure they're set in Vercel dashboard
    - Restart deployments after adding env vars
    - Check variable names match exactly
 
 3. **API Connection**:
-
    - Verify backend URL is correct
    - Check CORS settings
    - Test API endpoints directly
    - Use the test script: `bun run test:deployment [url]`
 
 4. **Routing Issues**:
-
    - Frontend should handle all routes with `index.html`
    - Backend should handle API routes properly
 

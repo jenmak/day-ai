@@ -9,20 +9,20 @@ export function getClothingRecommendations(
   windSpeed: number
 ): ClothingCategory[] {
   const recommendations: ClothingCategory[] = []
-  
+
   // Get base recommendations from weather code
   const conditionRule = WEATHER_CLOTHING_RULES[weatherCode]
   if (conditionRule) {
     // Check if temperature falls within recommended ranges
-    const isInRange = conditionRule.TEMPERATURE_RANGES.some(range => 
-      temperature >= range.min && temperature <= range.max
+    const isInRange = conditionRule.TEMPERATURE_RANGES.some(
+      (range) => temperature >= range.min && temperature <= range.max
     )
-    
+
     if (isInRange) {
       recommendations.push(...conditionRule.recommended)
     }
   }
-  
+
   // Add temperature-based recommendations
   if (temperature >= TEMPERATURE_RANGES.VERY_HOT.min) {
     recommendations.push(
@@ -69,26 +69,20 @@ export function getClothingRecommendations(
       ClothingCategoryEnum.SCARF
     )
   }
-  
+
   // Add rain-specific recommendations
   if (rainProbability > 30) {
-    recommendations.push(
-      ClothingCategoryEnum.RAIN_JACKET,
-      ClothingCategoryEnum.UMBRELLA
-    )
+    recommendations.push(ClothingCategoryEnum.RAIN_JACKET, ClothingCategoryEnum.UMBRELLA)
     if (rainProbability > 70) {
       recommendations.push(ClothingCategoryEnum.RAIN_BOOTS)
     }
   }
-  
+
   // Add wind-specific recommendations
   if (windSpeed > 15) {
-    recommendations.push(
-      ClothingCategoryEnum.SCARF,
-      ClothingCategoryEnum.JACKET
-    )
+    recommendations.push(ClothingCategoryEnum.SCARF, ClothingCategoryEnum.JACKET)
   }
-  
+
   // Remove duplicates and return
   return [...new Set(recommendations)]
 }
@@ -99,10 +93,15 @@ export function getTikTokShopClothingQuery(
   rainProbability: number,
   windSpeed: number
 ): string[] {
-  const categories = getClothingRecommendations(temperature, weatherCode, rainProbability, windSpeed)
-  
+  const categories = getClothingRecommendations(
+    temperature,
+    weatherCode,
+    rainProbability,
+    windSpeed
+  )
+
   // Convert categories to search terms for TikTok Shop API
-  return categories.map(category => {
+  return categories.map((category) => {
     switch (category) {
       case ClothingCategoryEnum.T_SHIRT:
         return "t-shirt"

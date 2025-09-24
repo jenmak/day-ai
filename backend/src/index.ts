@@ -6,18 +6,20 @@ import { createContext } from "../core/trpc.js"
 import { trpcServer } from "@hono/trpc-server"
 
 // Load environment variables from .env file (only in development)
-if (process.env.NODE_ENV !== 'production') {
+if (process.env.NODE_ENV !== "production") {
   config()
 }
 
 console.log("Starting server...")
 
 const app = new Hono()
-  .use(cors({
-    origin: 'http://localhost:6173',
-    allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowHeaders: ['Content-Type', 'Authorization'],
-  }))
+  .use(
+    cors({
+      origin: "http://localhost:6173",
+      allowMethods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+      allowHeaders: ["Content-Type", "Authorization"]
+    })
+  )
   .get("/", (c) => {
     console.log("Health check endpoint hit")
     return c.text("OK")
@@ -48,15 +50,15 @@ try {
 export default app
 
 // For local development (Bun compatible)
-if (process.env.NODE_ENV !== 'production') {
+if (process.env.NODE_ENV !== "production") {
   const port = process.env.PORT ? parseInt(process.env.PORT) : 3333
   const host = process.env.HOST || "0.0.0.0"
-  
+
   Bun.serve({
     port,
     hostname: host,
-    fetch: app.fetch,
+    fetch: app.fetch
   })
-  
+
   console.log(`Server running at http://${host}:${port}`)
 }

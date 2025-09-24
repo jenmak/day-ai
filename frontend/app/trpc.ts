@@ -1,4 +1,4 @@
-import type { AppRouter } from "@dayai/backend"
+import type { AppRouter } from "@dripdropcity/backend"
 import { QueryClient } from "@tanstack/react-query"
 import { createTRPCClient, httpBatchLink, loggerLink } from "@trpc/client"
 import superjson from "superjson"

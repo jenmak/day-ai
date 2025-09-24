@@ -1,5 +1,5 @@
 import * as React from "react"
-import { cn } from "../../utils/classNames"
+import { cn } from "../../utils/cn"
 
 export interface ImageProps extends React.ImgHTMLAttributes<HTMLImageElement> {
   src: string

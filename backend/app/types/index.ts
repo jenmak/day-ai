@@ -1,6 +1,20 @@
-import z from "zod";
-import { AddressSchema, CreatePlaceSchema, GeocodedAddressSchema, PlaceNormalizationSchema, PlaceSchema, TemperatureRangeSchema, TemperatureRangeCategorySchema, UpdatePlaceSchema, UserSchema, WeatherSchema, ClothingCategorySchema, ClothingRecommendationSchema, WeatherClothingRecommendationsSchema } from "../schemas";
-import { WEATHER_CONDITION } from "../consts";
+import z from "zod"
+import {
+  AddressSchema,
+  CreatePlaceSchema,
+  GeocodedAddressSchema,
+  PlaceNormalizationSchema,
+  PlaceSchema,
+  TemperatureRangeSchema,
+  TemperatureRangeCategorySchema,
+  UpdatePlaceSchema,
+  UserSchema,
+  WeatherSchema,
+  ClothingCategorySchema,
+  ClothingRecommendationSchema,
+  WeatherClothingRecommendationsSchema
+} from "../schemas"
+import { WEATHER_CONDITION } from "../consts"
 
 export type TemperatureRange = z.infer<typeof TemperatureRangeSchema>
 export type TemperatureRangeCategory = z.infer<typeof TemperatureRangeCategorySchema>

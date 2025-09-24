@@ -1,11 +1,12 @@
 {
-  "name": "@dayai/backend",
+  "name": "@dripdropcity/backend",
   "type": "module",
   "version": "0.0.0",
   "sideEffects": false,
   "exports": {
     ".": "./app/index.ts",
-    "./schemas": "./app/schemas/index.ts"
+    "./schemas": "./app/schemas/index.ts",
+    "./types": "./app/types/index.ts"
   },
   "scripts": {
     "dev": "bun run --hot src/index.ts",
@@ -13,7 +14,9 @@
     "build:full": "tsc",
     "start": "bun run src/index.ts",
     "vercel-build": "node scripts/build.cjs",
-    "test:deployment": "node test-deployment.js"
+    "test:deployment": "node test-deployment.js",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
   },
   "dependencies": {
     "@hono/trpc-server": "^0.3.4",

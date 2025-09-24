@@ -12,7 +12,7 @@ import {
 } from "react-hook-form"
 
 import { Label } from "./label"
-import { cn } from "../../utils/classNames"
+import { cn } from "../../utils/cn"
 
 // https://ui.shadcn.com/docs/components/form
 // https://react-hook-form.com/

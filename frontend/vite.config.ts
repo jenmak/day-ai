@@ -17,10 +17,10 @@ export default defineConfig({
     }
   },
   define: {
-    'import.meta.env.VITE_API_URL': JSON.stringify(
-      process.env.NODE_ENV === 'production' 
-        ? 'https://day-ai-backend.vercel.app'  // Use consistent domain
-        : 'http://localhost:3333'  // Local development
+    "import.meta.env.VITE_API_URL": JSON.stringify(
+      process.env.NODE_ENV === "production"
+        ? "https://dripdropcity-backend.vercel.app" // Use consistent domain
+        : "http://localhost:3333" // Local development
     )
   }
 })

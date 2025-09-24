@@ -1,15 +1,15 @@
 import { z } from "zod"
-import { ClothingCategoryEnum, TEMPERATURE_RANGES } from "../consts"
+import { ClothingCategoryEnum } from "../consts"
 
 // Temperature range category enum
 export const TemperatureRangeCategorySchema = z.enum([
-  'VERY_HOT',
-  'HOT', 
-  'WARM',
-  'MILD',
-  'COOL',
-  'COLD',
-  'VERY_COLD'
+  "VERY_HOT",
+  "HOT",
+  "WARM",
+  "MILD",
+  "COOL",
+  "COLD",
+  "VERY_COLD"
 ] as const)
 
 // Zod schema for Open-Meteo weather codes (using the numeric keys)
@@ -32,7 +32,7 @@ export const OpenMeteoResponseSchema = z.object({
 // Temperature Range Schema
 export const TemperatureRangeSchema = z.object({
   temperatureMinimum: z.number(),
-  temperatureMaximum: z.number(),
+  temperatureMaximum: z.number()
 })
 
 // Weather Schema

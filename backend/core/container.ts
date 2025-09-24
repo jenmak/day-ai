@@ -9,7 +9,7 @@ const container = createContainer<Cradle>()
 
 const placeStore = new PlaceStore()
 container.register({
-  places: asValue(placeStore),
+  places: asValue(placeStore)
 })
 
 export { container }

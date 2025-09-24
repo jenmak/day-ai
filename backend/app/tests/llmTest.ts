@@ -6,7 +6,7 @@ export async function testLLMService() {
 
   const testCases = [
     "Gotham City",
-    "The Big Apple", 
+    "The Big Apple",
     "Home of the school that's better than Yale",
     "The Windy City",
     "La La Land",
@@ -39,9 +39,9 @@ export async function testLLMService() {
 // Test a single place description with the real OpenAI API
 async function testSingleLocation() {
   console.log("=== Single LLM Service Test ===\n")
-  
+
   const testCase = "Gotham City"
-  
+
   try {
     console.log(`Testing: "${testCase}"`)
     const result = await LLMService.normalizePlace(testCase)
@@ -59,5 +59,3 @@ async function testSingleLocation() {
 
 // Run the single test
 // testSingleLocation()
-
-

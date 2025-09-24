@@ -18,14 +18,15 @@ type SearchInputProps = {
 }
 
 export function SearchInput({
-    onSearch,
-    className,
-    isLoading,
-    placeholder = 'ie. Gotham',
-    backgroundColor,
-    placeholderColor = 'white',
-    textColor = 'white',
-    ringBackgroundColor = 'white' }: SearchInputProps) {
+  onSearch,
+  className,
+  isLoading,
+  placeholder = "ie. Gotham",
+  backgroundColor,
+  placeholderColor = "white",
+  textColor = "white",
+  ringBackgroundColor = "white"
+}: SearchInputProps) {
   // Hooks.
   const { handleSubmit, control } = useForm()
   const { isSubmitting } = useFormState({ control })
@@ -47,21 +48,23 @@ export function SearchInput({
     }
   }
   const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
+    if (e.key === "Enter") {
       handleSearch()
     }
   }
 
   return (
     <form onSubmit={handleSubmit(handleSearch)}>
-      <div 
+      <div
         className={`input-container ${isDataLoading || isSubmitting ? "input-container-loading" : ""} ${className}`}
-        style={{
-          '--input-ring-background-color': ringBackgroundColor,
-          '--input-background-color': backgroundColor,
-          '--input-placeholder-color': placeholderColor,
-          '--input-text-color': textColor
-        } as ReactCSSProperties}
+        style={
+          {
+            "--input-ring-background-color": ringBackgroundColor,
+            "--input-background-color": backgroundColor,
+            "--input-placeholder-color": placeholderColor,
+            "--input-text-color": textColor
+          } as ReactCSSProperties
+        }
       >
         <Input
           className="search-input focus-visible:ring-0"
@@ -80,6 +83,6 @@ export function SearchInput({
         </Button>
         <div className="rotating-ring"></div>
       </div>
-    </form> 
+    </form>
   )
 }

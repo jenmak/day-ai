@@ -1,5 +1,4 @@
 export type ReactCSSProperties = React.CSSProperties & {
-  '--placeholder-color'?: string
-  '--button-text-color'?: string
+  "--placeholder-color"?: string
+  "--button-text-color"?: string
 }
-  

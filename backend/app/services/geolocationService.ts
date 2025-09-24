@@ -41,7 +41,7 @@ export class GeolocationService {
       return this.parseOpenCageResponse(opencageResponse, description)
     } catch (error) {
       console.error("Error geocoding place:", error)
-      
+
       // Fallback to mock implementation if OpenCage fails
       console.warn("OpenCage API failed, falling back to mock implementation")
       try {
@@ -60,7 +60,7 @@ export class GeolocationService {
     // Simple mock implementation that provides basic coordinates
     // In a real implementation, this could use a local geocoding database
     const mockCoordinates = this.getMockCoordinates(description)
-    
+
     return {
       latitude: mockCoordinates.lat,
       longitude: mockCoordinates.lng,
@@ -74,7 +74,7 @@ export class GeolocationService {
    */
   private static getMockCoordinates(description: string): { lat: number; lng: number } {
     const place = description.toLowerCase()
-  
+
     // Try to find a matching city
     for (const [city, coords] of Object.entries(CITY_COORDINATES)) {
       if (place.includes(city)) {
@@ -83,15 +83,15 @@ export class GeolocationService {
     }
 
     // Default to New York if no match found
-    return { lat: 40.7128, lng: -74.0060 }
+    return { lat: 40.7128, lng: -74.006 }
   }
 
   /**
    * Parse structured address from place description
    */
   private static parseStructuredAddress(description: string): Address {
-    const parts = description.split(',').map(part => part.trim())
-    
+    const parts = description.split(",").map((part) => part.trim())
+
     return {
       city: parts[0] || "",
       state: parts[1] || "",
@@ -110,13 +110,13 @@ export class GeolocationService {
 
     try {
       const response = await fetch(url)
-      
+
       if (!response.ok) {
         throw new Error(`OpenCage API error: ${response.status} ${response.statusText}`)
       }
 
-      const data = await response.json() as OpenCageResponse
-      
+      const data = (await response.json()) as OpenCageResponse
+
       if (data.status.code !== 200) {
         throw new Error(`OpenCage API error: ${data.status.message}`)
       }
@@ -131,7 +131,10 @@ export class GeolocationService {
   /**
    * Parse OpenCage API response into our GeocodedAddress format
    */
-  private static parseOpenCageResponse(response: OpenCageResponse, _originalDescription: string): GeocodedAddress {
+  private static parseOpenCageResponse(
+    response: OpenCageResponse,
+    _originalDescription: string
+  ): GeocodedAddress {
     if (!response.results || response.results.length === 0) {
       throw new Error("No geocoding results found")
     }

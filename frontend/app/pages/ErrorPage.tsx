@@ -7,10 +7,10 @@ type ErrorPageProps = {
   message?: string
 }
 
-const BACKGROUND_COLOR = 'white'
-const TEXT_COLOR = 'black'
+const BACKGROUND_COLOR = "white"
+const TEXT_COLOR = "black"
 
-export function ErrorPage({ message = 'An error occurred. Please try again.' }: ErrorPageProps) {
+export function ErrorPage({ message = "An error occurred. Please try again." }: ErrorPageProps) {
   const { createPlace, isLoading } = useCreatePlace()
 
   return (
@@ -22,19 +22,20 @@ export function ErrorPage({ message = 'An error occurred. Please try again.' }: 
           backgroundColor={BACKGROUND_COLOR}
           textColor={TEXT_COLOR}
           placeholderColor={TEXT_COLOR}
-          isLoading={isLoading} />
+          isLoading={isLoading}
+        />
       </div>
       <div className="flex flex-col items-center justify-center h-screen w-full">
-      {/* Card*/}
-      {
-        <div className="card bg-white bg-opacity-30 p-6 rounded-lg text-black max-w-[350px] shadow-md flex flex-col gap-4 text-center items-center justify-center">
-          <h2 className="text-2xl font-bold">Error</h2>
-          <hr className="border-black border w-full" />
-          <div className="flex items-center justify-center gap-2 w-full flex-col items-center justify-center">
-            <Heading className="font-body">{message}</Heading>
+        {/* Card*/}
+        {
+          <div className="card bg-white bg-opacity-30 p-6 rounded-lg text-black max-w-[350px] shadow-md flex flex-col gap-4 text-center items-center justify-center">
+            <h2 className="text-2xl font-bold">Error</h2>
+            <hr className="border-black border w-full" />
+            <div className="flex items-center justify-center gap-2 w-full flex-col items-center justify-center">
+              <Heading className="font-body">{message}</Heading>
+            </div>
           </div>
-        </div>
-      }
+        }
       </div>
     </PageWrapper>
   )

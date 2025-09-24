@@ -1,4 +1,4 @@
-import { cn } from "../../utils/classNames"
+import { cn } from "../../utils/cn"
 import * as React from "react"
 
 export interface SpinnerProps extends React.HTMLAttributes<HTMLDivElement> {

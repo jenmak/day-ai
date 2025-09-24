@@ -1,7 +1,7 @@
 import type { Place } from "../types"
 import { Store, type StoreItem } from "../../core/Store"
 
-export interface PlaceStoreItem extends StoreItem, Omit<Place, 'id' | 'createdAt'> { }
+export interface PlaceStoreItem extends StoreItem, Omit<Place, "id" | "createdAt"> {}
 
 export class PlaceStore extends Store<PlaceStoreItem> {
   constructor() {
@@ -14,10 +14,10 @@ export class PlaceStore extends Store<PlaceStoreItem> {
   static generateSlug(text: string): string {
     return text
       .toLowerCase()
-      .replace(/[^a-z0-9\s-]/g, '') // Remove all non-alphanumeric characters except spaces and hyphens
-      .replace(/\s+/g, '-') // Replace one or more spaces with a single hyphen
-      .replace(/-+/g, '-') // Replace multiple consecutive hyphens with a single hyphen
-      .replace(/^-|-$/g, '') // Remove leading and trailing hyphens
+      .replace(/[^a-z0-9\s-]/g, "") // Remove all non-alphanumeric characters except spaces and hyphens
+      .replace(/\s+/g, "-") // Replace one or more spaces with a single hyphen
+      .replace(/-+/g, "-") // Replace multiple consecutive hyphens with a single hyphen
+      .replace(/^-|-$/g, "") // Remove leading and trailing hyphens
   }
 
   toModel(item: PlaceStoreItem): Place {
@@ -35,17 +35,16 @@ export class PlaceStore extends Store<PlaceStoreItem> {
     } as Place
   }
 
-
   getByDescription(description: string): PlaceStoreItem | undefined {
-    return this.getAll().find(item => item.description === description)
+    return this.getAll().find((item) => item.description === description)
   }
 
   getBySlug(slug: string): PlaceStoreItem | undefined {
-    return this.getAll().find(item => item.slug === slug)
+    return this.getAll().find((item) => item.slug === slug)
   }
 
   getByNormalizedPlace(normalizedPlace: string): PlaceStoreItem | undefined {
-    return this.getAll().find(item => item.normalizedPlace === normalizedPlace)
+    return this.getAll().find((item) => item.normalizedPlace === normalizedPlace)
   }
 
   /**
@@ -60,7 +59,7 @@ export class PlaceStore extends Store<PlaceStoreItem> {
    * Get all places as models
    */
   getAllAsModels() {
-    return this.getAll().map(item => this.toModel(item))
+    return this.getAll().map((item) => this.toModel(item))
   }
 
   /**
@@ -105,10 +104,10 @@ export class PlaceStore extends Store<PlaceStoreItem> {
     if (!oldItem) {
       throw new Error(`Place with id "${id}" not found`)
     }
-    
+
     super.update(id, updates)
     const updatedItem = this.get(id)!
-    
+
     return updatedItem
   }
 }

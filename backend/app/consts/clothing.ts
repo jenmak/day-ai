@@ -13,7 +13,7 @@ export const ClothingCategoryEnum = {
   COAT: "coat",
   RAIN_JACKET: "rain-jacket",
   WINTER_COAT: "winter-coat",
-  
+
   // Bottoms
   SHORTS: "shorts",
   JEANS: "jeans",
@@ -21,13 +21,13 @@ export const ClothingCategoryEnum = {
   LEGGINGS: "leggings",
   SWEATPANTS: "sweatpants",
   RAIN_PANTS: "rain-pants",
-  
+
   // Dresses & Skirts
   DRESS: "dress",
   SKIRT: "skirt",
   MAXI_DRESS: "maxi-dress",
   MINI_DRESS: "mini-dress",
-  
+
   // Footwear
   SNEAKERS: "sneakers",
   SANDALS: "sandals",
@@ -36,7 +36,7 @@ export const ClothingCategoryEnum = {
   WINTER_BOOTS: "winter-boots",
   HEELS: "heels",
   FLATS: "flats",
-  
+
   // Accessories
   HAT: "hat",
   BEANIE: "beanie",
@@ -80,10 +80,7 @@ export const WEATHER_CLOTHING_RULES = {
       ClothingCategoryEnum.SUNGLASSES,
       ClothingCategoryEnum.DRESS
     ],
-    avoid: [
-      ClothingCategoryEnum.WINTER_COAT,
-      ClothingCategoryEnum.RAIN_JACKET
-    ]
+    avoid: [ClothingCategoryEnum.WINTER_COAT, ClothingCategoryEnum.RAIN_JACKET]
   },
 
   // Partly cloudy (code 2)
@@ -95,10 +92,7 @@ export const WEATHER_CLOTHING_RULES = {
       ClothingCategoryEnum.SNEAKERS,
       ClothingCategoryEnum.SWEATSHIRT
     ],
-    avoid: [
-      ClothingCategoryEnum.TANK_TOP,
-      ClothingCategoryEnum.SHORTS
-    ]
+    avoid: [ClothingCategoryEnum.TANK_TOP, ClothingCategoryEnum.SHORTS]
   },
 
   // Overcast (code 3)
@@ -110,10 +104,7 @@ export const WEATHER_CLOTHING_RULES = {
       ClothingCategoryEnum.SWEATSHIRT,
       ClothingCategoryEnum.SNEAKERS
     ],
-    avoid: [
-      ClothingCategoryEnum.TANK_TOP,
-      ClothingCategoryEnum.SHORTS
-    ]
+    avoid: [ClothingCategoryEnum.TANK_TOP, ClothingCategoryEnum.SHORTS]
   },
 
   // Foggy weather (codes 45, 48)
@@ -125,10 +116,7 @@ export const WEATHER_CLOTHING_RULES = {
       ClothingCategoryEnum.SWEATSHIRT,
       ClothingCategoryEnum.SNEAKERS
     ],
-    avoid: [
-      ClothingCategoryEnum.SHORTS,
-      ClothingCategoryEnum.TANK_TOP
-    ]
+    avoid: [ClothingCategoryEnum.SHORTS, ClothingCategoryEnum.TANK_TOP]
   },
 
   48: {
@@ -139,10 +127,7 @@ export const WEATHER_CLOTHING_RULES = {
       ClothingCategoryEnum.BOOTS,
       ClothingCategoryEnum.SCARF
     ],
-    avoid: [
-      ClothingCategoryEnum.SHORTS,
-      ClothingCategoryEnum.SANDALS
-    ]
+    avoid: [ClothingCategoryEnum.SHORTS, ClothingCategoryEnum.SANDALS]
   },
 
   // Light precipitation (codes 51, 53, 55, 56, 57, 80, 81)
@@ -154,10 +139,7 @@ export const WEATHER_CLOTHING_RULES = {
       ClothingCategoryEnum.SNEAKERS,
       ClothingCategoryEnum.LONG_SLEEVE
     ],
-    avoid: [
-      ClothingCategoryEnum.SANDALS,
-      ClothingCategoryEnum.SHORTS
-    ]
+    avoid: [ClothingCategoryEnum.SANDALS, ClothingCategoryEnum.SHORTS]
   },
 
   53: {
@@ -168,10 +150,7 @@ export const WEATHER_CLOTHING_RULES = {
       ClothingCategoryEnum.SNEAKERS,
       ClothingCategoryEnum.LONG_SLEEVE
     ],
-    avoid: [
-      ClothingCategoryEnum.SANDALS,
-      ClothingCategoryEnum.SHORTS
-    ]
+    avoid: [ClothingCategoryEnum.SANDALS, ClothingCategoryEnum.SHORTS]
   },
 
   55: {
@@ -182,10 +161,7 @@ export const WEATHER_CLOTHING_RULES = {
       ClothingCategoryEnum.SNEAKERS,
       ClothingCategoryEnum.LONG_SLEEVE
     ],
-    avoid: [
-      ClothingCategoryEnum.SANDALS,
-      ClothingCategoryEnum.SHORTS
-    ]
+    avoid: [ClothingCategoryEnum.SANDALS, ClothingCategoryEnum.SHORTS]
   },
 
   56: {
@@ -197,10 +173,7 @@ export const WEATHER_CLOTHING_RULES = {
       ClothingCategoryEnum.LONG_SLEEVE,
       ClothingCategoryEnum.GLOVES
     ],
-    avoid: [
-      ClothingCategoryEnum.SANDALS,
-      ClothingCategoryEnum.SHORTS
-    ]
+    avoid: [ClothingCategoryEnum.SANDALS, ClothingCategoryEnum.SHORTS]
   },
 
   57: {
@@ -212,10 +185,7 @@ export const WEATHER_CLOTHING_RULES = {
       ClothingCategoryEnum.LONG_SLEEVE,
       ClothingCategoryEnum.GLOVES
     ],
-    avoid: [
-      ClothingCategoryEnum.SANDALS,
-      ClothingCategoryEnum.SHORTS
-    ]
+    avoid: [ClothingCategoryEnum.SANDALS, ClothingCategoryEnum.SHORTS]
   },
 
   80: {
@@ -226,10 +196,7 @@ export const WEATHER_CLOTHING_RULES = {
       ClothingCategoryEnum.SNEAKERS,
       ClothingCategoryEnum.LONG_SLEEVE
     ],
-    avoid: [
-      ClothingCategoryEnum.SANDALS,
-      ClothingCategoryEnum.SHORTS
-    ]
+    avoid: [ClothingCategoryEnum.SANDALS, ClothingCategoryEnum.SHORTS]
   },
 
   81: {
@@ -240,10 +207,7 @@ export const WEATHER_CLOTHING_RULES = {
       ClothingCategoryEnum.SNEAKERS,
       ClothingCategoryEnum.LONG_SLEEVE
     ],
-    avoid: [
-      ClothingCategoryEnum.SANDALS,
-      ClothingCategoryEnum.SHORTS
-    ]
+    avoid: [ClothingCategoryEnum.SANDALS, ClothingCategoryEnum.SHORTS]
   },
 
   // Heavy precipitation (codes 61, 63, 65, 66, 67, 82)

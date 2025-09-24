@@ -3,35 +3,35 @@
 
 :root {
   /* Fonts */
-  --font-family-heading: 'Cormorant Garamond', serif;
-  --font-family-body: 'Poppins', sans-serif;
+  --font-family-heading: "Cormorant Garamond", serif;
+  --font-family-body: "Poppins", sans-serif;
   --font-size-hero: 3rem;
 
   /* Hot weather colors */
-  --color-hot-amber: #F3B700;
-  --color-hot-orange: #FAA300;
-  --color-hot-fulvous: #E57C04;
-  --color-hot-pantone-orange: #FF6201;
-  --color-hot-coquelicot: #F63E02;
+  --color-hot-amber: #f3b700;
+  --color-hot-orange: #faa300;
+  --color-hot-fulvous: #e57c04;
+  --color-hot-pantone-orange: #ff6201;
+  --color-hot-coquelicot: #f63e02;
 
   /* Cool weather colors */
-  --color-cool-aquamarine: #73FBD3;
-  --color-cool-cyan: #44E5E7;
-  --color-cool-skyblue: #59D2FE;
-  --color-cool-blue: #4A8FE7;
-  --color-cool-crayola-blue: #5C7AFF;
+  --color-cool-aquamarine: #73fbd3;
+  --color-cool-cyan: #44e5e7;
+  --color-cool-skyblue: #59d2fe;
+  --color-cool-blue: #4a8fe7;
+  --color-cool-crayola-blue: #5c7aff;
 
   /* Cold weather colors */
-  --color-cold-indigo: #A682FF;
-  --color-cold-slate-blue: #715AFF;
-  --color-cold-cornflower-blue: #5887FF;
-  --color-cold-maya-blue: #55C1FF;
-  --color-cold-prussian-blue: #102E4A;
+  --color-cold-indigo: #a682ff;
+  --color-cold-slate-blue: #715aff;
+  --color-cold-cornflower-blue: #5887ff;
+  --color-cold-maya-blue: #55c1ff;
+  --color-cold-prussian-blue: #102e4a;
 
   /* Monochrome gray colors */
-  --color-gray-1: #F8F9FA;
-  --color-gray-2: #DEE2E6;
-  --color-gray-3: #ADB5BD;
+  --color-gray-1: #f8f9fa;
+  --color-gray-2: #dee2e6;
+  --color-gray-3: #adb5bd;
   --color-gray-4: #495057;
   --color-gray-5: #212529;
 
@@ -56,7 +56,6 @@
   --color-cold-4: var(--color-cold-maya-blue);
   --color-cold-5: var(--color-cold-prussian-blue);
   --color-destructive: var(--color-hot-coquelicot);
-
   --background: var(--color-black);
 
   /* Rings */
@@ -85,16 +84,10 @@
   --card-height--mobile: 275px;
 }
 
-.font-heading {
-  font-family: var(--font-family-heading);
-}
-
-.font-body {
-  font-family: var(--font-family-body);
-}
+/** ------------------------------------------- Base Styles ------------------------------------------- */
 
 @property --angle {
-  syntax: '<angle>';
+  syntax: "<angle>";
   initial-value: 0deg;
   inherits: false;
 }
@@ -137,10 +130,10 @@
 /** ------------------------------------------- Keyframes ------------------------------------------- */
 
 @keyframes backgroundFadeIn {
-  from { 
+  from {
     opacity: 0;
   }
-  to { 
+  to {
     opacity: 1;
   }
 }
@@ -152,11 +145,11 @@
 }
 
 @keyframes fadeInUp {
-  from { 
+  from {
     opacity: 0;
     transform: translateY(30px);
   }
-  to { 
+  to {
     opacity: 1;
     transform: translateY(0);
   }
@@ -165,7 +158,7 @@
 /** ------------------------------------------- Animations ------------------------------------------- */
 
 .animate-background-transition {
-  animation: backgroundFadeIn 2.0s ease-out 0s both;
+  animation: backgroundFadeIn 2s ease-out 0s both;
 }
 
 /* Cascading fade-in animations */
@@ -178,43 +171,26 @@
 }
 
 .animate-cascade-description {
-  animation: fadeInUp 0.8s ease-out 1.0s both;
+  animation: fadeInUp 0.8s ease-out 1s both;
 }
 
 .animate-cascade-input {
   animation: fadeInUp 0.8s ease-out 1.4s both;
 }
 
-/* Sequential card animations */
-.animate-card-1 {
-  animation: cardSlideIn 0.6s ease-out 3.2s both;
-}
-
-.animate-card-2 {
-  animation: cardSlideIn 0.6s ease-out 3.3s both;
-}
-
-.animate-card-3 {
-  animation: cardSlideIn 0.6s ease-out 3.4s both;
-}
-
-.animate-card-4 {
-  animation: cardSlideIn 0.6s ease-out 3.5s both;
-}
-
-.animate-card-5 {
-  animation: cardSlideIn 0.6s ease-out 3.6s both;
-}
-
-.animate-card-6 {
-  animation: cardSlideIn 0.6s ease-out 3.7s both;
-}
-
-.animate-card-7 {
-  animation: cardSlideIn 0.6s ease-out 3.8s both;
-}
-
 /** ------------------------------------------- Components ------------------------------------------- */
+
+/* Background Colors */
+
+.background-colors {
+  gap: 0 !important;
+}
+
+.background-color {
+  flex: 1 1 0;
+  min-width: 0;
+  min-height: 0;
+}
 
 /* Place Card */
 
@@ -268,7 +244,7 @@
     width: var(--card-width--mobile);
   }
 
-  .card { 
+  .card {
     width: var(--card-width--mobile);
     height: var(--card-height--mobile);
   }
@@ -282,22 +258,8 @@
   }
 
   .place-card {
-    width: var(--card-width--mobile);
-    height: var(--card-height--mobile);
     margin-right: calc((100vw - var(--card-width--mobile)) / 2 - var(--card-width--mobile) / 3);
   }
-}
-
-/* Background Colors */
-
-.background-colors {
-  gap: 0 !important;
-}
-
-.background-color {
-  flex: 1 1 0;
-  min-width: 0;
-  min-height: 0;
 }
 
 /* Search Input */
@@ -327,7 +289,9 @@
 .input-container .rotating-ring::before {
   opacity: 0;
   visibility: hidden;
-  transition: opacity 0.2s ease, visibility 0.2s ease;
+  transition:
+    opacity 0.2s ease,
+    visibility 0.2s ease;
 }
 
 .input-container-loading .rotating-ring,
@@ -350,7 +314,7 @@
 
 /* Animated ring */
 .rotating-ring::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 50%;
   left: 50%;
@@ -370,7 +334,7 @@
 
 /* Mask */
 .rotating-ring::after {
-  content: '';
+  content: "";
   position: absolute;
   top: 50%;
   left: 50%;
@@ -403,7 +367,7 @@
 
 .search-input::placeholder {
   color: var(--input-placeholder-color, var(--color-white));
-  opacity: .6
+  opacity: 0.6;
 }
 
 .search-button {
@@ -422,6 +386,6 @@
 }
 
 .search-button:disabled {
-  opacity: .3;
+  opacity: 0.3;
   background: transparent;
 }

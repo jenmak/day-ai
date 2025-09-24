@@ -1,4 +1,4 @@
-// Type definitions for the DayAI API
+// Type definitions for the Drip Drop City API
 // These should match the backend schemas
 
 export interface Place {
@@ -23,13 +23,10 @@ export interface Place {
     }
   }
   weather?: Weather[]
-  temperatureRangeCategory?: 'VERY_HOT' | 'HOT' | 'WARM' | 'MILD' | 'COOL' | 'COLD' | 'VERY_COLD'
+  temperatureRangeCategory?: "VERY_HOT" | "HOT" | "WARM" | "MILD" | "COOL" | "COLD" | "VERY_COLD"
   createdAt: string
   updatedAt: string
 }
-
-// Legacy alias for backward compatibility
-export interface Location extends Place {}
 
 export interface Weather {
   date: string
@@ -73,8 +70,6 @@ export interface WeatherQuery {
   dateRange?: DateRange
 }
 
-// Export types that were previously imported from backend
 export type PlaceType = Place
-export type LocationType = Place // Legacy alias
 export type WeatherType = Weather
 export type WeatherConditionType = WeatherCondition

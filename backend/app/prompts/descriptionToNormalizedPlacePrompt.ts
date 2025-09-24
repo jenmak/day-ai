@@ -1,4 +1,6 @@
-export const DESCRIPTION_TO_NORMALIZED_PLACE_PROMPT = (description: string) => `Convert this place description to a normalized format with city and state/country.
+export const DESCRIPTION_TO_NORMALIZED_PLACE_PROMPT = (
+  description: string
+) => `Convert this place description to a normalized format with city and state/country.
 
 Place description: "${description}"
 

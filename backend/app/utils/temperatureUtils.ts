@@ -10,19 +10,19 @@ export type TemperatureRangeCategory = keyof typeof TEMPERATURE_RANGES
  */
 export function getTemperatureRangeCategory(temperature: number): TemperatureRangeCategory {
   if (temperature >= TEMPERATURE_RANGES.VERY_HOT.min) {
-    return 'VERY_HOT'
+    return "VERY_HOT"
   } else if (temperature >= TEMPERATURE_RANGES.HOT.min) {
-    return 'HOT'
+    return "HOT"
   } else if (temperature >= TEMPERATURE_RANGES.WARM.min) {
-    return 'WARM'
+    return "WARM"
   } else if (temperature >= TEMPERATURE_RANGES.MILD.min) {
-    return 'MILD'
+    return "MILD"
   } else if (temperature >= TEMPERATURE_RANGES.COOL.min) {
-    return 'COOL'
+    return "COOL"
   } else if (temperature >= TEMPERATURE_RANGES.COLD.min) {
-    return 'COLD'
+    return "COLD"
   } else {
-    return 'VERY_COLD'
+    return "VERY_COLD"
   }
 }
 
@@ -31,9 +31,11 @@ export function getTemperatureRangeCategory(temperature: number): TemperatureRan
  * @param temperatures - Array of temperatures in Fahrenheit
  * @returns The most common temperature range category
  */
-export function getAverageTemperatureRangeCategory(temperatures: number[]): TemperatureRangeCategory {
+export function getAverageTemperatureRangeCategory(
+  temperatures: number[]
+): TemperatureRangeCategory {
   if (temperatures.length === 0) {
-    return 'MILD' // Default fallback
+    return "MILD" // Default fallback
   }
 
   // Count occurrences of each temperature range
@@ -48,16 +50,19 @@ export function getAverageTemperatureRangeCategory(temperatures: number[]): Temp
   }
 
   // Count each temperature's range
-  temperatures.forEach(temp => {
+  temperatures.forEach((temp) => {
     const range = getTemperatureRangeCategory(temp)
     rangeCounts[range]++
   })
 
   // Find the most common range
-  let mostCommonRange: TemperatureRangeCategory = 'MILD'
+  let mostCommonRange: TemperatureRangeCategory = "MILD"
   let maxCount = 0
 
-  for (const [range, count] of Object.entries(rangeCounts) as [TemperatureRangeCategory, number][]) {
+  for (const [range, count] of Object.entries(rangeCounts) as [
+    TemperatureRangeCategory,
+    number
+  ][]) {
     if (count > maxCount) {
       maxCount = count
       mostCommonRange = range
@@ -72,8 +77,10 @@ export function getAverageTemperatureRangeCategory(temperatures: number[]): Temp
  * @param weatherData - Array of weather data for the place
  * @returns The temperature range category for the place
  */
-export function getPlaceTemperatureRangeCategory(weatherData: Array<{ degreesFahrenheit: number }>): TemperatureRangeCategory {
-  const temperatures = weatherData.map(weather => weather.degreesFahrenheit)
+export function getPlaceTemperatureRangeCategory(
+  weatherData: Array<{ degreesFahrenheit: number }>
+): TemperatureRangeCategory {
+  const temperatures = weatherData.map((weather) => weather.degreesFahrenheit)
   return getAverageTemperatureRangeCategory(temperatures)
 }
 

@@ -1,27 +1,101 @@
-# Day AI Take-Home Assignment
+# DripDrop.City
 
 ## Tech Stack
 
 Backend:
 
-- HTTP backend
 - tRPC for type-safe API communication
+- Node.js
+- HTTP/HTTPS protocol
+- RESTful endpoint structure
 - JSON-based temp store
 
 Frontend:
 
-- React
-- Zod
-- `<Button />`, `<Input />`, `<Card />`, `<Checkbox />`, `<RadioGroup />` and `<Form />` components for example (shadcn/ui)
-- React Router 7
-- Tailwind CSS
-
 - React: https://react.dev/learn
+- Zod: https://zod.dev/
 - tRPC: https://trpc.io/docs
-- shadcn/ui: https://ui.shadcn.com/docs/components/radio-group
+- shadcn/ui: https://ui.shadcn.com/docs/components
 - Tailwind: https://tailwindcss.com/
 - Bun: https://bun.com/
 - Docker: https://www.docker.com/
+
+## Code Formatting
+
+This project uses Prettier and ESLint to enforce consistent code formatting and prevent long lines.
+
+### Formatting Rules
+
+- **Line Length**: Maximum 80 characters per line
+- **Auto-formatting**: Prettier automatically formats code on save/run
+- **Linting**: ESLint catches formatting issues and long lines
+
+### Available Commands
+
+**Format all files:**
+
+```bash
+bun run format
+```
+
+**Check formatting without making changes:**
+
+```bash
+bun run format:check
+```
+
+**Run linter to catch issues:**
+
+```bash
+bun run lint
+```
+
+**Auto-fix linting issues:**
+
+```bash
+bun run lint:fix
+```
+
+**Fix some long lines automatically:**
+
+```bash
+bun run fix-long-lines
+```
+
+### Configuration Files
+
+- `.prettierrc` - Prettier configuration (80 char limit, 2-space tabs, etc.)
+- `.prettierignore` - Files/directories to exclude from formatting
+- `eslint.config.js` - ESLint rules including max-len enforcement
+- `.vscode/settings.json` - VSCode workspace settings for formatting on save
+
+### Formatting on Save
+
+The project is configured for automatic formatting on save when using VSCode:
+
+- **Format on Save**: Automatically formats files when you save
+- **ESLint Auto-fix**: Automatically fixes linting issues on save
+- **Import Organization**: Automatically organizes imports on save
+
+**What Gets Auto-Fixed:**
+
+- ✅ Code formatting (Prettier)
+- ✅ Import organization
+- ✅ Some ESLint rules (spacing, semicolons, etc.)
+
+**What Requires Manual Fix:**
+
+- ❌ Long lines (max-len) - must be manually broken
+- ❌ TypeScript `any` types - must be manually typed
+- ❌ Unused variables - must be manually removed or used
+
+**Required VSCode Extensions:**
+
+- Prettier - Code formatter
+- ESLint
+- Tailwind CSS IntelliSense
+
+These extensions are automatically recommended when you open the project in VSCode.
 
 ## Installation
 

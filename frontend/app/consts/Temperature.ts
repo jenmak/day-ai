@@ -8,16 +8,15 @@ export const TemperatureRangeCategory = {
   VERY_COLD: "VERY_COLD"
 } as const
 
-
 export const WEATHER_IMAGE_MAP: Record<number, string> = {
   0: "clear-sky",
-  1: "mainly-clear", 
+  1: "mainly-clear",
   2: "partly-cloudy",
   3: "overcast",
   45: "fog",
   48: "fog",
   51: "light-drizzle",
-  53: "moderate-drizzle", 
+  53: "moderate-drizzle",
   55: "dense-drizzle",
   56: "light-freezing-drizzle",
   57: "dense-freezing-drizzle",
@@ -28,7 +27,7 @@ export const WEATHER_IMAGE_MAP: Record<number, string> = {
   67: "heavy-freezing-rain",
   71: "slight-snow-fall",
   73: "moderate-snow-fall",
-  75: "heavy-snow-fall", 
+  75: "heavy-snow-fall",
   77: "snow-grains",
   80: "slight-rain-showers",
   81: "moderate-rain-showers",

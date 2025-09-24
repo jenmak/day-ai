@@ -1,18 +1,18 @@
+import { useEffect, useState } from "react"
 import { useParams } from "react-router"
-import { usePlaceBySlug } from "../hooks/usePlaceBySlug"
 import { PageWrapper } from "../components/PageWrapper"
-import { ErrorPage } from "./ErrorPage"
-import { useState, useEffect } from "react"
 import { SearchInput } from "../components/SearchInput"
-import { useCreatePlace } from "../hooks/useCreatePlace"
-import { getPlaceErrorState } from "../utils/placeErrorHandler"
 import { Heading } from "../components/typography/Heading"
 import { Subheading } from "../components/typography/Subheading"
 import { WeatherCard } from "../components/WeatherCard"
+import { useCreatePlace } from "../hooks/useCreatePlace"
+import { usePlaceBySlug } from "../hooks/usePlaceBySlug"
+import { getPlaceErrorState } from "../utils/getPlaceErrorState"
+import { ErrorPage } from "./ErrorPage"
 
-const RING_BACKGROUND_COLOR = 'white'
-const TEXT_COLOR = 'black'
-const BACKGROUND_COLOR = 'white'
+const RING_BACKGROUND_COLOR = "white"
+const TEXT_COLOR = "black"
+const BACKGROUND_COLOR = "white"
 
 export function Place() {
   // Hooks.
@@ -23,16 +23,10 @@ export function Place() {
   // Local state.
   const [errorMessage, setErrorMessage] = useState<string>("")
 
-  // Error handling with useEffect to avoid calling setState during render
   useEffect(() => {
     const errorState = getPlaceErrorState(slug, error, isLoading, place)
     setErrorMessage(errorState.errorMessage)
   }, [slug, error, isLoading, place])
-
-  // Show loading state
-  if (isLoading) {
-    return <div>Loading...</div>
-  }
 
   // Show error page if there's an error message
   if (errorMessage) {
@@ -49,7 +43,8 @@ export function Place() {
           textColor={TEXT_COLOR}
           placeholderColor={TEXT_COLOR}
           ringBackgroundColor={RING_BACKGROUND_COLOR}
-          isLoading={isLoading} />
+          isLoading={isLoading}
+        />
       </div>
       <div className="flex flex-row justify-center mt-17 h-full">
         <div className="cards-scroll-container">
@@ -67,14 +62,13 @@ export function Place() {
             )}
 
             {/* Weather cards. */}
-            {place?.weather?.map((weather) => (
+            {place?.weather?.map((weather: any) => (
               <WeatherCard key={weather.date} weather={weather} />
             ))}
             <div className="cards-spacer"></div>
           </div>
         </div>
       </div>
-
     </PageWrapper>
   )
 }

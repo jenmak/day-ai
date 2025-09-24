@@ -1,7 +1,7 @@
+import { Place as PlaceType } from "@dripdropcity/backend/types"
 import { useQuery } from "@tanstack/react-query"
-import { Place as PlaceType } from "@dayai/backend/schemas"
-import { usePlaceStore } from "../stores/placeStore"
 import { useEffect } from "react"
+import { usePlaceStore } from "../stores/placeStore"
 
 interface usePlaceBySlugOptions {
   slug: string
@@ -12,23 +12,25 @@ interface usePlaceBySlugOptions {
 const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3333"
 
 export const usePlaceBySlug = (options?: usePlaceBySlugOptions) => {
-  const { slug, onSuccess, onError } = options || { slug: '' }
+  const { slug, onSuccess, onError } = options || { slug: "" }
   const { setPlace } = usePlaceStore()
-  
+
   const query = useQuery({
     queryKey: ["place", "slug", slug],
     queryFn: async (): Promise<PlaceType> => {
       if (!slug) {
         throw new Error("Slug is required")
       }
-      
+
       try {
-        const response = await fetch(`${API_BASE_URL}/trpc/places.getBySlug?input=${encodeURIComponent(JSON.stringify({ json: { slug } }))}`)
-        
+        const response = await fetch(
+          `${API_BASE_URL}/trpc/places.getBySlug?input=${encodeURIComponent(JSON.stringify({ json: { slug } }))}`
+        )
+
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`)
         }
-        
+
         const data = await response.json()
         return data.result.data.json
       } catch (error) {
@@ -36,7 +38,7 @@ export const usePlaceBySlug = (options?: usePlaceBySlugOptions) => {
         throw error
       }
     },
-    enabled: !!slug,
+    enabled: !!slug
   })
 
   useEffect(() => {
@@ -59,6 +61,6 @@ export const usePlaceBySlug = (options?: usePlaceBySlugOptions) => {
     error: query.error,
     refetch: query.refetch,
     isError: query.isError,
-    isSuccess: query.isSuccess,
+    isSuccess: query.isSuccess
   }
 }
