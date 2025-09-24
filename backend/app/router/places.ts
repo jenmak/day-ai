@@ -11,6 +11,7 @@ import {
   ensureTemperatureRangeCategory,
   getPlaceTemperatureRangeCategory
 } from "../utils/temperatureUtils"
+import { CacheUtils } from "../../core/cacheUtils"
 
 export const places = router({
   /**
@@ -58,12 +59,16 @@ export const places = router({
       }
 
       // 2. Geocode the location with the OpenCage API
-      const geocodedAddress = await GeolocationService.geocodePlace(llmResult.normalizedPlace)
+      const geocodedAddress = await GeolocationService.geocodePlace(
+        llmResult.normalizedPlace,
+        ctx.cradle.cache
+      )
       console.log(`Geocoded "${llmResult.normalizedPlace}" to:`, geocodedAddress)
 
       const weatherData = await WeatherService.get7DayForecast({
         latitude: geocodedAddress.latitude,
-        longitude: geocodedAddress.longitude
+        longitude: geocodedAddress.longitude,
+        cache: ctx.cradle.cache
       })
 
       // 3. Get clothing recommendations from rules engine
@@ -180,5 +185,34 @@ export const places = router({
 
     const model = ctx.cradle.places.toModel(place)
     return ensureTemperatureRangeCategory(model)
+  }),
+
+  /**
+   * Get cache statistics and health metrics
+   */
+  getCacheStats: procedure.query(async ({ ctx }) => {
+    const metrics = CacheUtils.getCacheMetrics(ctx.cradle.cache)
+    return metrics
+  }),
+
+  /**
+   * Clean up expired cache entries
+   */
+  cleanupCache: procedure.mutation(async ({ ctx }) => {
+    const cleaned = await CacheUtils.cleanupExpiredEntries(ctx.cradle.cache)
+    return { cleanedEntries: cleaned }
+  }),
+
+  /**
+   * Monitor cache health and return status
+   */
+  monitorCacheHealth: procedure.query(async ({ ctx }) => {
+    CacheUtils.monitorCacheHealth(ctx.cradle.cache)
+    const metrics = CacheUtils.getCacheMetrics(ctx.cradle.cache)
+    return {
+      status: "healthy",
+      metrics,
+      timestamp: new Date().toISOString()
+    }
   })
 })

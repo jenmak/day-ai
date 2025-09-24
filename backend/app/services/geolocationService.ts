@@ -1,5 +1,7 @@
 import { type GeocodedAddress, type Address } from "../types"
 import { CITY_COORDINATES } from "../consts/place"
+import { CacheStore } from "../../core/CacheStore"
+import { CacheUtils } from "../../core/cacheUtils"
 
 export interface OpenCageResponse {
   results: Array<{
@@ -28,24 +30,59 @@ export class GeolocationService {
    * Geocode a place description using OpenCage API
    * Converts place descriptions to structured address data with coordinates
    */
-  static async geocodePlace(description: string): Promise<GeocodedAddress> {
+  static async geocodePlace(
+    description: string, 
+    cache?: CacheStore
+  ): Promise<GeocodedAddress> {
+    // Generate cache key for geocoding using utility
+    const cacheKey = CacheUtils.generateCacheKeys.geocode(description)
+
+    // Check cache first if cache store is provided
+    if (cache) {
+      const cached = await cache.getCached<GeocodedAddress>(cacheKey)
+      if (cached) {
+        console.log("Geocoding data served from cache")
+        return cached
+      }
+    }
     try {
       // Check if OpenCage API key is available
       if (!process.env.OPENCAGE_API_KEY) {
         console.warn("OpenCage API key not found, falling back to mock implementation")
-        return this.getMockGeocoding(description)
+        const mockResult = this.getMockGeocoding(description)
+        
+        // Cache mock result for 1 hour
+        if (cache) {
+          await cache.setCache(cacheKey, mockResult, CacheUtils.TTL.MOCK)
+        }
+        
+        return mockResult
       }
 
       // Use OpenCage API for geocoding
       const opencageResponse = await this.callOpenCageAPI(description)
-      return this.parseOpenCageResponse(opencageResponse, description)
+      const result = this.parseOpenCageResponse(opencageResponse, description)
+      
+      // Cache successful result for 24 hours
+      if (cache) {
+        await cache.setCache(cacheKey, result, CacheUtils.TTL.GEOCODE)
+      }
+      
+      return result
     } catch (error) {
       console.error("Error geocoding place:", error)
 
       // Fallback to mock implementation if OpenCage fails
       console.warn("OpenCage API failed, falling back to mock implementation")
       try {
-        return this.getMockGeocoding(description)
+        const mockResult = this.getMockGeocoding(description)
+        
+        // Cache mock result for 1 hour on fallback
+        if (cache) {
+          await cache.setCache(cacheKey, mockResult, CacheUtils.TTL.MOCK)
+        }
+        
+        return mockResult
       } catch (mockError) {
         console.error("Mock implementation also failed:", mockError)
         throw new Error("Failed to geocode place description")

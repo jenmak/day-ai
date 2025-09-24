@@ -1,8 +1,8 @@
-import { useCreatePlace } from "../hooks/useCreatePlace"
-import { Label } from "../components/shadcn/label"
-import { Image } from "../components/shadcn/image"
-const logoImage = "/images/drip-drop-city-logo.png"
 import { SearchInput } from "../components/SearchInput"
+import { Image } from "../components/shadcn/image"
+import { Label } from "../components/shadcn/label"
+import { useCreatePlace } from "../hooks/useCreatePlace"
+const logoImage = "/images/drip-drop-city-logo.png"
 
 export function Search() {
   const RING_BACKGROUND_COLOR = "black"
@@ -23,7 +23,6 @@ export function Search() {
         alt="Drip Drop City Logo"
         className="w-48 h-48 mx-auto object-contain animate-cascade-logo"
         loading="eager"
-        priority
       />
       <h1 className="text-hero font-heading text-white text-center mb-4 animate-cascade-title">
         Drip Drop City
