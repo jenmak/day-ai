@@ -112,6 +112,14 @@
     margin: 0;
     padding: 0;
   }
+
+  /* LCP Optimization - Prevent layout shift for logo */
+  .animate-cascade-logo {
+    width: 192px; /* w-48 => 12rem => 192px */
+    height: 192px; /* h-48 => 12rem => 192px */
+    min-width: 192px;
+    min-height: 192px;
+  }
 }
 
 @layer utilities {

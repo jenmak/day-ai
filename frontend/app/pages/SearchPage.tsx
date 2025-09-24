@@ -22,16 +22,19 @@ export function Search() {
         src={logoImage}
         alt="Drip Drop City Logo"
         className="w-48 h-48 mx-auto object-contain animate-cascade-logo"
-        loading="lazy"
+        loading="eager"
+        priority
       />
       <h1 className="text-hero font-heading text-white text-center mb-4 animate-cascade-title">
         Drip Drop City
       </h1>
       <Label
-        className="text-white text-center font-light mb-2 leading-6 
+        className="text-white text-center font-light mb-2 leading-6
         animate-cascade-description font-body"
       >
-        Describe your location and we'll recommend some weather appropriate outfits for the week.
+        {/* eslint-disable-next-line max-len */}
+        Describe your location and we&apos;ll recommend some weather appropriate outfits for the
+        week.
       </Label>
       <div className="animate-cascade-input">
         <SearchInput
