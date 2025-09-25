@@ -15,7 +15,7 @@ export const trpcClient = createTRPCClient({
   links: [
     loggerLink(),
     httpBatchLink({
-      url: ENV.BACKEND_URL,
+      url: `${ENV.BACKEND_URL}/api/trpc`,
       transformer: superjson
     })
   ]
