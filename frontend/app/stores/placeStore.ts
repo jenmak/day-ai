@@ -29,7 +29,10 @@ export const usePlaceStore = create<PlaceStore>()(
 
       addPlace: (place: Place) => {
         set((state) => {
-          const newPlaces = new Map(state.places)
+          // Ensure places is always a Map
+          const currentPlaces =
+            state.places instanceof Map ? state.places : new Map(Object.entries(state.places || {}))
+          const newPlaces = new Map(currentPlaces)
           newPlaces.set(place.slug, place)
           return {
             places: newPlaces,
@@ -43,7 +46,11 @@ export const usePlaceStore = create<PlaceStore>()(
       },
 
       getPlaceBySlug: (slug: string) => {
-        return get().places.get(slug) || null
+        const state = get()
+        // Ensure places is always a Map
+        const places =
+          state.places instanceof Map ? state.places : new Map(Object.entries(state.places || {}))
+        return places.get(slug) || null
       },
 
       setLoading: (loading: boolean) => {
@@ -61,7 +68,15 @@ export const usePlaceStore = create<PlaceStore>()(
     {
       name: "place-store",
       // Only persist the places Map, not the loading/error states
-      partialize: (state) => ({ places: state.places })
+      partialize: (state) => ({
+        places: state.places instanceof Map ? Object.fromEntries(state.places) : state.places
+      }),
+      // Convert the persisted object back to a Map on rehydration
+      onRehydrateStorage: () => (state) => {
+        if (state && state.places && !(state.places instanceof Map)) {
+          state.places = new Map(Object.entries(state.places))
+        }
+      }
     }
   )
 )
