@@ -1,7 +1,6 @@
 import { trpcServer } from "@hono/trpc-server"
 import { config } from "dotenv"
 import { Hono } from "hono"
-import { cors } from "hono/cors"
 import { appRouter } from "../app/router/index.js"
 
 // Load environment variables from .env file (only in development)
@@ -26,26 +25,36 @@ app.get("/", (c) => {
 
 // Add API routes without basePath (we'll mount them on /api)
 const apiApp = new Hono()
-  .use(
-    cors({
-      origin: (origin) => {
-        const allowedOrigins = [
-          "https://www.dripdrop.city",
-          "https://dripdrop.city",
-          "https://dripdropcity-frontend-mptcpd1j3-jenmaks-projects.vercel.app",
-          "https://dripdropcityfrontend-production.up.railway.app/",
-          "http://localhost:3000",
-          "http://localhost:5173",
-          "http://localhost:6173",
-          "http://localhost:8080"
-        ]
-        return allowedOrigins.includes(origin || "") ? origin : null
-      },
-      allowMethods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-      allowHeaders: ["Content-Type", "Authorization"],
-      credentials: true
-    })
-  )
+  .use("*", async (c, next) => {
+    const allowedOrigins = [
+      "https://www.dripdrop.city",
+      "https://dripdrop.city",
+      "https://dripdropcity-frontend-mptcpd1j3-jenmaks-projects.vercel.app",
+      "https://dripdropcityfrontend-production.up.railway.app",
+      "http://localhost:3000",
+      "http://localhost:5173",
+      "http://localhost:6173",
+      "http://localhost:8080"
+    ]
+
+    const origin = c.req.header("Origin")
+    console.log("CORS Middleware - Origin:", origin, "Method:", c.req.method, "Path:", c.req.path)
+
+    if (origin && allowedOrigins.includes(origin)) {
+      c.header("Access-Control-Allow-Origin", origin)
+      console.log("Set Access-Control-Allow-Origin:", origin)
+    }
+    c.header("Access-Control-Allow-Credentials", "true")
+    c.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
+    c.header("Access-Control-Allow-Headers", "Content-Type, Authorization")
+
+    if (c.req.method === "OPTIONS") {
+      console.log("Handling OPTIONS request")
+      return c.text("", 200)
+    }
+
+    await next()
+  })
   .get("/", (c) => {
     console.log("API health check endpoint hit")
     return c.text("OK")
@@ -53,18 +62,6 @@ const apiApp = new Hono()
   .get("/test", (c) => {
     console.log("Test endpoint hit")
     return c.json({ message: "Test successful", timestamp: new Date().toISOString() })
-  })
-  .options("/trpc/*", (c) => {
-    console.log("OPTIONS request for tRPC route:", c.req.path)
-    return new Response(null, {
-      status: 200,
-      headers: {
-        "Access-Control-Allow-Origin": c.req.header("origin") || "*",
-        "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
-        "Access-Control-Allow-Headers": "Content-Type, Authorization",
-        "Access-Control-Allow-Credentials": "true"
-      }
-    })
   })
   .onError((err, c) => {
     console.error("Error:", err)

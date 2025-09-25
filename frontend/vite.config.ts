@@ -29,7 +29,9 @@ export default defineConfig({
   },
   define: {
     "import.meta.env.VITE_API_URL": JSON.stringify(
-      process.env.NODE_ENV === "production"
+      process.env.NODE_ENV === "development" ||
+        process.env.RAILWAY_ENVIRONMENT ||
+        process.env.RAILWAY_PROJECT_ID
         ? "https://dripdropcitybackend-production.up.railway.app" // Railway backend
         : "http://localhost:3333" // Local development
     ),
