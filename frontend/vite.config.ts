@@ -5,11 +5,22 @@ import { defineConfig } from "vite"
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [tailwindcss(), react()],
+  plugins: [
+    tailwindcss(),
+    react({
+      jsxRuntime: "automatic",
+      jsxImportSource: "react"
+    })
+  ],
   clearScreen: false,
   server: {
     port: 6173,
-    host: "0.0.0.0"
+    host: "0.0.0.0",
+    allowedHosts: [
+      "dripdropcityfrontend-production.up.railway.app",
+      "dripdrop.city",
+      "www.dripdrop.city"
+    ]
   },
   resolve: {
     alias: {
@@ -19,8 +30,25 @@ export default defineConfig({
   define: {
     "import.meta.env.VITE_API_URL": JSON.stringify(
       process.env.NODE_ENV === "production"
-        ? "https://dripdropcity-backend.vercel.app" // Use consistent domain
-        : "http://localhost:3336" // Local development - now using main router
-    )
+        ? "https://dripdropcitybackend-production.up.railway.app" // Railway backend
+        : "http://localhost:3333" // Local development
+    ),
+    "process.env.NODE_ENV": JSON.stringify(process.env.NODE_ENV || "production")
+  },
+  build: {
+    target: "esnext",
+    minify: "esbuild",
+    sourcemap: false,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vendor: ["react", "react-dom"],
+          router: ["react-router"]
+        }
+      }
+    }
+  },
+  optimizeDeps: {
+    include: ["react", "react-dom", "react-router"]
   }
 })

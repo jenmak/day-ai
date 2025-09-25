@@ -1,0 +1,2 @@
+RAILWAY_DEPLOYMENT_ID=production-build-$(date +%s)
+NODE_ENV=production

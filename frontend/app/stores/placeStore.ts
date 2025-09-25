@@ -1,38 +1,8 @@
 import { create } from "zustand"
 import { persist } from "zustand/middleware"
+import type { Place as BackendPlace } from "../types/backend"
 
-export interface Place {
-  id: string
-  description: string
-  normalizedPlace: string
-  slug: string
-  createdAt: string
-  geocodedAddress?: {
-    latitude: number
-    longitude: number
-    formattedAddress: string
-    structuredAddress: {
-      city: string
-      state: string
-      postalCode: string
-      country: string
-    }
-  }
-  weather?: Array<{
-    date: string
-    degreesFahrenheit: number
-    temperatureRange: {
-      temperatureMinimum: number
-      temperatureMaximum: number
-    }
-    temperatureRangeCategory: string
-    rainProbabilityPercentage: number
-    windSpeedMph: number
-    condition: number
-    clothing: string[]
-  }>
-  confidence?: number
-}
+export type Place = BackendPlace
 
 interface PlaceStore {
   places: Map<string, Place>

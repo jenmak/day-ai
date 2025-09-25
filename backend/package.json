@@ -3,6 +3,9 @@
   "type": "module",
   "version": "0.0.0",
   "sideEffects": false,
+  "engines": {
+    "node": ">=20.0.0"
+  },
   "exports": {
     ".": "./app/index.ts",
     "./schemas": "./app/schemas/index.ts",
@@ -11,21 +14,19 @@
     "./config": "./app/config.ts"
   },
   "scripts": {
-    "dev": "bun run --hot src/index.ts",
-    "build": "tsc --declaration --emitDeclarationOnly",
-    "build:full": "tsc",
-    "start": "bun run src/index.ts",
-    "vercel-build": "node scripts/build.cjs",
-    "test:deployment": "node test-deployment.js",
+    "dev": "bun run --watch src/index.ts",
+    "start": "bun server.js",
+    "build": "bun run type-check",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "type-check": "bun run tsc --noEmit"
   },
   "dependencies": {
     "@hono/trpc-server": "^0.3.4",
-    "@trpc/server": "^11.0.0",
+    "@trpc/server": "^11.6.0",
     "awilix": "^12.0.5",
     "dotenv": "^17.2.2",
-    "hono": "^4.7.4",
+    "hono": "^4.9.8",
     "openai": "^5.20.1",
     "superjson": "^2.2.1",
     "zod": "^3.24.2"
@@ -36,6 +37,9 @@
   },
   "devDependencies": {
     "@types/node": "^24.3.3",
-    "esbuild": "^0.25.9"
+    "esbuild": "^0.25.9",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.3",
+    "prettier": "^3.0.0"
   }
 }

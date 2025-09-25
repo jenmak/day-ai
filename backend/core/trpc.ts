@@ -1,7 +1,7 @@
 import { initTRPC } from "@trpc/server"
 import type { FetchCreateContextFnOptions } from "@trpc/server/adapters/fetch"
-import { container } from "./container"
 import superjson from "superjson"
+import { container } from "../core/container"
 
 export const createContext = async (opts: FetchCreateContextFnOptions) => {
   const cradle = container.cradle

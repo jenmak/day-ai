@@ -10,13 +10,32 @@ if (process.env.NODE_ENV !== "production") {
 }
 
 console.log("Starting server...")
+console.log("🔍 Environment check:")
+console.log("  NODE_ENV:", process.env.NODE_ENV)
+console.log("  PORT:", process.env.PORT)
+console.log("  RAILWAY_ENVIRONMENT:", process.env.RAILWAY_ENVIRONMENT)
+console.log("  RAILWAY_PROJECT_ID:", process.env.RAILWAY_PROJECT_ID)
 
 const app = new Hono()
+  .basePath("/api")
   .use(
     cors({
-      origin: "*", // Allow all origins for now
+      origin: (origin) => {
+        const allowedOrigins = [
+          "https://www.dripdrop.city",
+          "https://dripdrop.city",
+          "https://dripdropcity-frontend-mptcpd1j3-jenmaks-projects.vercel.app",
+          "https://dripdropcityfrontend-production.up.railway.app/",
+          "http://localhost:3000",
+          "http://localhost:5173",
+          "http://localhost:6173",
+          "http://localhost:8080"
+        ]
+        return allowedOrigins.includes(origin || "") ? origin : null
+      },
       allowMethods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-      allowHeaders: ["Content-Type", "Authorization"]
+      allowHeaders: ["Content-Type", "Authorization"],
+      credentials: true
     })
   )
   .get("/", (c) => {
@@ -26,6 +45,18 @@ const app = new Hono()
   .get("/test", (c) => {
     console.log("Test endpoint hit")
     return c.json({ message: "Test successful", timestamp: new Date().toISOString() })
+  })
+  .options("/trpc/*", (c) => {
+    console.log("OPTIONS request for tRPC route:", c.req.path)
+    return new Response(null, {
+      status: 200,
+      headers: {
+        "Access-Control-Allow-Origin": c.req.header("origin") || "*",
+        "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type, Authorization",
+        "Access-Control-Allow-Credentials": "true"
+      }
+    })
   })
   .onError((err, c) => {
     console.error("Error:", err)
@@ -41,7 +72,7 @@ try {
     trpcServer({
       router: appRouter,
       createContext: async (opts) => {
-        // Import the context creation function from the main router
+        // Import the context creation function from the core directory
         const { createContext } = await import("../core/trpc.js")
         return createContext(opts)
       }
@@ -61,10 +92,8 @@ try {
   })
 }
 
-// For Vercel deployment
-// Export the app for Bun to handle server startup
-export default {
-  port: process.env.PORT ? parseInt(process.env.PORT) : 3333,
-  hostname: process.env.HOST || "0.0.0.0",
-  fetch: app.fetch
-}
+// Export the app for compatibility
+export default app
+
+// Server startup is now handled by server.js
+// This file only exports the app configuration

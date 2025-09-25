@@ -45,13 +45,24 @@ function validateApiKey(apiKey: string, type: "openai" | "opencage"): boolean {
     return false
   }
 
+  // Remove any whitespace
+  const cleanKey = apiKey.trim()
+
+  if (cleanKey.length === 0) {
+    return false
+  }
+
   switch (type) {
     case "openai":
-      // OpenAI API keys start with 'sk-' and are 51 characters long
-      return apiKey.startsWith("sk-") && apiKey.length === 51
+      // OpenAI API keys start with 'sk-' and are typically 51+ characters long
+      // Support both old format (sk-xxx...xxx) and new format (sk-proj-xxx...xxx)
+      return (
+        (cleanKey.startsWith("sk-") && cleanKey.length >= 40) ||
+        (cleanKey.startsWith("sk-proj-") && cleanKey.length >= 50)
+      )
     case "opencage":
-      // OpenCage API keys are typically 32 characters long
-      return apiKey.length >= 32 && /^[a-zA-Z0-9]+$/.test(apiKey)
+      // OpenCage API keys are typically 32+ characters long and alphanumeric
+      return cleanKey.length >= 20 && /^[a-zA-Z0-9]+$/.test(cleanKey)
     default:
       return false
   }
@@ -85,6 +96,16 @@ export class ApiKeyManager {
   private initializeKeys(): void {
     const openaiKey = process.env.OPENAI_API_KEY
     const opencageKey = process.env.OPENCAGE_API_KEY
+
+    // Debug logging (only in development or when debugging)
+    if (process.env.NODE_ENV !== "production" || process.env.DEBUG_API_KEYS) {
+      console.log("🔍 API Key Debug Info:")
+      console.log("  OPENAI_API_KEY exists:", !!openaiKey)
+      console.log("  OPENAI_API_KEY length:", openaiKey?.length || 0)
+      console.log("  OPENAI_API_KEY starts with sk-:", openaiKey?.startsWith("sk-") || false)
+      console.log("  OPENCAGE_API_KEY exists:", !!opencageKey)
+      console.log("  OPENCAGE_API_KEY length:", opencageKey?.length || 0)
+    }
 
     // Validate and store keys
     this.keys = {

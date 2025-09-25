@@ -20,8 +20,8 @@ export const CONFIG = {
     BACKEND_URL: "http://localhost:3333",
 
     // Production URLs (can be overridden by environment variables)
-    PRODUCTION_FRONTEND_URL: "https://dripdropcity-frontend.vercel.app",
-    PRODUCTION_BACKEND_URL: "https://dripdropcity-backend-dcamcjtri-jenmaks-projects.vercel.app",
+    PRODUCTION_FRONTEND_URL: "https://dripdrop.city",
+    PRODUCTION_BACKEND_URL: "https://dripdropcitybackend-production.up.railway.app/", // Replace with your actual Railway backend URL
 
     // CORS configuration
     CORS_ORIGINS: {
@@ -34,9 +34,9 @@ export const CONFIG = {
         "http://127.0.0.1:6173"
       ],
       PRODUCTION: [
-        "https://dripdropcity-frontend.vercel.app",
-        "https://dripdropcity.com",
-        "https://www.dripdropcity.com"
+        "https://dripdrop.city",
+        "https://www.dripdrop.city",
+        "https://dripdropcityfrontend-production.up.railway.app/"
       ]
     },
 
@@ -278,6 +278,11 @@ export const ENV = {
   },
 
   get BACKEND_URL() {
+    // In production, use the Railway backend URL
+    if (this.IS_PRODUCTION) {
+      return import.meta.env.VITE_API_URL || CONFIG.SERVER.PRODUCTION_BACKEND_URL
+    }
+    // In development, use local backend
     return import.meta.env.VITE_API_URL || CONFIG.SERVER.BACKEND_URL
   },
 

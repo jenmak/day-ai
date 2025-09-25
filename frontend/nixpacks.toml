@@ -1,0 +1,11 @@
+[phases.setup]
+nixPkgs = ["nodejs", "bun"]
+
+[phases.install]
+cmds = ["bun install"]
+
+[phases.build]
+cmds = ["echo 'Building production version...'", "bun run build", "echo 'Build completed, listing dist contents:'", "ls -la dist/"]
+
+[start]
+cmd = "echo 'Starting production server...' && bun start"

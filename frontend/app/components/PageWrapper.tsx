@@ -15,7 +15,7 @@ interface PageWrapperProps {
  * @returns The page wrapper component.
  */
 export function PageWrapper({ children }: PageWrapperProps) {
-  const { place } = usePlaceStore()
+  const { currentPlace } = usePlaceStore()
 
   const initialBackgroundColors = [
     "bg-[var(--color-gray-1)]",
@@ -27,13 +27,13 @@ export function PageWrapper({ children }: PageWrapperProps) {
   const [backgroundColors, setBackgroundColors] = useState<string[]>(initialBackgroundColors)
 
   useEffect(() => {
-    if (place?.temperatureRangeCategory) {
+    if (currentPlace?.temperatureRangeCategory) {
       const colors = getBackgroundColors(
-        place.temperatureRangeCategory as (typeof TemperatureRangeCategory)[keyof typeof TemperatureRangeCategory]
+        currentPlace.temperatureRangeCategory as (typeof TemperatureRangeCategory)[keyof typeof TemperatureRangeCategory]
       )
       setBackgroundColors(colors)
     }
-  }, [place])
+  }, [currentPlace])
 
   return (
     <div className="bg-black relative h-screen w-full">
