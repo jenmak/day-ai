@@ -190,8 +190,8 @@ export class GeolocationService {
         state: components.state || "",
         postalCode: components.postcode || "",
         country: components.country || "",
-        street: components.road || undefined,
-        streetNumber: components.house_number || undefined
+        street: components.road || null,
+        streetNumber: components.house_number || null
       }
     }
   }
