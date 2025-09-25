@@ -107,7 +107,7 @@ export function SearchInput({
 
       {/* Validation Error Display */}
       {showValidationErrors && isTouched && errors.length > 0 && (
-        <div className="mt-2 text-sm text-red-400">
+        <div className="mt-2 text-sm text-orange-400">
           {errors.map((error, index) => (
             <div key={index} className="flex items-center gap-1">
               <span>{error.message}</span>

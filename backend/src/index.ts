@@ -17,6 +17,43 @@ console.log("  RAILWAY_PROJECT_ID:", process.env.RAILWAY_PROJECT_ID)
 
 const app = new Hono()
 
+// Add CORS middleware to root app as well
+app.use("*", async (c, next) => {
+  const allowedOrigins = [
+    "https://www.dripdrop.city",
+    "https://dripdrop.city",
+    "https://dripdropcity-frontend-mptcpd1j3-jenmaks-projects.vercel.app",
+    "https://dripdropcityfrontend-production.up.railway.app",
+    "http://localhost:3000",
+    "http://localhost:5173",
+    "http://localhost:6173",
+    "http://localhost:8080"
+  ]
+
+  const origin = c.req.header("Origin")
+  const method = c.req.method
+
+  // Set CORS headers for all requests
+  if (origin && allowedOrigins.includes(origin)) {
+    c.header("Access-Control-Allow-Origin", origin)
+  }
+
+  c.header("Access-Control-Allow-Credentials", "true")
+  c.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS, PATCH")
+  c.header(
+    "Access-Control-Allow-Headers",
+    "Content-Type, Authorization, X-Requested-With, Accept, Origin"
+  )
+  c.header("Access-Control-Max-Age", "86400")
+
+  // Handle preflight OPTIONS requests
+  if (method === "OPTIONS") {
+    return c.text("", 200)
+  }
+
+  await next()
+})
+
 // Add root health check endpoint (for Railway health checks)
 app.get("/", (c) => {
   console.log("Root health check endpoint hit")
@@ -38,18 +75,30 @@ const apiApp = new Hono()
     ]
 
     const origin = c.req.header("Origin")
-    console.log("CORS Middleware - Origin:", origin, "Method:", c.req.method, "Path:", c.req.path)
+    const method = c.req.method
+    const path = c.req.path
 
+    console.log("🌐 CORS Middleware - Origin:", origin, "Method:", method, "Path:", path)
+
+    // Set CORS headers for all requests
     if (origin && allowedOrigins.includes(origin)) {
       c.header("Access-Control-Allow-Origin", origin)
-      console.log("Set Access-Control-Allow-Origin:", origin)
+      console.log("✅ Set Access-Control-Allow-Origin:", origin)
+    } else if (origin) {
+      console.log("❌ Origin not allowed:", origin)
     }
-    c.header("Access-Control-Allow-Credentials", "true")
-    c.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
-    c.header("Access-Control-Allow-Headers", "Content-Type, Authorization")
 
-    if (c.req.method === "OPTIONS") {
-      console.log("Handling OPTIONS request")
+    c.header("Access-Control-Allow-Credentials", "true")
+    c.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS, PATCH")
+    c.header(
+      "Access-Control-Allow-Headers",
+      "Content-Type, Authorization, X-Requested-With, Accept, Origin"
+    )
+    c.header("Access-Control-Max-Age", "86400") // 24 hours
+
+    // Handle preflight OPTIONS requests
+    if (method === "OPTIONS") {
+      console.log("🔄 Handling OPTIONS preflight request")
       return c.text("", 200)
     }
 
