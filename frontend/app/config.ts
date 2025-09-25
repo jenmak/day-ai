@@ -21,7 +21,7 @@ export const CONFIG = {
 
     // Production URLs (can be overridden by environment variables)
     PRODUCTION_FRONTEND_URL: "https://dripdropcity-frontend.vercel.app",
-    PRODUCTION_BACKEND_URL: "https://dripdropcity-backend.vercel.app",
+    PRODUCTION_BACKEND_URL: "https://dripdropcity-backend-dcamcjtri-jenmaks-projects.vercel.app",
 
     // CORS configuration
     CORS_ORIGINS: {
@@ -274,19 +274,19 @@ export const CONFIG = {
 export const ENV = {
   // Server URLs
   get FRONTEND_URL() {
-    return process.env.VITE_FRONTEND_URL || CONFIG.SERVER.FRONTEND_URL
+    return import.meta.env.VITE_FRONTEND_URL || CONFIG.SERVER.FRONTEND_URL
   },
 
   get BACKEND_URL() {
-    return process.env.VITE_API_URL || CONFIG.SERVER.BACKEND_URL
+    return import.meta.env.VITE_API_URL || CONFIG.SERVER.BACKEND_URL
   },
 
   get PRODUCTION_FRONTEND_URL() {
-    return process.env.PRODUCTION_FRONTEND_URL || CONFIG.SERVER.PRODUCTION_FRONTEND_URL
+    return import.meta.env.PRODUCTION_FRONTEND_URL || CONFIG.SERVER.PRODUCTION_FRONTEND_URL
   },
 
   get PRODUCTION_BACKEND_URL() {
-    return process.env.PRODUCTION_BACKEND_URL || CONFIG.SERVER.PRODUCTION_BACKEND_URL
+    return import.meta.env.PRODUCTION_BACKEND_URL || CONFIG.SERVER.PRODUCTION_BACKEND_URL
   },
 
   // Note: API keys are backend-only and managed securely
@@ -294,38 +294,42 @@ export const ENV = {
 
   // Server Configuration
   get PORT() {
-    return process.env.PORT ? parseInt(process.env.PORT) : CONFIG.SERVER.BACKEND_PORT
+    return import.meta.env.PORT ? parseInt(import.meta.env.PORT) : CONFIG.SERVER.BACKEND_PORT
   },
 
   get HOST() {
-    return process.env.HOST || CONFIG.SERVER.HOST
+    return import.meta.env.HOST || CONFIG.SERVER.HOST
   },
 
   // Environment Detection
   get IS_PRODUCTION() {
-    return process.env.NODE_ENV === "production"
+    return import.meta.env.MODE === "production"
   },
 
   get IS_DEVELOPMENT() {
-    return process.env.NODE_ENV === "development" || !process.env.NODE_ENV
+    return import.meta.env.MODE === "development" || import.meta.env.DEV
   },
 
   // Feature Flags
   get ENABLE_CACHING() {
-    return process.env.ENABLE_CACHING !== "false"
+    return import.meta.env.VITE_ENABLE_CACHING !== "false"
   },
 
   get ENABLE_MOCK_SERVICES() {
-    return process.env.ENABLE_MOCK_SERVICES === "true"
+    return import.meta.env.VITE_ENABLE_MOCK_SERVICES === "true"
   },
 
   // CORS Configuration
   get ADDITIONAL_CORS_ORIGINS() {
-    return process.env.ADDITIONAL_CORS_ORIGINS?.split(",").map((origin) => origin.trim()) || []
+    return (
+      import.meta.env.VITE_ADDITIONAL_CORS_ORIGINS?.split(",").map((origin: string) =>
+        origin.trim()
+      ) || []
+    )
   },
 
   get DISABLE_CORS() {
-    return process.env.DISABLE_CORS === "true"
+    return import.meta.env.VITE_DISABLE_CORS === "true"
   }
 } as const
 

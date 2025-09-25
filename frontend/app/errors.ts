@@ -8,9 +8,12 @@ export const ERROR_MESSAGES = {
   // User-facing messages (friendly, actionable)
   USER: {
     INVALID_PAGE: "You have reached an invalid page. Please try a different location.",
-    LOCATION_NOT_FOUND: "The location you searched for was not found. Please try a different location.",
-    LOCATION_NOT_APPLICABLE: "This location is not applicable for weather data. Please try a different location.",
-    NO_WEATHER_DATA: "The place you searched for does not contain any weather data. Please try a different location.",
+    LOCATION_NOT_FOUND:
+      "The location you searched for was not found. Please try a different location.",
+    LOCATION_NOT_APPLICABLE:
+      "This location is not applicable for weather data. Please try a different location.",
+    NO_WEATHER_DATA:
+      "The place you searched for does not contain any weather data. Please try a different location.",
     GENERIC_ERROR: "Something went wrong. Please try again.",
     NETWORK_ERROR: "Unable to connect to the server. Please check your connection and try again.",
     VALIDATION_ERROR: "Please provide a valid location description.",
@@ -44,17 +47,17 @@ export const ERROR_MESSAGES = {
 export const ERROR_CODES = {
   // User errors
   INVALID_PAGE: "INVALID_PAGE",
-  LOCATION_NOT_FOUND: "LOCATION_NOT_FOUND", 
+  LOCATION_NOT_FOUND: "LOCATION_NOT_FOUND",
   LOCATION_NOT_APPLICABLE: "LOCATION_NOT_APPLICABLE",
   NO_WEATHER_DATA: "NO_WEATHER_DATA",
   VALIDATION_ERROR: "VALIDATION_ERROR",
-  
+
   // System errors
   NETWORK_ERROR: "NETWORK_ERROR",
   SERVER_ERROR: "SERVER_ERROR",
   API_ERROR: "API_ERROR",
   DATABASE_ERROR: "DATABASE_ERROR",
-  
+
   // Service-specific errors
   WEATHER_API_ERROR: "WEATHER_API_ERROR",
   GEOCODING_API_ERROR: "GEOCODING_API_ERROR",
@@ -64,21 +67,26 @@ export const ERROR_CODES = {
 // Special slug constants for error handling
 export const ERROR_SLUGS = {
   NO_SPECIFIC_LOCATION_FOUND: "no-specific-location-found",
-  UNKNOWN: "unknown", 
+  UNKNOWN: "unknown",
   NOT_APPLICABLE: "not-applicable"
 } as const
 
+// Legacy exports for backward compatibility
+export const NO_SPECIFIC_LOCATION_FOUND = ERROR_SLUGS.NO_SPECIFIC_LOCATION_FOUND
+export const UNKNOWN = ERROR_SLUGS.UNKNOWN
+export const NOT_APPLICABLE = ERROR_SLUGS.NOT_APPLICABLE
+
 // Error severity levels
 export const ERROR_SEVERITY = {
-  LOW: "low",      // User can continue, minor issue
+  LOW: "low", // User can continue, minor issue
   MEDIUM: "medium", // User should be aware, may affect functionality
-  HIGH: "high",    // User cannot continue, major issue
+  HIGH: "high", // User cannot continue, major issue
   CRITICAL: "critical" // System failure, requires immediate attention
 } as const
 
 // Error types for TypeScript
-export type ErrorCode = typeof ERROR_CODES[keyof typeof ERROR_CODES]
-export type ErrorSeverity = typeof ERROR_SEVERITY[keyof typeof ERROR_SEVERITY]
+export type ErrorCode = (typeof ERROR_CODES)[keyof typeof ERROR_CODES]
+export type ErrorSeverity = (typeof ERROR_SEVERITY)[keyof typeof ERROR_SEVERITY]
 
 // Standard error response interface
 export interface StandardErrorResponse {
@@ -213,7 +221,9 @@ export const ErrorUtils = {
    * Check if error is a known error slug
    */
   isErrorSlug: (slug: string): boolean => {
-    return Object.values(ERROR_SLUGS).includes(slug as any)
+    return Object.values(ERROR_SLUGS).includes(
+      slug as (typeof ERROR_SLUGS)[keyof typeof ERROR_SLUGS]
+    )
   },
 
   /**

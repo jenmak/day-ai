@@ -1,3 +1,4 @@
+import type { AppRouter } from "@dripdropcity/backend"
 import { QueryClient } from "@tanstack/react-query"
 import { createTRPCClient, httpBatchLink, loggerLink } from "@trpc/client"
 import superjson from "superjson"
@@ -11,7 +12,7 @@ export const queryClient = new QueryClient({
   }
 })
 
-export const trpcClient = createTRPCClient<any>({
+export const trpcClient = createTRPCClient<AppRouter>({
   links: [
     loggerLink(),
     httpBatchLink({

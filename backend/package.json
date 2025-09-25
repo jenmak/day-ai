@@ -7,7 +7,6 @@
     ".": "./app/index.ts",
     "./schemas": "./app/schemas/index.ts",
     "./types": "./app/types/index.ts",
-    "./types-only": "./app/types-only.ts",
     "./errors": "./app/errors.ts",
     "./config": "./app/config.ts"
   },

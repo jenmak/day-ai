@@ -4,8 +4,6 @@ import { DESCRIPTION_TO_NORMALIZED_PLACE_PROMPT } from "../prompts/descriptionTo
 import { PlaceNormalizationSchema } from "../schemas"
 import { apiKeys, getApiKeyWithFallback } from "../security/apiKeys"
 import { PlaceNormalization } from "../types"
-// import { CONFIG, ENV } from "../config"
-// import { ERROR_MESSAGES } from "../errors"
 
 export class LLMService {
   /**

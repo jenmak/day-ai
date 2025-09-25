@@ -20,7 +20,7 @@ export default defineConfig({
     "import.meta.env.VITE_API_URL": JSON.stringify(
       process.env.NODE_ENV === "production"
         ? "https://dripdropcity-backend.vercel.app" // Use consistent domain
-        : "http://localhost:3333" // Local development
+        : "http://localhost:3336" // Local development - now using main router
     )
   }
 })

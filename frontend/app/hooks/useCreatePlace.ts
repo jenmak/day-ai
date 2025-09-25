@@ -2,7 +2,7 @@ import { useMutation } from "@tanstack/react-query"
 import { useNavigate } from "react-router"
 import { ENV } from "../config"
 import { ERROR_MESSAGES } from "../errors"
-import { SearchInputSchema, validateInput } from "../schemas/validation"
+// import { SearchInputSchema, validateInput } from "../schemas/validation"
 import { usePlaceStore } from "../stores/placeStore"
 import { Place as PlaceType } from "../types/backend"
 
@@ -14,15 +14,18 @@ interface useCreatePlaceOptions {
 export const useCreatePlace = (options?: useCreatePlaceOptions) => {
   const { onSuccess, onError } = options || {}
   const navigate = useNavigate()
-  const { setPlace } = usePlaceStore()
+  const { addPlace, setLoading, setError } = usePlaceStore()
 
   const createPlaceMutation = useMutation({
     mutationFn: async (description: string): Promise<PlaceType> => {
+      setLoading(true)
+      setError(null)
+
       // Validate input before sending request
-      const validationResult = validateInput(SearchInputSchema, { query: description })
-      if (!validationResult.success) {
-        throw new Error(validationResult.errors?.[0]?.message || "Invalid input")
-      }
+      // const validationResult = validateInput(SearchInputSchema, { query: description })
+      // if (!validationResult.success) {
+      //   throw new Error(validationResult.errors?.[0]?.message || "Invalid input")
+      // }
 
       const response = await fetch(`${ENV.BACKEND_URL}/trpc/places.create`, {
         method: "POST",
@@ -48,20 +51,21 @@ export const useCreatePlace = (options?: useCreatePlaceOptions) => {
       return data.result.data.json
     },
     onSuccess: (data: PlaceType) => {
-      console.log(
-        "Place created or updated successfully. Setting place in store and navigating to place page.",
-        data
-      )
+      console.log("Place created successfully. Adding to store and navigating to place page.", data)
 
-      setPlace(data)
+      // Add place to Zustand store
+      addPlace(data)
 
       // Navigate to the place page
       navigate(`/${data.slug}`)
 
+      setLoading(false)
       onSuccess?.(data)
     },
     onError: (error) => {
       console.error("Error creating place:", error)
+      setError(error.message)
+      setLoading(false)
       onError?.(error)
     }
   })

@@ -1,6 +1,7 @@
 const { build } = require("esbuild")
 const path = require("path")
 
+/* Deploys build to Vercel */
 async function buildProject() {
   try {
     console.log("Building with esbuild...")

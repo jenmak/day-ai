@@ -37,7 +37,7 @@ export function SearchInput({
   const { handleSubmit, control } = useForm()
   const { isSubmitting } = useFormState({ control })
 
-  // Validation hook
+  // Validation hook.
   const { errors, isValid, isTouched, setValue, validate, handleChange, handleBlur } =
     useValidation({
       schema: SearchInputSchema,
@@ -110,7 +110,6 @@ export function SearchInput({
         <div className="mt-2 text-sm text-red-400">
           {errors.map((error, index) => (
             <div key={index} className="flex items-center gap-1">
-              <span>⚠️</span>
               <span>{error.message}</span>
             </div>
           ))}
