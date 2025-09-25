@@ -33,7 +33,7 @@ export default defineConfig({
         ? "https://dripdropcitybackend-production.up.railway.app" // Railway backend
         : "http://localhost:3333" // Local development
     ),
-    "process.env.NODE_ENV": JSON.stringify(process.env.NODE_ENV || "production")
+    "process.env.NODE_ENV": JSON.stringify(process.env.NODE_ENV || "development")
   },
   build: {
     target: "esnext",
