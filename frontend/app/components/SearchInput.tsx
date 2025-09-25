@@ -56,9 +56,10 @@ export function SearchInput({
   const handleSearch = () => {
     const validationResult = validate()
     if (validationResult.success && searchTerm.trim()) {
-      clearError() // Clear any previous errors
+      clearError()
       onSearch(searchTerm.trim())
-      setValue({ query: "" }) // Clear validation state
+      setValue({ query: "" })
+      setSearchTerm("")
     }
   }
 
