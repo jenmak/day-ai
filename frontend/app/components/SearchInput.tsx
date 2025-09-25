@@ -54,7 +54,6 @@ export function SearchInput({
     const validationResult = validate()
     if (validationResult.success && searchTerm.trim()) {
       onSearch(searchTerm.trim())
-      setSearchTerm("") // Clear input after search
       setValue({ query: "" }) // Clear validation state
     }
   }
