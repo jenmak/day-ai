@@ -31,7 +31,9 @@ export const usePlaceStore = create<PlaceStore>()(
         set((state) => {
           // Ensure places is always a Map
           const currentPlaces =
-            state.places instanceof Map ? state.places : new Map(Object.entries(state.places || {}))
+            state.places instanceof Map
+              ? state.places
+              : new Map(Object.entries(state.places || {}) as [string, Place][])
           const newPlaces = new Map(currentPlaces)
           newPlaces.set(place.slug, place)
           return {
@@ -49,7 +51,9 @@ export const usePlaceStore = create<PlaceStore>()(
         const state = get()
         // Ensure places is always a Map
         const places =
-          state.places instanceof Map ? state.places : new Map(Object.entries(state.places || {}))
+          state.places instanceof Map
+            ? state.places
+            : new Map(Object.entries(state.places || {}) as [string, Place][])
         return places.get(slug) || null
       },
 
