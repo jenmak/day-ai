@@ -1,4 +1,4 @@
-import { trpcServer } from "@hono/trpc-server"
+import { fetchRequestHandler } from "@trpc/server/adapters/fetch"
 import { config } from "dotenv"
 import { Hono } from "hono"
 import { appRouter } from "../app/router/index.js"
@@ -117,25 +117,79 @@ const apiApp = new Hono()
     return c.json({ error: "Internal Server Error", message: err.message }, 500)
   })
 
-// Configure TRPC
+// Mount the API app on the main app
+app.route("/api", apiApp)
+
+// Configure TRPC with complete manual implementation
 try {
   console.log("Loading TRPC components...")
 
-  apiApp.use(
-    "/trpc/*",
-    trpcServer({
+  // Handle tRPC requests with complete manual implementation
+  app.use("/api/trpc/*", async (c) => {
+    // Get the original path and strip the /api/trpc/ prefix
+    const originalPath = c.req.path
+    const strippedPath = originalPath.replace(/^\/api\/trpc\//, "")
+
+    console.log("🔍 Manual tRPC Handler:")
+    console.log("  Original Path:", originalPath)
+    console.log("  Stripped Path:", strippedPath)
+
+    // Create a new URL with the stripped path
+    const newUrl = new URL(c.req.url)
+    newUrl.pathname = `/${strippedPath}`
+
+    console.log("  Modified URL:", newUrl.toString())
+
+    // Get the request body if it exists
+    let body: BodyInit | undefined = undefined
+    if (c.req.method !== "GET" && c.req.method !== "HEAD") {
+      const contentType = c.req.header("content-type")
+      if (contentType?.includes("application/json")) {
+        body = JSON.stringify(await c.req.json())
+      } else {
+        body = await c.req.arrayBuffer()
+      }
+    }
+
+    // Create a new request with the modified URL
+    const newRequest = new Request(newUrl.toString(), {
+      method: c.req.method,
+      headers: c.req.header(),
+      body: body
+    })
+
+    // Import the context creation function
+    const { createContext } = await import("../core/trpc.js")
+
+    // Use the fetchRequestHandler directly from tRPC
+    const response = await fetchRequestHandler({
+      endpoint: "/",
+      req: newRequest,
       router: appRouter,
       createContext: async (opts) => {
-        // Import the context creation function from the core directory
-        const { createContext } = await import("../core/trpc.js")
         return createContext(opts)
+      },
+      onError: ({ error, path }) => {
+        console.error("tRPC Error:", error, "Path:", path)
       }
     })
-  )
-  console.log("TRPC server configured")
+
+    // Convert the Response to Hono response format
+    const responseBody = await response.text()
+    const responseHeaders: Record<string, string> = {}
+    response.headers.forEach((value, key) => {
+      responseHeaders[key] = value
+    })
+
+    console.log("✅ tRPC Response:", response.status, responseBody.substring(0, 100))
+
+    return c.text(responseBody, response.status, responseHeaders)
+  })
+
+  console.log("TRPC server configured with complete manual implementation")
 } catch (error) {
   console.error("Failed to load TRPC components:", error)
-  apiApp.get("/trpc/*", (c) => {
+  app.get("/api/trpc/*", (c) => {
     return c.json(
       {
         error: "TRPC Error",
@@ -145,9 +199,6 @@ try {
     )
   })
 }
-
-// Mount the API app on the main app
-app.route("/api", apiApp)
 
 // Export the app for compatibility
 export default app

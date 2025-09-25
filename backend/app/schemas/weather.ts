@@ -1,6 +1,6 @@
 import { z } from "zod"
 import { ClothingCategoryEnum } from "../consts"
-import { DateValidation, NumberValidation } from "./validation"
+import { NumberValidation } from "./validation"
 
 // Temperature range category enum with enhanced validation
 export const TemperatureRangeCategorySchema = z.enum(
@@ -29,7 +29,7 @@ export const OpenMeteoWeatherCodeSchema = z
 export const OpenMeteoDailySchema = z
   .object({
     time: z
-      .array(DateValidation.isoString)
+      .array(z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Must be a valid date string (YYYY-MM-DD)"))
       .min(1, "Time array cannot be empty")
       .max(14, "Cannot request more than 14 days"),
 
@@ -90,7 +90,7 @@ export const TemperatureRangeSchema = z
 // Enhanced Weather Schema
 export const WeatherSchema = z
   .object({
-    date: DateValidation.isoString,
+    date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Must be a valid date string (YYYY-MM-DD)"),
 
     degreesFahrenheit: NumberValidation.temperatureF,
 
@@ -134,8 +134,8 @@ export const WeatherForecastSchema = z.object({
     name: z.string().max(200).optional()
   }),
   forecast: z.array(WeatherSchema).min(1).max(14),
-  generatedAt: DateValidation.isoString,
-  validUntil: DateValidation.isoString
+  generatedAt: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Must be a valid date string (YYYY-MM-DD)"),
+  validUntil: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Must be a valid date string (YYYY-MM-DD)")
 })
 
 // Weather Condition Schema
