@@ -21,13 +21,7 @@ export const useCreatePlace = (options?: useCreatePlaceOptions) => {
       setLoading(true)
       setError(null)
 
-      // Validate input before sending request
-      // const validationResult = validateInput(SearchInputSchema, { query: description })
-      // if (!validationResult.success) {
-      //   throw new Error(validationResult.errors?.[0]?.message || "Invalid input")
-      // }
-
-      const response = await fetch(`${ENV.BACKEND_URL}/trpc/places.create`, {
+      const response = await fetch(`${ENV.BACKEND_URL}/api/trpc/places.create`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json"

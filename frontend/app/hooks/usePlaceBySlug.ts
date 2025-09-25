@@ -29,7 +29,7 @@ export const usePlaceBySlug = (options?: usePlaceBySlugOptions) => {
 
       try {
         const response = await fetch(
-          `${ENV.BACKEND_URL}/trpc/places.getBySlug?batch=1&input=${encodeURIComponent(JSON.stringify({ "0": { json: { slug } } }))}`
+          `${ENV.BACKEND_URL}/api/trpc/places.getBySlug?batch=1&input=${encodeURIComponent(JSON.stringify({ "0": { json: { slug } } }))}`
         )
 
         if (!response.ok) {
