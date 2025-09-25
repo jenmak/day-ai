@@ -120,8 +120,8 @@ export function SearchInput({
       )}
 
       {/* API Error Display */}
-      {error && !isLoading && (
-        <div className="mt-2 text-sm text-red-400">
+      {error && !isLoading && !isSubmitting && (
+        <div className="mt-2 text-sm text-white">
           <div className="flex items-center gap-1">
             <span>{error.message}</span>
           </div>
