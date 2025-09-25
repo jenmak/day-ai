@@ -141,7 +141,7 @@ try {
     console.log("  Modified URL:", newUrl.toString())
 
     // Get the request body if it exists
-    let body: BodyInit | undefined = undefined
+    let body: string | ArrayBuffer | undefined = undefined
     if (c.req.method !== "GET" && c.req.method !== "HEAD") {
       const contentType = c.req.header("content-type")
       if (contentType?.includes("application/json")) {
@@ -183,7 +183,7 @@ try {
 
     console.log("✅ tRPC Response:", response.status, responseBody.substring(0, 100))
 
-    return c.text(responseBody, response.status, responseHeaders)
+    return c.text(responseBody, response.status as any, responseHeaders)
   })
 
   console.log("TRPC server configured with complete manual implementation")
