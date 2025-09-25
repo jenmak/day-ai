@@ -71,9 +71,10 @@ export const usePlaceStore = create<PlaceStore>()(
     }),
     {
       name: "place-store",
-      // Only persist the places Map, not the loading/error states
+      // Persist the places Map and currentPlace, not the loading/error states
       partialize: (state) => ({
-        places: state.places instanceof Map ? Object.fromEntries(state.places) : state.places
+        places: state.places instanceof Map ? Object.fromEntries(state.places) : state.places,
+        currentPlace: state.currentPlace
       }),
       // Convert the persisted object back to a Map on rehydration
       onRehydrateStorage: () => (state) => {

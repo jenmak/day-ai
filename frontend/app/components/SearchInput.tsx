@@ -3,6 +3,7 @@ import { useState } from "react"
 import { useForm, useFormState } from "react-hook-form"
 import { useValidation } from "../hooks/useValidation"
 import { SearchInputSchema } from "../schemas/validation"
+import { usePlaceStore } from "../stores/placeStore"
 import { ReactCSSProperties } from "../types/CustomProperties"
 import { Button } from "./shadcn/button"
 import { Input } from "./shadcn/input"
@@ -23,6 +24,7 @@ type SearchInputProps = {
 
 export function SearchInput({
   onSearch,
+  error,
   className,
   isLoading,
   placeholder = "ie. Gotham",
@@ -36,6 +38,7 @@ export function SearchInput({
   // Hooks.
   const { handleSubmit, control } = useForm()
   const { isSubmitting } = useFormState({ control })
+  const { clearError } = usePlaceStore()
 
   // Validation hook.
   const { errors, isValid, isTouched, setValue, validate, handleChange, handleBlur } =
@@ -53,6 +56,7 @@ export function SearchInput({
   const handleSearch = () => {
     const validationResult = validate()
     if (validationResult.success && searchTerm.trim()) {
+      clearError() // Clear any previous errors
       onSearch(searchTerm.trim())
       setValue({ query: "" }) // Clear validation state
     }
@@ -112,6 +116,15 @@ export function SearchInput({
               <span>{error.message}</span>
             </div>
           ))}
+        </div>
+      )}
+
+      {/* API Error Display */}
+      {error && !isLoading && (
+        <div className="mt-2 text-sm text-red-400">
+          <div className="flex items-center gap-1">
+            <span>{error.message}</span>
+          </div>
         </div>
       )}
     </form>
