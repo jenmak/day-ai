@@ -17,7 +17,15 @@ console.log("  RAILWAY_ENVIRONMENT:", process.env.RAILWAY_ENVIRONMENT)
 console.log("  RAILWAY_PROJECT_ID:", process.env.RAILWAY_PROJECT_ID)
 
 const app = new Hono()
-  .basePath("/api")
+
+// Add root health check endpoint (for Railway health checks)
+app.get("/", (c) => {
+  console.log("Root health check endpoint hit")
+  return c.text("OK")
+})
+
+// Add API routes without basePath (we'll mount them on /api)
+const apiApp = new Hono()
   .use(
     cors({
       origin: (origin) => {
@@ -39,7 +47,7 @@ const app = new Hono()
     })
   )
   .get("/", (c) => {
-    console.log("Health check endpoint hit")
+    console.log("API health check endpoint hit")
     return c.text("OK")
   })
   .get("/test", (c) => {
@@ -67,7 +75,7 @@ const app = new Hono()
 try {
   console.log("Loading TRPC components...")
 
-  app.use(
+  apiApp.use(
     "/trpc/*",
     trpcServer({
       router: appRouter,
@@ -81,7 +89,7 @@ try {
   console.log("TRPC server configured")
 } catch (error) {
   console.error("Failed to load TRPC components:", error)
-  app.get("/trpc/*", (c) => {
+  apiApp.get("/trpc/*", (c) => {
     return c.json(
       {
         error: "TRPC Error",
@@ -91,6 +99,9 @@ try {
     )
   })
 }
+
+// Mount the API app on the main app
+app.route("/api", apiApp)
 
 // Export the app for compatibility
 export default app
