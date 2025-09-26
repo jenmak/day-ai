@@ -42,13 +42,53 @@ export const useCreatePlace = (options?: useCreatePlaceOptions) => {
       }
 
       const data = await response.json()
+
+      // Check if the response contains an error (TRPC error format)
+      if (data.error) {
+        console.error("Backend returned error:", data.error)
+        const errorMessage = data.error.json?.message || ERROR_MESSAGES.USER.SERVER_ERROR
+        throw new Error(errorMessage)
+      }
+
+      // Check if the response has the expected structure
+      if (!data.result?.data?.json) {
+        console.error("Unexpected response structure:", data)
+        throw new Error(ERROR_MESSAGES.USER.SERVER_ERROR)
+      }
+
       return data.result.data.json
     },
     onSuccess: (data: PlaceType) => {
       console.log("Place created successfully. Adding to store and navigating to place page.", data)
+      console.log("Place data structure:", {
+        slug: data.slug,
+        description: data.description,
+        normalizedPlace: data.normalizedPlace,
+        weather: data.weather?.length || 0
+      })
+
+      // Check if this is an error slug (unknown, no-specific-location-found, etc.)
+      if (
+        data.slug === "unknown" ||
+        data.slug === "no-specific-location-found" ||
+        data.slug === "not-applicable"
+      ) {
+        console.warn(
+          "Backend returned error slug:",
+          data.slug,
+          "for description:",
+          data.description
+        )
+        setError(
+          "The location you searched for could not be found or processed. Please try a different location."
+        )
+        setLoading(false)
+        return
+      }
 
       // Add place to Zustand store
       addPlace(data)
+      console.log("Place added to store successfully")
 
       // Navigate to the place page
       navigate(`/${data.slug}`)
@@ -60,6 +100,10 @@ export const useCreatePlace = (options?: useCreatePlaceOptions) => {
       console.error("Error creating place:", error)
       setError(error.message)
       setLoading(false)
+
+      // Redirect to error page for backend failures
+      navigate("/error")
+
       onError?.(error)
     }
   })

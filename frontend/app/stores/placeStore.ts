@@ -28,6 +28,7 @@ export const usePlaceStore = create<PlaceStore>()(
       error: null,
 
       addPlace: (place: Place) => {
+        console.log("Store: Adding place to store", place)
         set((state) => {
           // Ensure places is always a Map
           const currentPlaces =
@@ -36,6 +37,7 @@ export const usePlaceStore = create<PlaceStore>()(
               : new Map(Object.entries(state.places || {}) as [string, Place][])
           const newPlaces = new Map(currentPlaces)
           newPlaces.set(place.slug, place)
+          console.log("Store: Place added, total places:", newPlaces.size)
           return {
             places: newPlaces,
             currentPlace: place
@@ -44,6 +46,7 @@ export const usePlaceStore = create<PlaceStore>()(
       },
 
       setCurrentPlace: (place: Place | null) => {
+        console.log("Store: Setting current place", place)
         set({ currentPlace: place })
       },
 

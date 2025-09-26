@@ -32,6 +32,17 @@ export function PageWrapper({ children }: PageWrapperProps) {
         currentPlace.temperatureRangeCategory as (typeof TemperatureRangeCategory)[keyof typeof TemperatureRangeCategory]
       )
       setBackgroundColors(colors)
+    } else if (currentPlace?.weather?.length) {
+      // Fallback: use the temperature range category from the first weather entry
+      const firstWeather = currentPlace.weather[0]
+      if (firstWeather?.temperatureRangeCategory) {
+        const colors = getBackgroundColors(
+          firstWeather.temperatureRangeCategory as (typeof TemperatureRangeCategory)[keyof typeof TemperatureRangeCategory]
+        )
+        setBackgroundColors(colors)
+      }
+    } else {
+      setBackgroundColors(initialBackgroundColors)
     }
   }, [currentPlace])
 

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react"
 import { useParams } from "react-router"
+import { LoadingSpinner } from "../components/LoadingSpinner"
 import { PageWrapper } from "../components/PageWrapper"
 import { SearchInput } from "../components/SearchInput"
 import { Heading } from "../components/typography/Heading"
@@ -20,7 +21,7 @@ export function Place() {
   // Hooks.
   const { slug } = useParams()
   const { data: place, isLoading, error } = usePlaceBySlug({ slug: slug || "" })
-  const { createPlace } = useCreatePlace()
+  const { createPlace, isLoading: isCreatingPlace } = useCreatePlace()
 
   // Local state.
   const [errorMessage, setErrorMessage] = useState<string>("")
@@ -29,6 +30,14 @@ export function Place() {
     const errorState = getPlaceErrorState(slug, error, isLoading, place)
     setErrorMessage(errorState.errorMessage)
   }, [slug, error, isLoading, place])
+
+  if (isLoading || isCreatingPlace) {
+    return (
+      <PageWrapper>
+        <LoadingSpinner size="xl" className="h-screen flex items-center justify-center" />
+      </PageWrapper>
+    )
+  }
 
   // Show error page if there's an error message
   if (errorMessage) {

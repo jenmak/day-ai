@@ -41,25 +41,28 @@ export function SearchInput({
   const { clearError } = usePlaceStore()
 
   // Validation hook.
-  const { errors, isValid, isTouched, setValue, validate, handleChange, handleBlur } =
-    useValidation({
-      schema: SearchInputSchema,
-      initialValue: { query: "" },
-      validateOnChange: false,
-      validateOnBlur: true
-    })
+  const { errors, isValid, setValue, validate, handleChange, handleBlur, reset } = useValidation({
+    schema: SearchInputSchema,
+    initialValue: { query: "" },
+    validateOnChange: false,
+    validateOnBlur: false
+  })
 
   // Local state.
   const [searchTerm, setSearchTerm] = useState("")
+  const [hasAttemptedSearch, setHasAttemptedSearch] = useState(false)
 
   // Handlers.
   const handleSearch = () => {
+    setHasAttemptedSearch(true)
     const validationResult = validate()
     if (validationResult.success && searchTerm.trim()) {
       clearError()
       onSearch(searchTerm.trim())
       setValue({ query: "" })
       setSearchTerm("")
+      reset()
+      setHasAttemptedSearch(false)
     }
   }
 
@@ -74,6 +77,10 @@ export function SearchInput({
     const value = e.target.value
     setSearchTerm(value)
     handleChange({ query: value })
+    // Reset attempted search state when user starts typing
+    if (hasAttemptedSearch) {
+      setHasAttemptedSearch(false)
+    }
   }
 
   return (
@@ -109,25 +116,28 @@ export function SearchInput({
         <div className="rotating-ring"></div>
       </div>
 
-      {/* Validation Error Display */}
-      {showValidationErrors && isTouched && errors.length > 0 && (
-        <div className="mt-2 text-sm text-orange-400">
-          {errors.map((error, index) => (
-            <div key={index} className="flex items-center gap-1">
+      {/* Error Display Container - maintains consistent height */}
+      <div className="mt-2 min-h-[1.5rem]">
+        {/* Validation Error Display - only show after user attempts search */}
+        {showValidationErrors && hasAttemptedSearch && errors.length > 0 && (
+          <div className="text-sm text-white">
+            {errors.map((error, index) => (
+              <div key={index} className="flex items-center gap-1">
+                <span>{error.message}</span>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* API Error Display */}
+        {error && !isLoading && !isSubmitting && (
+          <div className="text-sm text-white">
+            <div className="flex items-center gap-1">
               <span>{error.message}</span>
             </div>
-          ))}
-        </div>
-      )}
-
-      {/* API Error Display */}
-      {error && !isLoading && !isSubmitting && (
-        <div className="mt-2 text-sm text-white">
-          <div className="flex items-center gap-1">
-            <span>{error.message}</span>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </form>
   )
 }

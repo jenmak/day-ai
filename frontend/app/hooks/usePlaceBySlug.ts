@@ -51,14 +51,17 @@ export const usePlaceBySlug = (options?: usePlaceBySlugOptions) => {
   })
 
   useEffect(() => {
+    console.log("usePlaceBySlug: Effect triggered", { storePlace, queryData: query.data, slug })
     if (storePlace) {
+      console.log("usePlaceBySlug: Using store place", storePlace)
       setCurrentPlace(storePlace)
       onSuccess?.(storePlace)
     } else if (query.data) {
+      console.log("usePlaceBySlug: Using query data", query.data)
       setCurrentPlace(query.data)
       onSuccess?.(query.data)
     }
-  }, [storePlace, query.data, setCurrentPlace, onSuccess])
+  }, [storePlace, query.data, setCurrentPlace, onSuccess, slug])
 
   useEffect(() => {
     if (query.error) {

@@ -1,0 +1,30 @@
+import { cn } from "../utils/cn"
+
+interface LoadingSpinnerProps {
+  className?: string
+  size?: "sm" | "md" | "lg" | "xl"
+  text?: string
+}
+
+export function LoadingSpinner({ className, size = "md", text }: LoadingSpinnerProps) {
+  const sizeClasses = {
+    sm: "h-4 w-4",
+    md: "h-6 w-6",
+    lg: "h-8 w-8",
+    xl: "h-20 w-20"
+  }
+
+  return (
+    <div className={cn("flex items-center justify-center", className)}>
+      <div className="flex flex-col items-center gap-2">
+        <div
+          className={cn(
+            "animate-spin rounded-full border-2 border-gray-300 border-t-black",
+            sizeClasses[size]
+          )}
+        />
+        {text && <p className="text-sm text-black">{text}</p>}
+      </div>
+    </div>
+  )
+}
