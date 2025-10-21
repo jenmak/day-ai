@@ -23,7 +23,7 @@ export function Place() {
   // Hooks.
   const { slug } = useParams()
   const { data: place, isLoading, error } = usePlaceBySlug({ slug: slug || "" })
-  const { isLoading: isCreatingPlace, currentPlace } = usePlaceStore()
+  const { isLoading: isCreatingPlace } = usePlaceStore()
   const { createPlace } = useCreatePlace()
 
   // Local state.
