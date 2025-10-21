@@ -17,35 +17,37 @@ export function Search() {
   }
 
   return (
-    <div className="flex flex-col h-screen min-h-screen gap-4 p-9 justify-center items-center h-full container mx-auto md:max-w-[400px]">
-      <Image
-        src={logoImage}
-        alt="Drip Drop City Logo"
-        className="w-48 h-48 mx-auto object-contain animate-cascade-logo"
-        loading="eager"
-      />
-      <h1 className="text-hero font-heading text-white text-center mb-4 animate-cascade-title">
-        Drip Drop City
-      </h1>
-      <Label
-        className="text-white text-center font-light mb-2 leading-6
-        animate-cascade-description font-body"
-      >
-        {/* eslint-disable-next-line max-len */}
-        Describe your location and we&apos;ll recommend some weather appropriate outfits for the
-        week.
-      </Label>
-      <div className="animate-cascade-input">
-        <SearchInput
-          className="w-[275px]"
-          ringBackgroundColor={RING_BACKGROUND_COLOR}
-          backgroundColor={BACKGROUND_COLOR}
-          textColor={TEXT_COLOR}
-          placeholderColor={PLACEHOLDER_COLOR}
-          onSearch={handleSearch}
-          isLoading={isLoading}
-          error={error}
+    <div className="bg-[var(--color-black)] min-h-screen w-full">
+      <div className="flex flex-col h-screen gap-4 p-9 justify-center items-center h-full container mx-auto md:max-w-[400px]">
+        <Image
+          src={logoImage}
+          alt="Drip Drop City Logo"
+          className="w-48 h-48 mx-auto object-contain animate-cascade-logo"
+          loading="eager"
         />
+        <h1 className="text-hero font-heading text-white text-center mb-4 animate-cascade-title">
+          Drip Drop City
+        </h1>
+        <Label
+          className="text-white text-center font-light mb-2 leading-6
+          animate-cascade-description font-body"
+        >
+          {/* eslint-disable-next-line max-len */}
+          Describe your location and we&apos;ll recommend some weather appropriate outfits for the
+          week.
+        </Label>
+        <div className="animate-cascade-input">
+          <SearchInput
+            className="w-[275px]"
+            ringBackgroundColor={RING_BACKGROUND_COLOR}
+            backgroundColor={BACKGROUND_COLOR}
+            textColor={TEXT_COLOR}
+            placeholderColor={PLACEHOLDER_COLOR}
+            onSearch={handleSearch}
+            isLoading={isLoading}
+            error={error}
+          />
+        </div>
       </div>
     </div>
   )

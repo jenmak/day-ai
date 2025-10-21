@@ -7,7 +7,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./sha
 import { Image } from "./shadcn/image"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./shadcn/tooltip"
 
-export const WeatherCard = ({ weather }: { weather: Weather }) => {
+interface WeatherCardProps {
+  weather: Weather
+  iconBackgroundColor?: string
+  accentColor?: string
+}
+
+export const WeatherCard = ({ weather, iconBackgroundColor, accentColor }: WeatherCardProps) => {
   const dayOfWeek = getDayOfWeek(weather.date)
 
   const weatherConditionWithTooltip = () => (
@@ -29,7 +35,9 @@ export const WeatherCard = ({ weather }: { weather: Weather }) => {
     <div className="weather">
       {/* Main weather condition icon */}
       <div className="relative mb-6 mx-auto w-20 h-20 md:w-40 md:h-40">
-        <div className="rounded-full overflow-hidden bg-white/20 backdrop-blur-sm w-20 h-20 md:w-40 md:h-40 shadow-md z-30 relative">
+        <div
+          className={`rounded-full overflow-hidden ${iconBackgroundColor || "bg-white/20"} backdrop-blur-sm w-20 h-20 md:w-40 md:h-40 shadow-md z-30 relative`}
+        >
           <Image
             src={getWeatherImage(weather.condition)}
             alt={`Weather condition ${weather.condition}`}
@@ -94,16 +102,18 @@ export const WeatherCard = ({ weather }: { weather: Weather }) => {
           </div>
         </CardHeader>
         {/* Clothing list */}
-        <CardContent className={`absolute bottom-4 right-0 text-black w-full z-20`}>
+        <CardContent className={`absolute bottom-4 right-0 text-white w-full z-20`}>
           <ul className="list-inside text-right">
             {weather.clothing.map((item: string) => (
-              <li key={item} className="font-heading font-light text-black">
+              <li key={item} className="font-heading font-light text-white">
                 {item}
               </li>
             ))}
           </ul>
         </CardContent>
-        <span className="absolute bottom-[-100px] right-[-190px] md:right-[-180px] w-[300px] h-[500px] bg-white/60 transform rotate-20 transform-origin-center z-10"></span>
+        <span
+          className={`absolute bottom-[-100px] right-[-190px] md:right-[-180px] w-[300px] h-[500px] ${accentColor || "bg-white/60"} transform rotate-20 transform-origin-center z-10`}
+        ></span>
       </Card>
     </div>
   )

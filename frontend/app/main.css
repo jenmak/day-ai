@@ -61,7 +61,7 @@
   --color-cold-4: var(--color-cold-maya-blue);
   --color-cold-5: var(--color-cold-prussian-blue);
   --color-destructive: var(--color-hot-coquelicot);
-  --background: var(--color-black);
+  --background: var(--color-gray-1);
 
   /* Rings */
   --ring-color-1: var(--color-gray-1);
@@ -195,6 +195,10 @@
 
 /* Background Colors */
 
+.bg-gray-1 {
+  background-color: var(--color-gray-1);
+}
+
 .background-colors {
   gap: 0 !important;
 }
@@ -210,13 +214,22 @@
 .place-card {
   width: var(--card-width);
   height: var(--card-height);
-  margin-right: calc((100vw - var(--card-width)) / 2 - var(--card-width) / 2);
+  margin-right: 2rem;
+  box-shadow: 0 0 10px var(--color-gray-3);
+}
+
+.place-card .card {
+  box-shadow: 0 0 10px var(--color-gray-3);
 }
 
 /* Weather Card */
 
 .weather {
   width: var(--card-width);
+}
+
+.weather .card {
+  box-shadow: 0 0 10px var(--color-gray-3);
 }
 
 .card {
@@ -244,6 +257,7 @@
   display: flex;
   flex-direction: row;
   gap: var(--card-gap);
+  padding-bottom: 2rem;
 }
 
 .cards-container > *:last-child {
@@ -285,12 +299,14 @@
   border-radius: var(--input-border-radius);
   outline: 1px solid var(--color-white);
   background: transparent;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
 .input-container:active,
 .input-container:focus,
 .input-container:focus-within {
   outline: 2px solid var(--color-white);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
 }
 
 .input-container.input-container-loading {
@@ -381,7 +397,7 @@
 }
 
 .search-input:focus {
-  box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+  box-shadow: 0 0 10px var(--color-gray-3);
 }
 
 .search-input::placeholder {

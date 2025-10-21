@@ -6,8 +6,6 @@ import { DateService } from "./dateService"
 export interface WeatherServiceOptions {
   latitude: number
   longitude: number
-  startDate?: Date
-  endDate?: Date
 }
 
 export class WeatherService {
@@ -17,23 +15,13 @@ export class WeatherService {
    * Get 7-day weather forecast for given coordinates
    */
   static async get7DayForecast(options: WeatherServiceOptions): Promise<Weather[]> {
-    const { latitude, longitude, startDate = new Date(), endDate } = options
-
-    // Calculate end date (default forecast days from start date)
-    const daysToAdd = 7 - 1
-    const forecastEndDate =
-      endDate || new Date(startDate.getTime() + daysToAdd * 24 * 60 * 60 * 1000)
-
-    // Format dates for API using DateService
-    const startDateStr = DateService.formatDate(startDate)
-    const endDateStr = DateService.formatDate(forecastEndDate)
+    const { latitude, longitude } = options
 
     try {
       const url = new URL(this.BASE_URL)
       url.searchParams.set("latitude", latitude.toString())
       url.searchParams.set("longitude", longitude.toString())
-      url.searchParams.set("start_date", startDateStr)
-      url.searchParams.set("end_date", endDateStr)
+      url.searchParams.set("forecast_days", "7")
       url.searchParams.set(
         "daily",
         "temperature_2m_max,temperature_2m_min,precipitation_probability_max,windspeed_10m_max,weathercode"

@@ -98,7 +98,7 @@ export function SearchInput({
         }
       >
         <Input
-          className="search-input focus-visible:ring-0"
+          className="search-input focus-visible:ring-0 shadow-sm"
           placeholder={placeholder}
           value={searchTerm}
           onChange={handleInputChange}

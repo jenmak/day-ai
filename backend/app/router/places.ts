@@ -3,7 +3,6 @@ import { procedure, router } from "../../core/trpc"
 import { CreatePlaceSchema, GetPlaceBySlugSchema, UpdatePlaceSchema } from "../schemas/place"
 import { validateInput } from "../schemas/validation"
 import { ClothingService } from "../services/clothingService"
-import { DateService } from "../services/dateService"
 import { GeolocationService } from "../services/geolocationService"
 import { LLMService } from "../services/llmService"
 import { WeatherService } from "../services/weatherService"
@@ -143,21 +142,25 @@ export const places = router({
 
       // Check if we need to update weather data
       if (place.weather && place.weather.length > 0 && place.geocodedAddress) {
-        const today = DateService.getToday() // YYYY-MM-DD format
-        const firstWeatherDate = place.weather[0].date
+        const firstWeatherDate = new Date(place.weather[0].date)
+        const now = new Date()
 
-        // If today is not the first day in weather data, fetch fresh weather data
-        if (firstWeatherDate !== today) {
+        // Calculate the age of the weather data in days
+        const daysSinceWeatherFetch = Math.floor(
+          (now.getTime() - firstWeatherDate.getTime()) / (1000 * 60 * 60 * 24)
+        )
+
+        // If weather data is outdated (first date is in the past), fetch fresh data
+        if (daysSinceWeatherFetch > 0) {
           try {
             console.log(
-              `Weather data is outdated. First date: ${firstWeatherDate}, Today: ${today}. Fetching fresh data.`
+              `Weather data is outdated. First date: ${place.weather[0].date} (${daysSinceWeatherFetch} days old). Fetching fresh data.`
             )
 
             // Fetch fresh 7-day weather data starting from today
             const freshWeatherData = await WeatherService.get7DayForecast({
               latitude: place.geocodedAddress.latitude,
-              longitude: place.geocodedAddress.longitude,
-              startDate: new Date()
+              longitude: place.geocodedAddress.longitude
             })
 
             // Get clothing recommendations for the fresh weather data
