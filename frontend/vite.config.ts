@@ -16,11 +16,9 @@ export default defineConfig({
   server: {
     port: 6173,
     host: "0.0.0.0",
-    allowedHosts: [
-      "dripdropcityfrontend-production.up.railway.app",
-      "dripdrop.city",
-      "www.dripdrop.city"
-    ]
+    // Allow all hosts for Railway deployment flexibility
+    // Railway will handle domain validation through proxy headers
+    allowedHosts: "all"
   },
   resolve: {
     alias: {
@@ -29,11 +27,9 @@ export default defineConfig({
   },
   define: {
     "import.meta.env.VITE_API_URL": JSON.stringify(
-      process.env.NODE_ENV === "development" ||
-        process.env.RAILWAY_ENVIRONMENT ||
-        process.env.RAILWAY_PROJECT_ID
-        ? "https://dripdropcitybackend-production.up.railway.app" // Railway backend
-        : "http://localhost:3333" // Local development
+      process.env.NODE_ENV === "development"
+        ? "http://localhost:3333" // Local development
+        : "https://dripdropcitybackend-production.up.railway.app" // Railway backend
     ),
     "process.env.NODE_ENV": JSON.stringify(process.env.NODE_ENV || "development")
   },

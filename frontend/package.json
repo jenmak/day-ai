@@ -5,8 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "bun run --bun vite",
-    "build": "tsc -b && vite build",
-    "start": "echo 'Starting production static server...' && node server.js",
+    "build": "NODE_ENV=production tsc -b && vite build",
+    "start": "NODE_ENV=production node server.js",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",
