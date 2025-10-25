@@ -43,6 +43,7 @@
   /* Basic colors */
   --color-white: #ffffff;
   --color-black: #000000;
+  --color-burnt-umber: #141204;
 
   /* Aliases */
   --color-hot-1: var(--color-hot-amber);
@@ -61,7 +62,7 @@
   --color-cold-4: var(--color-cold-maya-blue);
   --color-cold-5: var(--color-cold-prussian-blue);
   --color-destructive: var(--color-hot-coquelicot);
-  --background: var(--color-gray-1);
+  --background: var(--color-burnt-umber);
 
   /* Rings */
   --ring-color-1: var(--color-gray-1);
@@ -195,8 +196,8 @@
 
 /* Background Colors */
 
-.bg-gray-1 {
-  background-color: var(--color-gray-1);
+.color-background {
+  background-color: var(--color-background);
 }
 
 .background-colors {
@@ -215,11 +216,9 @@
   width: var(--card-width);
   height: var(--card-height);
   margin-right: 2rem;
-  box-shadow: 0 0 10px var(--color-gray-3);
 }
 
 .place-card .card {
-  box-shadow: 0 0 10px var(--color-gray-3);
 }
 
 /* Weather Card */
@@ -229,7 +228,6 @@
 }
 
 .weather .card {
-  box-shadow: 0 0 10px var(--color-gray-3);
 }
 
 .card {
@@ -246,6 +244,11 @@
   box-sizing: border-box;
   display: flex;
   flex-direction: row;
+}
+
+/* Hide the scrollbar itself */
+.cards-scroll-containr::-webkit-scrollbar {
+  display: none;
 }
 
 .cards-spacer {
@@ -299,14 +302,12 @@
   border-radius: var(--input-border-radius);
   outline: 1px solid var(--color-white);
   background: transparent;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
 .input-container:active,
 .input-container:focus,
 .input-container:focus-within {
   outline: 2px solid var(--color-white);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
 }
 
 .input-container.input-container-loading {
@@ -397,7 +398,6 @@
 }
 
 .search-input:focus {
-  box-shadow: 0 0 10px var(--color-gray-3);
 }
 
 .search-input::placeholder {

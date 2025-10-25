@@ -40,6 +40,12 @@ export const MOCK_MAPPINGS: Record<string, PlaceNormalization> = {
     confidence: 0.95,
     reasoning: "Gotham City is commonly associated with New York City in popular culture"
   },
+  gotham: {
+    normalizedPlace: "New York, NY",
+    slug: "new-york-ny",
+    confidence: 0.9,
+    reasoning: "Gotham is commonly associated with New York City in popular culture"
+  },
   metropolis: {
     normalizedPlace: "New York, NY",
     slug: "new-york-ny",

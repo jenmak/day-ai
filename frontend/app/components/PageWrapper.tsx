@@ -13,7 +13,7 @@ interface PageWrapperProps {
  */
 export function PageWrapper({ children }: PageWrapperProps) {
   return (
-    <div className="bg-[var(--color-gray-1)] relative h-screen w-full">
+    <div className="bg-gray-3 relative h-screen w-full">
       <div className="absolute top-0 left-0 right-0 bottom-0 z-1">{children}</div>
     </div>
   )

@@ -34,9 +34,9 @@ export const WeatherCard = ({ weather, iconBackgroundColor, accentColor }: Weath
   return (
     <div className="weather">
       {/* Main weather condition icon */}
-      <div className="relative mb-6 mx-auto w-20 h-20 md:w-40 md:h-40">
+      <div className="relative my-6 mx-auto w-20 h-20 md:w-40 md:h-40">
         <div
-          className={`rounded-full overflow-hidden ${iconBackgroundColor || "bg-white/20"} backdrop-blur-sm w-20 h-20 md:w-40 md:h-40 shadow-md z-30 relative`}
+          className={`rounded-full overflow-hidden ${iconBackgroundColor || "bg-white/20"} w-20 h-20 md:w-40 md:h-40 z-30 relative`}
         >
           <Image
             src={getWeatherImage(weather.condition)}
@@ -61,7 +61,7 @@ export const WeatherCard = ({ weather, iconBackgroundColor, accentColor }: Weath
       </h2>
       {/* Weather card */}
       <Card
-        className={`relative text-black bg-white/60 backdrop-blur-sm rounded-lg shadow-md outline-none border-none overflow-hidden card`}
+        className={`relative text-black bg-white rounded-lg shadow-none outline-none border-none overflow-hidden card`}
       >
         <CardHeader className="relative text-black z-20">
           <div className="absolute top-0 left-3 md:top-3 md:left-5 flex flex-col gap-4">
