@@ -36,6 +36,8 @@ export const CONFIG = {
       PRODUCTION: [
         "https://dripdrop.city",
         "https://www.dripdrop.city",
+        "https://dripdropcity.com",
+        "https://www.dripdropcity.com",
         "https://dripdropcityfrontend-production.up.railway.app/"
       ]
     },
