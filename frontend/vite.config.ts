@@ -44,7 +44,8 @@ export default defineConfig({
           router: ["react-router"]
         }
       }
-    }
+    },
+    outDir: "dist"
   },
   optimizeDeps: {
     include: ["react", "react-dom", "react-router"]

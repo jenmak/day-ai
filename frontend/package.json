@@ -6,13 +6,14 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "start": "npm run preview",
+    "start": "npx serve -s dist -l $PORT",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "preview": "vite preview"
   },
+  "main": "dist/index.html",
   "dependencies": {
     "@dripdropcity/backend": "file:../backend",
     "@hookform/resolvers": "^4.1.3",
