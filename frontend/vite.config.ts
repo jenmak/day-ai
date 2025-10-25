@@ -14,7 +14,7 @@ export default defineConfig({
   ],
   clearScreen: false,
   server: {
-    port: 6173,
+    port: process.env.PORT || 3000,
     host: "0.0.0.0",
     // Allow all hosts for Railway deployment flexibility
     // Railway will handle domain validation through proxy headers
@@ -48,5 +48,10 @@ export default defineConfig({
   },
   optimizeDeps: {
     include: ["react", "react-dom", "react-router"]
+  },
+  preview: {
+    host: "0.0.0.0",
+    port: process.env.PORT || 4173,
+    allowedHosts: "all" // Also for production preview
   }
 })
