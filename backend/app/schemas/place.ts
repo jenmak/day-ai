@@ -16,7 +16,9 @@ export const AddressSchema = z.object({
     .max(100, "State name must be 100 characters or less")
     .regex(/^[a-zA-Z\s\-'\.]+$/, "State name contains invalid characters"),
 
-  postalCode: z.string().regex(/^[a-zA-Z0-9\s\-]{3,10}$/, "Must be a valid postal code"),
+  postalCode: z
+    .string()
+    .regex(/^[a-zA-Z0-9\s\-]{3,10}$/, "Must be a valid postal code"),
 
   country: z
     .string()
@@ -51,7 +53,10 @@ export const GeocodedAddressSchema = z.object({
 export const PlaceSchema = z.object({
   id: z.string().uuid("Must be a valid UUID"),
 
-  description: z.string().max(500, "Description must be 500 characters or less").optional(),
+  description: z
+    .string()
+    .max(500, "Description must be 500 characters or less")
+    .optional(),
 
   normalizedPlace: z
     .string()
@@ -78,9 +83,15 @@ export const CreatePlaceSchema = z.object({
   description: StringValidation.required
     .min(1, "Place description cannot be empty")
     .max(500, "Place description must be 500 characters or less")
-    .refine((desc) => desc.trim().length > 0, "Place description cannot be only whitespace")
+    .refine(
+      (desc) => desc.trim().length > 0,
+      "Place description cannot be only whitespace"
+    )
     .transform((desc) => desc.trim())
-    .refine((desc) => !/^[0-9\s\-_]+$/.test(desc), "Place description must contain letters")
+    .refine(
+      (desc) => !/^[0-9\s\-_]+$/.test(desc),
+      "Place description must contain letters"
+    )
 })
 
 // Update Place Schema with enhanced validation
@@ -100,23 +111,6 @@ export const GetPlaceBySlugSchema = z.object({
     .max(100, "Slug must be 100 characters or less")
 })
 
-// Get Place by ID Schema
-export const GetPlaceByIdSchema = z.object({
-  id: z.string().uuid("Must be a valid UUID")
-})
-
-// Search Places Schema
-export const SearchPlacesSchema = z.object({
-  query: StringValidation.required
-    .min(1, "Search query cannot be empty")
-    .max(200, "Search query must be 200 characters or less")
-    .transform((query) => query.trim()),
-
-  limit: NumberValidation.range(1, 100).default(20),
-
-  offset: NumberValidation.nonNegative.default(0)
-})
-
 // LLM Response Schema with enhanced validation
 export const PlaceNormalizationSchema = z.object({
   slug: StringValidation.slug
@@ -132,5 +126,8 @@ export const PlaceNormalizationSchema = z.object({
     "Confidence must be between 0 and 1"
   ),
 
-  reasoning: z.string().max(1000, "Reasoning must be 1000 characters or less").optional()
+  reasoning: z
+    .string()
+    .max(1000, "Reasoning must be 1000 characters or less")
+    .optional()
 })

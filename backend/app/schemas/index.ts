@@ -1,4 +1,3 @@
-export * from "./user"
+export * from "./clothing"
 export * from "./place"
 export * from "./weather"
-export * from "./clothing"

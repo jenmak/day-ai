@@ -19,8 +19,8 @@ export const OpenMeteoWeatherCodeSchema = z
   .refine(
     (code) =>
       [
-        0, 1, 2, 3, 45, 48, 51, 53, 55, 56, 57, 61, 63, 65, 66, 67, 71, 73, 75, 77, 80, 81, 82, 85,
-        86, 95, 96, 99
+        0, 1, 2, 3, 45, 48, 51, 53, 55, 56, 57, 61, 63, 65, 66, 67, 71, 73, 75,
+        77, 80, 81, 82, 85, 86, 95, 96, 99
       ].includes(code),
     "Must be a valid Open-Meteo weather code"
   )
@@ -29,7 +29,14 @@ export const OpenMeteoWeatherCodeSchema = z
 export const OpenMeteoDailySchema = z
   .object({
     time: z
-      .array(z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Must be a valid date string (YYYY-MM-DD)"))
+      .array(
+        z
+          .string()
+          .regex(
+            /^\d{4}-\d{2}-\d{2}$/,
+            "Must be a valid date string (YYYY-MM-DD)"
+          )
+      )
       .min(1, "Time array cannot be empty")
       .max(14, "Cannot request more than 14 days"),
 
@@ -74,7 +81,10 @@ export const OpenMeteoResponseSchema = z
   .object({
     daily: OpenMeteoDailySchema
   })
-  .refine((data) => data.daily.time.length > 0, "Weather data must contain at least one day")
+  .refine(
+    (data) => data.daily.time.length > 0,
+    "Weather data must contain at least one day"
+  )
 
 // Enhanced Temperature Range Schema
 export const TemperatureRangeSchema = z
@@ -90,7 +100,9 @@ export const TemperatureRangeSchema = z
 // Enhanced Weather Schema
 export const WeatherSchema = z
   .object({
-    date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Must be a valid date string (YYYY-MM-DD)"),
+    date: z
+      .string()
+      .regex(/^\d{4}-\d{2}-\d{2}$/, "Must be a valid date string (YYYY-MM-DD)"),
 
     degreesFahrenheit: NumberValidation.temperatureF,
 
@@ -116,32 +128,3 @@ export const WeatherSchema = z
       weather.degreesFahrenheit <= tempRange.temperatureMaximum
     )
   }, "Current temperature must be within the temperature range")
-
-// Weather Request Schema
-export const WeatherRequestSchema = z.object({
-  latitude: NumberValidation.latitude,
-  longitude: NumberValidation.longitude,
-  days: NumberValidation.range(1, 14).default(7),
-  unit: z.enum(["fahrenheit", "celsius"]).default("fahrenheit"),
-  timezone: z.string().max(50).optional()
-})
-
-// Weather Forecast Schema
-export const WeatherForecastSchema = z.object({
-  location: z.object({
-    latitude: NumberValidation.latitude,
-    longitude: NumberValidation.longitude,
-    name: z.string().max(200).optional()
-  }),
-  forecast: z.array(WeatherSchema).min(1).max(14),
-  generatedAt: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Must be a valid date string (YYYY-MM-DD)"),
-  validUntil: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Must be a valid date string (YYYY-MM-DD)")
-})
-
-// Weather Condition Schema
-export const WeatherConditionSchema = z.object({
-  code: OpenMeteoWeatherCodeSchema,
-  name: z.string().max(50),
-  description: z.string().max(200),
-  icon: z.string().max(50).optional()
-})

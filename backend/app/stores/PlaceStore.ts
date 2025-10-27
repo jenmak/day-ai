@@ -1,23 +1,13 @@
 import { Store, type StoreItem } from "../../core/Store"
 import type { Place, Weather } from "../types"
 
-export interface PlaceStoreItem extends StoreItem, Omit<Place, "id" | "createdAt"> {}
+export interface PlaceStoreItem
+  extends StoreItem,
+    Omit<Place, "id" | "createdAt"> {}
 
 export class PlaceStore extends Store<PlaceStoreItem> {
   constructor() {
     super("places")
-  }
-
-  /**
-   * Generate a URL-friendly slug from a normalized place string
-   */
-  static generateSlug(text: string): string {
-    return text
-      .toLowerCase()
-      .replace(/[^a-z0-9\s-]/g, "") // Remove all non-alphanumeric characters except spaces and hyphens
-      .replace(/\s+/g, "-") // Replace one or more spaces with a single hyphen
-      .replace(/-+/g, "-") // Replace multiple consecutive hyphens with a single hyphen
-      .replace(/^-|-$/g, "") // Remove leading and trailing hyphens
   }
 
   toModel(item: PlaceStoreItem): Place {
@@ -35,31 +25,14 @@ export class PlaceStore extends Store<PlaceStoreItem> {
     } as Place
   }
 
-  getByDescription(description: string): PlaceStoreItem | undefined {
-    return this.getAll().find((item) => item.description === description)
-  }
-
   getBySlug(slug: string): PlaceStoreItem | undefined {
     return this.getAll().find((item) => item.slug === slug)
   }
 
   getByNormalizedPlace(normalizedPlace: string): PlaceStoreItem | undefined {
-    return this.getAll().find((item) => item.normalizedPlace === normalizedPlace)
-  }
-
-  /**
-   * Get place by ID and return as model
-   */
-  getById(id: string) {
-    const item = this.get(id)
-    return item ? this.toModel(item) : undefined
-  }
-
-  /**
-   * Get all places as models
-   */
-  getAllAsModels() {
-    return this.getAll().map((item) => this.toModel(item))
+    return this.getAll().find(
+      (item) => item.normalizedPlace === normalizedPlace
+    )
   }
 
   /**
