@@ -9,7 +9,6 @@
     "@eslint/js": "^9.22.0",
     "@types/bun": "latest",
     "eslint": "^9.22.0",
-    "eslint-plugin-unused-imports": "^4.1.4",
     "prettier": "^3.6.2",
     "turbo": "^2.4.4",
     "typescript-eslint": "^8.26.1"
@@ -18,15 +17,6 @@
     "backend",
     "frontend"
   ],
-  "prettier": {
-    "printWidth": 100,
-    "tabWidth": 2,
-    "useTabs": false,
-    "singleQuote": false,
-    "trailingComma": "none",
-    "arrowParens": "always",
-    "semi": false
-  },
   "packageManager": "bun@1.2.5",
   "dependencies": {
     "@radix-ui/react-tooltip": "^1.2.8",
