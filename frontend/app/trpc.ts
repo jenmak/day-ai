@@ -23,7 +23,7 @@ export const trpcClient = createTRPCClient({
       url: `${backendUrl}/api/trpc`,
       transformer: superjson,
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json"
       }
     })
   ]

@@ -35,3 +35,4 @@ echo ""
 echo "🔄 Restart your servers to ensure clean state:"
 echo "   Backend:  cd /workspace/backend && bun run dev"
 echo "   Frontend: cd /workspace/frontend && npm run dev"
+

@@ -43,3 +43,4 @@ echo "🔍 To check if it's working:"
 echo "1. Check Railway logs: railway logs"
 echo "2. Test health endpoint: https://your-railway-url.railway.app/"
 echo "3. Test API endpoint: https://your-railway-url.railway.app/api/test"
+
