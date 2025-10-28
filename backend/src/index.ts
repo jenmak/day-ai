@@ -22,6 +22,8 @@ app.use("*", async (c, next) => {
   const allowedOrigins = [
     "https://www.dripdrop.city",
     "https://dripdrop.city",
+    "https://dripdropcity.com",
+    "https://www.dripdropcity.com",
     "https://dripdropcity-frontend-mptcpd1j3-jenmaks-projects.vercel.app",
     "https://dripdropcityfrontend-production.up.railway.app",
     "http://localhost:3000",
