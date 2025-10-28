@@ -32,7 +32,7 @@ export abstract class Store<T extends StoreItem> {
     const newItem = {
       ...item,
       id: this.generateId(),
-      createdAt: new Date().toISOString()
+      createdAt: new Date()
     } as T
 
     this.items.set(newItem.id, newItem)

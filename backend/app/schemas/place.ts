@@ -75,7 +75,7 @@ export const PlaceSchema = z.object({
 
   temperatureRangeCategory: TemperatureRangeCategorySchema.optional(),
 
-  createdAt: z.date().transform((date) => date.toISOString())
+  createdAt: z.date()
 })
 
 // Create Place Schema with enhanced validation
