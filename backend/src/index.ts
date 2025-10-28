@@ -41,7 +41,10 @@ app.use("*", async (c, next) => {
   }
 
   c.header("Access-Control-Allow-Credentials", "true")
-  c.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS, PATCH")
+  c.header(
+    "Access-Control-Allow-Methods",
+    "GET, POST, PUT, DELETE, OPTIONS, PATCH"
+  )
   c.header(
     "Access-Control-Allow-Headers",
     "Content-Type, Authorization, X-Requested-With, Accept, Origin"
@@ -80,7 +83,14 @@ const apiApp = new Hono()
     const method = c.req.method
     const path = c.req.path
 
-    console.log("🌐 CORS Middleware - Origin:", origin, "Method:", method, "Path:", path)
+    console.log(
+      "🌐 CORS Middleware - Origin:",
+      origin,
+      "Method:",
+      method,
+      "Path:",
+      path
+    )
 
     // Set CORS headers for all requests
     if (origin && allowedOrigins.includes(origin)) {
@@ -91,7 +101,10 @@ const apiApp = new Hono()
     }
 
     c.header("Access-Control-Allow-Credentials", "true")
-    c.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS, PATCH")
+    c.header(
+      "Access-Control-Allow-Methods",
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH"
+    )
     c.header(
       "Access-Control-Allow-Headers",
       "Content-Type, Authorization, X-Requested-With, Accept, Origin"
@@ -112,7 +125,47 @@ const apiApp = new Hono()
   })
   .get("/test", (c) => {
     console.log("Test endpoint hit")
-    return c.json({ message: "Test successful", timestamp: new Date().toISOString() })
+    return c.json({
+      message: "Test successful",
+      timestamp: new Date().toISOString()
+    })
+  })
+  .get("/health/keys", async (c) => {
+    try {
+      // Import the API key manager
+      const { ApiKeyManager } = await import("../app/security/apiKeys.js")
+      const keyManager = ApiKeyManager.getInstance()
+      const status = keyManager.getStatus()
+
+      return c.json({
+        status: "ok",
+        timestamp: new Date().toISOString(),
+        apiKeys: {
+          openai: {
+            available: status.openai.available,
+            masked: status.openai.masked
+          },
+          opencage: {
+            available: status.opencage.available,
+            masked: status.opencage.masked
+          }
+        }
+      })
+    } catch (error) {
+      console.error("Health check error:", error)
+      return c.json(
+        {
+          status: "error",
+          timestamp: new Date().toISOString(),
+          error: error instanceof Error ? error.message : "Unknown error",
+          apiKeys: {
+            openai: { available: false, masked: "***" },
+            opencage: { available: false, masked: "***" }
+          }
+        },
+        500
+      )
+    }
   })
   .onError((err, c) => {
     console.error("Error:", err)
@@ -147,7 +200,8 @@ try {
     if (c.req.method !== "GET" && c.req.method !== "HEAD") {
       const contentType = c.req.header("content-type")
       if (contentType?.includes("application/json")) {
-        body = JSON.stringify(await c.req.json())
+        const jsonData = await c.req.json()
+        body = JSON.stringify(jsonData)
       } else {
         body = await c.req.arrayBuffer()
       }
@@ -171,8 +225,26 @@ try {
       createContext: async (opts) => {
         return createContext(opts)
       },
-      onError: ({ error, path }) => {
-        console.error("tRPC Error:", error, "Path:", path)
+      onError: ({ error, path, type }) => {
+        console.error("tRPC Error:", {
+          error: error.message,
+          path,
+          type,
+          stack: error.stack
+        })
+
+        // Handle API key errors specifically
+        if (
+          error.message.includes("API key") ||
+          error.message.includes("OPENAI_API_KEY") ||
+          error.message.includes("OPENCAGE_API_KEY")
+        ) {
+          console.error("🔑 API Key Error Detected:", {
+            message: error.message,
+            path,
+            help: "Check Railway environment variables"
+          })
+        }
       }
     })
 
@@ -183,7 +255,17 @@ try {
       responseHeaders[key] = value
     })
 
-    console.log("✅ tRPC Response:", response.status, responseBody.substring(0, 100))
+    // Ensure Content-Type is set for superjson transformation
+    if (!responseHeaders["content-type"]) {
+      responseHeaders["content-type"] = "application/json"
+    }
+
+    console.log(
+      "✅ tRPC Response:",
+      response.status,
+      "Content-Type:",
+      responseHeaders["content-type"]
+    )
 
     return c.text(responseBody, response.status as any, responseHeaders)
   })

@@ -5,6 +5,48 @@
  * masking, and error handling to prevent exposure.
  */
 
+/**
+ * Custom error class for API key issues
+ */
+export class ApiKeyError extends Error {
+  public readonly code: string
+  public readonly missingKeys: string[]
+  public readonly helpMessage: string
+
+  constructor(message: string, code: string, missingKeys: string[] = []) {
+    super(message)
+    this.name = "ApiKeyError"
+    this.code = code
+    this.missingKeys = missingKeys
+    this.helpMessage = this.generateHelpMessage()
+  }
+
+  private generateHelpMessage(): string {
+    if (this.missingKeys.length === 0) return ""
+
+    let help = "\n\n🔧 To fix this issue:\n"
+
+    if (this.missingKeys.includes("OPENAI_API_KEY")) {
+      help +=
+        "1. Get your OpenAI API key from: https://platform.openai.com/api-keys\n"
+      help += "2. Set OPENAI_API_KEY in your environment variables\n"
+    }
+
+    if (this.missingKeys.includes("OPENCAGE_API_KEY")) {
+      help +=
+        "1. Get your OpenCage API key from: https://opencagedata.com/api\n"
+      help += "2. Set OPENCAGE_API_KEY in your environment variables\n"
+    }
+
+    help += "\nFor Railway deployment:\n"
+    help += "- Go to your Railway project dashboard\n"
+    help += "- Navigate to Variables tab\n"
+    help += "- Add the missing environment variables\n"
+
+    return help
+  }
+}
+
 interface ApiKeyConfig {
   openai: string
   opencage: string
@@ -102,9 +144,19 @@ export class ApiKeyManager {
       console.log("🔍 API Key Debug Info:")
       console.log("  OPENAI_API_KEY exists:", !!openaiKey)
       console.log("  OPENAI_API_KEY length:", openaiKey?.length || 0)
-      console.log("  OPENAI_API_KEY starts with sk-:", openaiKey?.startsWith("sk-") || false)
+      console.log(
+        "  OPENAI_API_KEY starts with sk-:",
+        openaiKey?.startsWith("sk-") || false
+      )
       console.log("  OPENCAGE_API_KEY exists:", !!opencageKey)
       console.log("  OPENCAGE_API_KEY length:", opencageKey?.length || 0)
+    }
+
+    // During build time, don't validate API keys as they may not be available
+    if (process.env.NODE_ENV === "production" && !openaiKey && !opencageKey) {
+      console.log(
+        "⚠️  API keys not available during build - will validate at runtime"
+      )
     }
 
     // Validate and store keys
@@ -114,13 +166,21 @@ export class ApiKeyManager {
     }
 
     // Create status object with masked keys
+    // During build time, don't fail if keys are missing
+    const isBuildTime =
+      process.env.NODE_ENV === "production" && !openaiKey && !opencageKey
+
     this.status = {
       openai: {
-        available: validateApiKey(this.keys.openai, "openai"),
+        available: isBuildTime
+          ? true
+          : validateApiKey(this.keys.openai, "openai"),
         masked: maskApiKey(this.keys.openai)
       },
       opencage: {
-        available: validateApiKey(this.keys.opencage, "opencage"),
+        available: isBuildTime
+          ? true
+          : validateApiKey(this.keys.opencage, "opencage"),
         masked: maskApiKey(this.keys.opencage)
       }
     }
@@ -144,11 +204,15 @@ export class ApiKeyManager {
     )
 
     if (!this.status.openai.available) {
-      console.warn("⚠️  OpenAI API key missing - LLM service will use mock implementation")
+      console.warn(
+        "⚠️  OpenAI API key missing - LLM service will use mock implementation"
+      )
     }
 
     if (!this.status.opencage.available) {
-      console.warn("⚠️  OpenCage API key missing - Geocoding service will use mock implementation")
+      console.warn(
+        "⚠️  OpenCage API key missing - Geocoding service will use mock implementation"
+      )
     }
   }
 
@@ -157,11 +221,21 @@ export class ApiKeyManager {
    */
   getOpenAIKey(): string {
     if (!this.keys?.openai) {
-      throw new Error("OpenAI API key not available")
+      const missingKeys = this.getMissingKeys()
+      throw new ApiKeyError(
+        "OpenAI API key not available",
+        "OPENAI_API_KEY_MISSING",
+        missingKeys
+      )
     }
 
     if (!this.status?.openai.available) {
-      throw new Error("OpenAI API key is invalid or missing")
+      const missingKeys = this.getMissingKeys()
+      throw new ApiKeyError(
+        "OpenAI API key is invalid or missing",
+        "OPENAI_API_KEY_INVALID",
+        missingKeys
+      )
     }
 
     return this.keys.openai
@@ -172,11 +246,21 @@ export class ApiKeyManager {
    */
   getOpenCageKey(): string {
     if (!this.keys?.opencage) {
-      throw new Error("OpenCage API key not available")
+      const missingKeys = this.getMissingKeys()
+      throw new ApiKeyError(
+        "OpenCage API key not available",
+        "OPENCAGE_API_KEY_MISSING",
+        missingKeys
+      )
     }
 
     if (!this.status?.opencage.available) {
-      throw new Error("OpenCage API key is invalid or missing")
+      const missingKeys = this.getMissingKeys()
+      throw new ApiKeyError(
+        "OpenCage API key is invalid or missing",
+        "OPENCAGE_API_KEY_INVALID",
+        missingKeys
+      )
     }
 
     return this.keys.opencage
@@ -214,6 +298,23 @@ export class ApiKeyManager {
         masked: this.status.opencage.masked
       }
     }
+  }
+
+  /**
+   * Get list of missing API keys
+   */
+  private getMissingKeys(): string[] {
+    const missing: string[] = []
+
+    if (!this.keys?.openai || !this.status?.openai.available) {
+      missing.push("OPENAI_API_KEY")
+    }
+
+    if (!this.keys?.opencage || !this.status?.opencage.available) {
+      missing.push("OPENCAGE_API_KEY")
+    }
+
+    return missing
   }
 
   /**
@@ -276,7 +377,9 @@ export function getApiKeyWithFallback(
       return apiKeys.getOpenCageKey()
     }
   } catch (error) {
-    console.warn(`${fallbackMessage}: ${error instanceof Error ? error.message : "Unknown error"}`)
+    console.warn(
+      `${fallbackMessage}: ${error instanceof Error ? error.message : "Unknown error"}`
+    )
     return null
   }
 

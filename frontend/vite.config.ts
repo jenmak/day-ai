@@ -55,7 +55,9 @@ export default defineConfig({
         assetFileNames: "assets/[name]-[hash].[ext]"
       }
     },
-    outDir: "dist"
+    outDir: "dist",
+    // Ensure public assets are copied to dist
+    copyPublicDir: true
   },
   optimizeDeps: {
     include: ["react", "react-dom", "react-router"]

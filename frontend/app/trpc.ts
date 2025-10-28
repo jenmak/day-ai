@@ -21,7 +21,10 @@ export const trpcClient = createTRPCClient({
     loggerLink(),
     httpLink({
       url: `${backendUrl}/api/trpc`,
-      transformer: superjson
+      transformer: superjson,
+      headers: {
+        'Content-Type': 'application/json',
+      }
     })
   ]
 })
