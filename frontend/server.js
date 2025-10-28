@@ -65,13 +65,12 @@ app.use((req, res, next) => {
     'Original URL': req.originalUrl
   })
   
-  // Set the correct host and protocol for the request
+  // Set the correct host for the request
   if (forwardedHost) {
     req.headers.host = forwardedHost
   }
-  if (forwardedProto) {
-    req.protocol = forwardedProto
-  }
+  // Note: req.protocol is read-only, so we can't set it directly
+  // The forwardedProto is logged for debugging but not used
   
   next()
 })
