@@ -124,6 +124,30 @@ app.use('/api', express.json(), async (req, res) => {
     res.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
     res.set('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept, Origin')
     
+    // If the backend returns a 404, transform it to a proper tRPC error
+    if (response.status === 404) {
+      try {
+        const errorData = JSON.parse(data)
+        if (errorData.status === 'error' && errorData.code === 404) {
+          // Transform Railway 404 error to tRPC error format
+          res.status(503).json({
+            error: {
+              code: -1,
+              message: 'Backend service not found',
+              data: {
+                code: 'SERVICE_UNAVAILABLE',
+                httpStatus: 503,
+                details: 'The backend service is not running or not accessible'
+              }
+            }
+          })
+          return
+        }
+      } catch (parseError) {
+        // If we can't parse the response, continue with the original response
+      }
+    }
+    
     res.send(data)
   } catch (error) {
     console.error('❌ Proxy error:', error)
@@ -137,15 +161,28 @@ app.use('/api', express.json(), async (req, res) => {
     
     // Handle specific error cases
     if (error.message.includes('ENOTFOUND') || error.message.includes('ECONNREFUSED')) {
-      res.status(503).json({ 
-        error: 'Backend service unavailable', 
-        message: 'The backend service is currently unavailable. Please try again later.',
-        details: isProduction ? 'Railway backend is not running' : 'Local backend is not running'
+      // Return a proper tRPC error format
+      res.status(503).json({
+        error: {
+          code: -1,
+          message: 'Backend service unavailable',
+          data: {
+            code: 'SERVICE_UNAVAILABLE',
+            httpStatus: 503
+          }
+        }
       })
     } else {
-      res.status(500).json({ 
-        error: 'Backend connection failed', 
-        details: error.message 
+      // Return a proper tRPC error format
+      res.status(500).json({
+        error: {
+          code: -1,
+          message: 'Backend connection failed',
+          data: {
+            code: 'INTERNAL_SERVER_ERROR',
+            httpStatus: 500
+          }
+        }
       })
     }
   }
