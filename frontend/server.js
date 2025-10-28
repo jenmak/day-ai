@@ -90,6 +90,9 @@ app.get('/health', (req, res) => {
 // In development, use local backend
 // IMPORTANT: This must come BEFORE the static file middleware
 app.use('/api', express.json(), async (req, res) => {
+  console.log(`🚀 API request received: ${req.method} ${req.originalUrl}`)
+  console.log(`🔍 Request headers:`, req.headers)
+  
   const isProduction = process.env.NODE_ENV === 'production'
   const backendUrl = isProduction 
     ? 'https://dripdropcitybackend-production.up.railway.app'
