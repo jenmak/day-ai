@@ -30,7 +30,7 @@ export default defineConfig({
     )
   },
   build: {
-    target: "esnext",
+    target: ["es2020", "safari14"], // Safari compatibility
     minify: "esbuild",
     sourcemap: false,
     rollupOptions: {
@@ -38,7 +38,11 @@ export default defineConfig({
         manualChunks: {
           vendor: ["react", "react-dom"],
           router: ["react-router"]
-        }
+        },
+        // Safari-friendly chunk naming
+        chunkFileNames: 'assets/[name]-[hash].js',
+        entryFileNames: 'assets/[name]-[hash].js',
+        assetFileNames: 'assets/[name]-[hash].[ext]'
       }
     },
     outDir: "dist"

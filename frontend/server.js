@@ -35,6 +35,23 @@ if (!fs.existsSync(distDir)) {
 // This is crucial for Railway deployments with custom domains
 app.set('trust proxy', true)
 
+// CORS middleware for Safari compatibility
+app.use((req, res, next) => {
+  // Set CORS headers for Safari compatibility
+  res.header('Access-Control-Allow-Origin', '*')
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization')
+  res.header('Access-Control-Allow-Credentials', 'true')
+  
+  // Handle preflight requests (Safari is strict about this)
+  if (req.method === 'OPTIONS') {
+    res.status(200).end()
+    return
+  }
+  
+  next()
+})
+
 // Middleware to log proxy headers for debugging
 app.use((req, res, next) => {
   const forwardedHost = req.get('X-Forwarded-Host')
@@ -72,7 +89,25 @@ app.get('/health', (req, res) => {
 // Explicitly serve from dist directory to avoid conflicts with root index.html
 app.use(express.static(distDir, {
   index: false, // Don't serve index.html automatically
-  dotfiles: 'ignore' // Ignore dotfiles
+  dotfiles: 'ignore', // Ignore dotfiles
+  setHeaders: (res, path) => {
+    // Safari-specific headers for better compatibility
+    if (path.endsWith('.js')) {
+      res.setHeader('Content-Type', 'application/javascript; charset=utf-8')
+      res.setHeader('Cache-Control', 'public, max-age=31536000')
+    } else if (path.endsWith('.css')) {
+      res.setHeader('Content-Type', 'text/css; charset=utf-8')
+      res.setHeader('Cache-Control', 'public, max-age=31536000')
+    } else if (path.endsWith('.html')) {
+      res.setHeader('Content-Type', 'text/html; charset=utf-8')
+      res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate')
+    }
+    
+    // Security headers for Safari
+    res.setHeader('X-Content-Type-Options', 'nosniff')
+    res.setHeader('X-Frame-Options', 'DENY')
+    res.setHeader('X-XSS-Protection', '1; mode=block')
+  }
 }))
 
 // Serve specific static files that might be requested from root
