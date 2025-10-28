@@ -81,7 +81,7 @@ export const SearchInputSchema = z.object({
     .max(200, "Search query must be 200 characters or less")
     .transform((query) => query.trim())
     .refine((query) => query.length > 0, "Search query cannot be empty")
-    .refine((query) => !/^[0-9\s\-_]+$/.test(query), "Search query must contain letters")
+    .refine((query) => !/^[\s\-_]+$/.test(query), "Search query cannot be only spaces, dashes, or underscores")
 })
 
 /**
@@ -93,7 +93,7 @@ export const PlaceDescriptionSchema = z.object({
     .max(500, "Place description must be 500 characters or less")
     .transform((desc) => desc.trim())
     .refine((desc) => desc.length > 0, "Place description cannot be empty")
-    .refine((desc) => !/^[0-9\s\-_]+$/.test(desc), "Place description must contain letters")
+    .refine((desc) => !/^[\s\-_]+$/.test(desc), "Place description cannot be only spaces, dashes, or underscores")
 })
 
 /**
