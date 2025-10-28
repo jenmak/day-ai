@@ -280,9 +280,9 @@ export const ENV = {
   },
 
   get BACKEND_URL() {
-    // In production, use the Railway backend URL
+    // In production, use empty string to use same domain (proxy)
     if (this.IS_PRODUCTION) {
-      return import.meta.env.VITE_API_URL || CONFIG.SERVER.PRODUCTION_BACKEND_URL
+      return import.meta.env.VITE_API_URL || ""
     }
     // In development, use local backend
     return import.meta.env.VITE_API_URL || CONFIG.SERVER.BACKEND_URL

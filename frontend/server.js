@@ -88,11 +88,18 @@ app.get('/health', (req, res) => {
   })
 })
 
-// Proxy API requests to local backend
-// This allows the production frontend to work with a local backend
+// Proxy API requests to backend
+// In production, use the Railway backend URL
+// In development, use local backend
 // IMPORTANT: This must come BEFORE the static file middleware
 app.use('/api', async (req, res) => {
-  const backendUrl = 'http://localhost:3334'
+  const isProduction = process.env.NODE_ENV === 'production'
+  const backendUrl = isProduction 
+    ? 'https://dripdropcitybackend-production.up.railway.app'
+    : 'http://localhost:3334'
+  
+  // Log the backend URL being used
+  console.log(`🌐 Using backend URL: ${backendUrl}`)
   const targetUrl = `${backendUrl}${req.originalUrl}`
   
   try {
@@ -128,7 +135,20 @@ app.use('/api', async (req, res) => {
       method: req.method,
       body: req.body
     })
-    res.status(500).json({ error: 'Backend connection failed', details: error.message })
+    
+    // Handle specific error cases
+    if (error.message.includes('ENOTFOUND') || error.message.includes('ECONNREFUSED')) {
+      res.status(503).json({ 
+        error: 'Backend service unavailable', 
+        message: 'The backend service is currently unavailable. Please try again later.',
+        details: isProduction ? 'Railway backend is not running' : 'Local backend is not running'
+      })
+    } else {
+      res.status(500).json({ 
+        error: 'Backend connection failed', 
+        details: error.message 
+      })
+    }
   }
 })
 
