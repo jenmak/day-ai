@@ -85,6 +85,41 @@ app.get('/health', (req, res) => {
   })
 })
 
+// Proxy API requests to local backend
+// This allows the production frontend to work with a local backend
+// IMPORTANT: This must come BEFORE the static file middleware
+app.use('/api', async (req, res) => {
+  try {
+    const backendUrl = 'http://localhost:3334'
+    const targetUrl = `${backendUrl}${req.originalUrl}`
+    
+    console.log(`🔄 Proxying API request: ${req.method} ${req.originalUrl} -> ${targetUrl}`)
+    
+    const response = await fetch(targetUrl, {
+      method: req.method,
+      headers: {
+        'Content-Type': 'application/json',
+        'Origin': req.get('Origin') || 'https://dripdropcity.com'
+      },
+      body: req.method !== 'GET' ? JSON.stringify(req.body) : undefined
+    })
+    
+    const data = await response.text()
+    
+    // Forward response headers
+    res.status(response.status)
+    res.set('Content-Type', response.headers.get('Content-Type') || 'application/json')
+    res.set('Access-Control-Allow-Origin', '*')
+    res.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
+    res.set('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept, Origin')
+    
+    res.send(data)
+  } catch (error) {
+    console.error('❌ Proxy error:', error)
+    res.status(500).json({ error: 'Backend connection failed' })
+  }
+})
+
 // Serve static files from dist directory only
 // Explicitly serve from dist directory to avoid conflicts with root index.html
 app.use(express.static(distDir, {

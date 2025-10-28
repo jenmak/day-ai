@@ -12,7 +12,15 @@ export default defineConfig({
     host: "0.0.0.0",
     // Allow all hosts for Railway deployment flexibility
     // Railway will handle domain validation through proxy headers
-    allowedHosts: true
+    allowedHosts: true,
+    // Development proxy to backend (optional - for consistency with production)
+    proxy: {
+      '/api': {
+        target: 'http://localhost:3334',
+        changeOrigin: true,
+        secure: false
+      }
+    }
   },
   resolve: {
     alias: {
@@ -20,11 +28,10 @@ export default defineConfig({
     }
   },
   define: {
-    "import.meta.env.VITE_API_URL": JSON.stringify(
-      process.env.NODE_ENV === "development"
-        ? "http://localhost:3334" // Local development
-        : "http://localhost:3334" // Use local backend for now since Railway backend is down
-    ),
+    // Use same domain for API requests in both development and production
+    // Development: Vite proxy handles /api -> backend
+    // Production: Express proxy handles /api -> backend
+    "import.meta.env.VITE_API_URL": JSON.stringify(""),
     "process.env.NODE_ENV": JSON.stringify(
       process.env.NODE_ENV || "development"
     )
