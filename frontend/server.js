@@ -52,9 +52,6 @@ app.use((req, res, next) => {
   next()
 })
 
-// Parse JSON bodies for API requests
-app.use('/api', express.json())
-
 // Middleware to log proxy headers for debugging
 app.use((req, res, next) => {
   const forwardedHost = req.get('X-Forwarded-Host')
@@ -92,7 +89,7 @@ app.get('/health', (req, res) => {
 // In production, use the Railway backend URL
 // In development, use local backend
 // IMPORTANT: This must come BEFORE the static file middleware
-app.use('/api', async (req, res) => {
+app.use('/api', express.json(), async (req, res) => {
   const isProduction = process.env.NODE_ENV === 'production'
   const backendUrl = isProduction 
     ? 'https://dripdropcitybackend-production.up.railway.app'
