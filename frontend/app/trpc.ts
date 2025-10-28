@@ -12,7 +12,9 @@ export const queryClient = new QueryClient({
 })
 
 // Get the backend URL from environment configuration
-const backendUrl = ENV.BACKEND_URL
+// In development, use empty string to use Vite proxy
+// In production, use the configured backend URL
+const backendUrl = ENV.IS_DEVELOPMENT ? "" : ENV.BACKEND_URL
 
 export const trpcClient = createTRPCClient({
   links: [

@@ -17,11 +17,12 @@ export const CONFIG = {
 
     // Default URLs
     FRONTEND_URL: "http://localhost:6173",
-    BACKEND_URL: "http://localhost:3334",
+    BACKEND_URL: "http://localhost:3333",
 
     // Production URLs (can be overridden by environment variables)
     PRODUCTION_FRONTEND_URL: "https://dripdrop.city",
-    PRODUCTION_BACKEND_URL: "https://dripdropcitybackend-production.up.railway.app/", // Replace with your actual Railway backend URL
+    PRODUCTION_BACKEND_URL:
+      "https://dripdropcitybackend-production.up.railway.app/", // Replace with your actual Railway backend URL
 
     // CORS configuration
     CORS_ORIGINS: {
@@ -45,7 +46,14 @@ export const CONFIG = {
     // CORS settings
     CORS_SETTINGS: {
       CREDENTIALS: true,
-      ALLOWED_METHODS: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"] as string[],
+      ALLOWED_METHODS: [
+        "GET",
+        "POST",
+        "PUT",
+        "DELETE",
+        "OPTIONS",
+        "PATCH"
+      ] as string[],
       ALLOWED_HEADERS: [
         "Content-Type",
         "Authorization",
@@ -289,11 +297,17 @@ export const ENV = {
   },
 
   get PRODUCTION_FRONTEND_URL() {
-    return import.meta.env.PRODUCTION_FRONTEND_URL || CONFIG.SERVER.PRODUCTION_FRONTEND_URL
+    return (
+      import.meta.env.PRODUCTION_FRONTEND_URL ||
+      CONFIG.SERVER.PRODUCTION_FRONTEND_URL
+    )
   },
 
   get PRODUCTION_BACKEND_URL() {
-    return import.meta.env.PRODUCTION_BACKEND_URL || CONFIG.SERVER.PRODUCTION_BACKEND_URL
+    return (
+      import.meta.env.PRODUCTION_BACKEND_URL ||
+      CONFIG.SERVER.PRODUCTION_BACKEND_URL
+    )
   },
 
   // Note: API keys are backend-only and managed securely
@@ -301,7 +315,9 @@ export const ENV = {
 
   // Server Configuration
   get PORT() {
-    return import.meta.env.PORT ? parseInt(import.meta.env.PORT) : CONFIG.SERVER.BACKEND_PORT
+    return import.meta.env.PORT
+      ? parseInt(import.meta.env.PORT)
+      : CONFIG.SERVER.BACKEND_PORT
   },
 
   get HOST() {
@@ -329,8 +345,8 @@ export const ENV = {
   // CORS Configuration
   get ADDITIONAL_CORS_ORIGINS() {
     return (
-      import.meta.env.VITE_ADDITIONAL_CORS_ORIGINS?.split(",").map((origin: string) =>
-        origin.trim()
+      import.meta.env.VITE_ADDITIONAL_CORS_ORIGINS?.split(",").map(
+        (origin: string) => origin.trim()
       ) || []
     )
   },

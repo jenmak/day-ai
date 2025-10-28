@@ -15,8 +15,8 @@ export default defineConfig({
     allowedHosts: true,
     // Development proxy to backend (optional - for consistency with production)
     proxy: {
-      '/api': {
-        target: 'http://localhost:3334',
+      "/api": {
+        target: "http://localhost:3333",
         changeOrigin: true,
         secure: false
       }
@@ -50,9 +50,9 @@ export default defineConfig({
           router: ["react-router"]
         },
         // Safari-friendly chunk naming
-        chunkFileNames: 'assets/[name]-[hash].js',
-        entryFileNames: 'assets/[name]-[hash].js',
-        assetFileNames: 'assets/[name]-[hash].[ext]'
+        chunkFileNames: "assets/[name]-[hash].js",
+        entryFileNames: "assets/[name]-[hash].js",
+        assetFileNames: "assets/[name]-[hash].[ext]"
       }
     },
     outDir: "dist"
