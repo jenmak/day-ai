@@ -4,6 +4,7 @@ import { ERROR_MESSAGES } from "../errors"
 // import { SearchInputSchema, validateInput } from "../schemas/validation"
 import { usePlaceStore } from "../stores/placeStore"
 import { Place as PlaceType } from "../types/backend"
+import { trpcClient } from "../trpc"
 
 interface useCreatePlaceOptions {
   onSuccess?: (place: PlaceType) => void
@@ -20,43 +21,30 @@ export const useCreatePlace = (options?: useCreatePlaceOptions) => {
       setLoading(true)
       setError(null)
 
-      const response = await fetch("/api/trpc/places.create", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          json: {
-            description: description
-          }
+      try {
+        // Use tRPC client to call the backend
+        const result = await trpcClient.places.create.mutate({
+          description: description
         })
-      })
 
-      if (!response.ok) {
-        const errorMessage =
-          response.status >= 500
-            ? ERROR_MESSAGES.USER.SERVER_ERROR
-            : ERROR_MESSAGES.USER.NETWORK_ERROR
-        throw new Error(`${errorMessage} (HTTP ${response.status})`)
+        return result
+      } catch (error: any) {
+        console.error("tRPC error:", error)
+        
+        // Handle tRPC errors
+        if (error.data?.code) {
+          const errorMessage = error.message || ERROR_MESSAGES.USER.SERVER_ERROR
+          throw new Error(errorMessage)
+        }
+        
+        // Handle network errors
+        if (error.message?.includes('fetch')) {
+          throw new Error(ERROR_MESSAGES.USER.NETWORK_ERROR)
+        }
+        
+        // Handle other errors
+        throw new Error(error.message || ERROR_MESSAGES.USER.SERVER_ERROR)
       }
-
-      const data = await response.json()
-
-      // Check if the response contains an error (TRPC error format)
-      if (data.error) {
-        console.error("Backend returned error:", data.error)
-        const errorMessage =
-          data.error.json?.message || ERROR_MESSAGES.USER.SERVER_ERROR
-        throw new Error(errorMessage)
-      }
-
-      // Check if the response has the expected structure
-      if (!data.result?.data?.json) {
-        console.error("Unexpected response structure:", data)
-        throw new Error(ERROR_MESSAGES.USER.SERVER_ERROR)
-      }
-
-      return data.result.data.json
     },
     onSuccess: (data: PlaceType) => {
       console.log(

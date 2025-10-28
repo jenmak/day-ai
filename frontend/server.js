@@ -9,7 +9,7 @@ const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
 const app = express()
-const port = process.env.PORT || 3000
+const port = process.env.PORT || 8080
 const distDir = path.join(__dirname, "dist")
 
 console.log("🚀 Starting production static server...")
@@ -68,17 +68,53 @@ app.get('/health', (req, res) => {
   })
 })
 
-// Serve static files from dist directory
-app.use(express.static(distDir))
+// Serve static files from dist directory only
+// Explicitly serve from dist directory to avoid conflicts with root index.html
+app.use(express.static(distDir, {
+  index: false, // Don't serve index.html automatically
+  dotfiles: 'ignore' // Ignore dotfiles
+}))
+
+// Serve specific static files that might be requested from root
+app.use('/favicon.ico', express.static(path.join(distDir, 'favicon.ico')))
+app.use('/images', express.static(path.join(distDir, 'images')))
+app.use('/assets', express.static(path.join(distDir, 'assets')))
 
 // Handle React Router (SPA) - serve index.html for all non-API routes
-app.get("*", (req, res) => {
+// Use app.all() to handle all HTTP methods (GET, POST, PUT, DELETE, etc.)
+app.all("*", (req, res) => {
   console.log("📥 SPA route request:", req.path)
-  res.sendFile(path.join(distDir, "index.html"))
+  console.log("🔍 Request method:", req.method)
+  console.log("🔍 Request URL:", req.url)
+  console.log("🔍 Request headers:", req.headers)
+  
+  const indexPath = path.join(distDir, "index.html")
+  console.log("📁 Serving index.html from:", indexPath)
+  
+  // Check if index.html exists
+  if (!fs.existsSync(indexPath)) {
+    console.error("❌ index.html not found at:", indexPath)
+    return res.status(404).json({ error: "index.html not found" })
+  }
+  
+  res.sendFile(indexPath)
 })
 
-app.listen(port, "0.0.0.0", () => {
-  console.log("✅ Static server running on port", port)
-  console.log("🌐 Server URL: http://localhost:" + port)
-  console.log("🔧 Trusting proxy headers for Railway custom domain support")
-})
+// Function to start server with port fallback
+function startServer(portToTry) {
+  const server = app.listen(portToTry, "0.0.0.0", () => {
+    console.log("✅ Static server running on port", portToTry)
+    console.log("🌐 Server URL: http://localhost:" + portToTry)
+    console.log("🔧 Trusting proxy headers for Railway custom domain support")
+  }).on('error', (err) => {
+    if (err.code === 'EADDRINUSE') {
+      console.log(`⚠️  Port ${portToTry} is in use, trying port ${portToTry + 1}...`)
+      startServer(portToTry + 1)
+    } else {
+      console.error("❌ Server failed to start:", err)
+      process.exit(1)
+    }
+  })
+}
+
+startServer(port)

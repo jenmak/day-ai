@@ -1,5 +1,5 @@
 import { Store, type StoreItem } from "../../core/Store"
-import type { Place, Weather } from "../types"
+import type { Place, Weather, TemperatureRangeCategory } from "../types"
 
 export interface PlaceStoreItem
   extends StoreItem,
@@ -57,13 +57,15 @@ export class PlaceStore extends Store<PlaceStoreItem> {
       }
     }
     weather?: Weather[]
+    temperatureRangeCategory?: TemperatureRangeCategory
   }): PlaceStoreItem {
     const placeData: Omit<PlaceStoreItem, "id" | "createdAt"> = {
       description: data.description,
       normalizedPlace: data.normalizedPlace,
       slug: data.slug,
       geocodedAddress: data.geocodedAddress,
-      weather: data.weather
+      weather: data.weather,
+      temperatureRangeCategory: data.temperatureRangeCategory
     }
 
     return this.add(placeData)
