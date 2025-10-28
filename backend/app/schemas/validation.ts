@@ -146,7 +146,7 @@ export const DateValidation = {
   isoString: z.string().datetime("Must be a valid ISO date string"),
 
   // Date object
-  date: z.date("Must be a valid date"),
+  date: z.date({ message: "Must be a valid date" }),
 
   // Date string that can be parsed
   dateString: z
@@ -168,7 +168,7 @@ export function createValidationSchema<T extends z.ZodRawShape>(
     minLength?: number
     maxLength?: number
   }
-): z.ZodObject<T> {
+) {
   const schema = z.object(shape)
 
   if (options?.required) {
