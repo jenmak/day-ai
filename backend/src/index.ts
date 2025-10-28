@@ -181,93 +181,123 @@ try {
 
   // Handle tRPC requests with complete manual implementation
   app.use("/api/trpc/*", async (c) => {
-    // Get the original path and strip the /api/trpc/ prefix
-    const originalPath = c.req.path
-    const strippedPath = originalPath.replace(/^\/api\/trpc\//, "")
+    try {
+      // Get the original path and strip the /api/trpc/ prefix
+      const originalPath = c.req.path
+      const strippedPath = originalPath.replace(/^\/api\/trpc\//, "")
 
-    console.log("🔍 Manual tRPC Handler:")
-    console.log("  Original Path:", originalPath)
-    console.log("  Stripped Path:", strippedPath)
+      console.log("🔍 Manual tRPC Handler:")
+      console.log("  Original Path:", originalPath)
+      console.log("  Stripped Path:", strippedPath)
 
-    // Create a new URL with the stripped path
-    const newUrl = new URL(c.req.url)
-    newUrl.pathname = `/${strippedPath}`
+      // Create a new URL with the stripped path
+      const newUrl = new URL(c.req.url)
+      newUrl.pathname = `/${strippedPath}`
 
-    console.log("  Modified URL:", newUrl.toString())
+      console.log("  Modified URL:", newUrl.toString())
 
-    // Get the request body if it exists
-    let body: string | ArrayBuffer | undefined = undefined
-    if (c.req.method !== "GET" && c.req.method !== "HEAD") {
-      const contentType = c.req.header("content-type")
-      if (contentType?.includes("application/json")) {
-        const jsonData = await c.req.json()
-        body = JSON.stringify(jsonData)
-      } else {
-        body = await c.req.arrayBuffer()
-      }
-    }
-
-    // Create a new request with the modified URL
-    const newRequest = new Request(newUrl.toString(), {
-      method: c.req.method,
-      headers: c.req.header(),
-      body: body
-    })
-
-    // Import the context creation function
-    const { createContext } = await import("../core/trpc.js")
-
-    // Use the fetchRequestHandler directly from tRPC
-    const response = await fetchRequestHandler({
-      endpoint: "/",
-      req: newRequest,
-      router: appRouter,
-      createContext: async (opts) => {
-        return createContext(opts)
-      },
-      onError: ({ error, path, type }) => {
-        console.error("tRPC Error:", {
-          error: error.message,
-          path,
-          type,
-          stack: error.stack
-        })
-
-        // Handle API key errors specifically
-        if (
-          error.message.includes("API key") ||
-          error.message.includes("OPENAI_API_KEY") ||
-          error.message.includes("OPENCAGE_API_KEY")
-        ) {
-          console.error("🔑 API Key Error Detected:", {
-            message: error.message,
-            path,
-            help: "Check Railway environment variables"
-          })
+      // Get the request body if it exists
+      let body: string | ArrayBuffer | undefined = undefined
+      if (c.req.method !== "GET" && c.req.method !== "HEAD") {
+        const contentType = c.req.header("content-type")
+        if (contentType?.includes("application/json")) {
+          const jsonData = await c.req.json()
+          body = JSON.stringify(jsonData)
+        } else {
+          body = await c.req.arrayBuffer()
         }
       }
-    })
 
-    // Convert the Response to Hono response format
-    const responseBody = await response.text()
-    const responseHeaders: Record<string, string> = {}
-    response.headers.forEach((value, key) => {
-      responseHeaders[key] = value
-    })
+      // Create a new request with the modified URL
+      const newRequest = new Request(newUrl.toString(), {
+        method: c.req.method,
+        headers: c.req.header(),
+        body: body
+      })
 
-    // Ensure Content-Type is set for superjson transformation
-    if (!responseHeaders["content-type"]) {
-      responseHeaders["content-type"] = "application/json"
+      // Import the context creation function
+      const { createContext } = await import("../core/trpc.js")
+
+      // Use the fetchRequestHandler directly from tRPC
+      const response = await fetchRequestHandler({
+        endpoint: "/",
+        req: newRequest,
+        router: appRouter,
+        createContext: async (opts) => {
+          try {
+            return await createContext(opts)
+          } catch (contextError) {
+            console.error("❌ Context creation failed:", contextError)
+            throw new Error(
+              `Context creation failed: ${contextError instanceof Error ? contextError.message : "Unknown error"}`
+            )
+          }
+        },
+        onError: ({ error, path, type }) => {
+          console.error("tRPC Error:", {
+            error: error.message,
+            path,
+            type,
+            stack: error.stack
+          })
+
+          // Handle API key errors specifically
+          if (
+            error.message.includes("API key") ||
+            error.message.includes("OPENAI_API_KEY") ||
+            error.message.includes("OPENCAGE_API_KEY")
+          ) {
+            console.error("🔑 API Key Error Detected:", {
+              message: error.message,
+              path,
+              help: "Check Railway environment variables"
+            })
+          }
+        }
+      })
+
+      // Convert the Response to Hono response format
+      const responseBody = await response.text()
+      const responseHeaders: Record<string, string> = {}
+      response.headers.forEach((value, key) => {
+        responseHeaders[key] = value
+      })
+
+      // Ensure Content-Type is set for superjson transformation
+      if (!responseHeaders["content-type"]) {
+        responseHeaders["content-type"] = "application/json"
+      }
+
+      console.log(
+        "✅ tRPC Response:",
+        response.status,
+        "Content-Type:",
+        responseHeaders["content-type"]
+      )
+
+      return c.text(responseBody, response.status as any, responseHeaders)
+    } catch (error) {
+      console.error("❌ CRITICAL: Unhandled error in tRPC handler:", error)
+      console.error(
+        "Error stack:",
+        error instanceof Error ? error.stack : "No stack trace"
+      )
+
+      // Return a properly formatted tRPC error response
+      const errorResponse = {
+        error: {
+          message:
+            error instanceof Error ? error.message : "Internal Server Error",
+          code: -32603, // Internal error code
+          data: {
+            code: "INTERNAL_SERVER_ERROR",
+            httpStatus: 500
+          }
+        }
+      }
+
+      return c.json(errorResponse, 500)
     }
-
-    console.log(
-      "✅ tRPC Response:",
-      response.status,
-      "Content-Type:",
-      responseHeaders["content-type"]
-    )
-
-    return c.text(responseBody, response.status as any, responseHeaders)
   })
 
   console.log("TRPC server configured with complete manual implementation")
