@@ -32,6 +32,9 @@ export default defineConfig({
     // Development: Vite proxy handles /api -> backend
     // Production: Express proxy handles /api -> backend
     "import.meta.env.VITE_API_URL": JSON.stringify(""),
+    "import.meta.env.MODE": JSON.stringify(
+      process.env.NODE_ENV === "production" ? "production" : "development"
+    ),
     "process.env.NODE_ENV": JSON.stringify(
       process.env.NODE_ENV || "development"
     )

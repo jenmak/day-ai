@@ -52,6 +52,9 @@ app.use((req, res, next) => {
   next()
 })
 
+// Parse JSON bodies for API requests
+app.use('/api', express.json())
+
 // Middleware to log proxy headers for debugging
 app.use((req, res, next) => {
   const forwardedHost = req.get('X-Forwarded-Host')
@@ -89,11 +92,12 @@ app.get('/health', (req, res) => {
 // This allows the production frontend to work with a local backend
 // IMPORTANT: This must come BEFORE the static file middleware
 app.use('/api', async (req, res) => {
+  const backendUrl = 'http://localhost:3334'
+  const targetUrl = `${backendUrl}${req.originalUrl}`
+  
   try {
-    const backendUrl = 'http://localhost:3334'
-    const targetUrl = `${backendUrl}${req.originalUrl}`
-    
     console.log(`🔄 Proxying API request: ${req.method} ${req.originalUrl} -> ${targetUrl}`)
+    console.log(`📦 Request body:`, req.body)
     
     const response = await fetch(targetUrl, {
       method: req.method,
@@ -101,10 +105,11 @@ app.use('/api', async (req, res) => {
         'Content-Type': 'application/json',
         'Origin': req.get('Origin') || 'https://dripdropcity.com'
       },
-      body: req.method !== 'GET' ? JSON.stringify(req.body) : undefined
+      body: req.method !== 'GET' && req.body ? JSON.stringify(req.body) : undefined
     })
     
     const data = await response.text()
+    console.log(`✅ Proxy response status: ${response.status}`)
     
     // Forward response headers
     res.status(response.status)
@@ -116,7 +121,14 @@ app.use('/api', async (req, res) => {
     res.send(data)
   } catch (error) {
     console.error('❌ Proxy error:', error)
-    res.status(500).json({ error: 'Backend connection failed' })
+    console.error('❌ Error details:', {
+      message: error.message,
+      stack: error.stack,
+      targetUrl: targetUrl,
+      method: req.method,
+      body: req.body
+    })
+    res.status(500).json({ error: 'Backend connection failed', details: error.message })
   }
 })
 

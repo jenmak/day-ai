@@ -17,7 +17,7 @@ export const CONFIG = {
 
     // Default URLs
     FRONTEND_URL: "http://localhost:6173",
-    BACKEND_URL: "http://localhost:3333",
+    BACKEND_URL: "http://localhost:3334",
 
     // Production URLs (can be overridden by environment variables)
     PRODUCTION_FRONTEND_URL: "https://dripdrop.city",
