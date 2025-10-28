@@ -1,6 +1,5 @@
 import { useQuery } from "@tanstack/react-query"
 import { useEffect, useMemo } from "react"
-import { ENV } from "../config"
 import { ERROR_MESSAGES } from "../errors"
 import { usePlaceStore } from "../stores/placeStore"
 import { Place as PlaceType } from "../types/backend"
@@ -29,7 +28,7 @@ export const usePlaceBySlug = (options?: usePlaceBySlugOptions) => {
 
       try {
         const response = await fetch(
-          `${ENV.BACKEND_URL}/api/trpc/places.getBySlug?batch=1&input=${encodeURIComponent(JSON.stringify({ "0": { json: { slug } } }))}`
+          `/api/trpc/places.getBySlug?batch=1&input=${encodeURIComponent(JSON.stringify({ "0": { json: { slug } } }))}`
         )
 
         if (!response.ok) {
@@ -51,7 +50,11 @@ export const usePlaceBySlug = (options?: usePlaceBySlugOptions) => {
   })
 
   useEffect(() => {
-    console.log("usePlaceBySlug: Effect triggered", { storePlace, queryData: query.data, slug })
+    console.log("usePlaceBySlug: Effect triggered", {
+      storePlace,
+      queryData: query.data,
+      slug
+    })
     if (storePlace) {
       console.log("usePlaceBySlug: Using store place", storePlace)
       setCurrentPlace(storePlace)

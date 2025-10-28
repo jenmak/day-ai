@@ -1,6 +1,5 @@
 import { useMutation } from "@tanstack/react-query"
 import { useNavigate } from "react-router"
-import { ENV } from "../config"
 import { ERROR_MESSAGES } from "../errors"
 // import { SearchInputSchema, validateInput } from "../schemas/validation"
 import { usePlaceStore } from "../stores/placeStore"
@@ -21,7 +20,7 @@ export const useCreatePlace = (options?: useCreatePlaceOptions) => {
       setLoading(true)
       setError(null)
 
-      const response = await fetch(`${ENV.BACKEND_URL}/api/trpc/places.create`, {
+      const response = await fetch("/api/trpc/places.create", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -46,7 +45,8 @@ export const useCreatePlace = (options?: useCreatePlaceOptions) => {
       // Check if the response contains an error (TRPC error format)
       if (data.error) {
         console.error("Backend returned error:", data.error)
-        const errorMessage = data.error.json?.message || ERROR_MESSAGES.USER.SERVER_ERROR
+        const errorMessage =
+          data.error.json?.message || ERROR_MESSAGES.USER.SERVER_ERROR
         throw new Error(errorMessage)
       }
 
@@ -59,7 +59,10 @@ export const useCreatePlace = (options?: useCreatePlaceOptions) => {
       return data.result.data.json
     },
     onSuccess: (data: PlaceType) => {
-      console.log("Place created successfully. Adding to store and navigating to place page.", data)
+      console.log(
+        "Place created successfully. Adding to store and navigating to place page.",
+        data
+      )
       console.log("Place data structure:", {
         slug: data.slug,
         description: data.description,
