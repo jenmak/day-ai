@@ -168,12 +168,49 @@ const apiApp = new Hono()
     }
   })
   .onError((err, c) => {
-    console.error("Error:", err)
+    console.error("❌ API Error Handler:", err)
+    console.error("Error path:", c.req.path)
+    console.error("Error method:", c.req.method)
+
+    // Don't handle tRPC errors here - let tRPC handle them
+    if (c.req.path.startsWith("/api/trpc/")) {
+      console.log("Skipping API error handler for tRPC request")
+      throw err // Re-throw to let tRPC handler catch it
+    }
+
     return c.json({ error: "Internal Server Error", message: err.message }, 500)
   })
 
 // Mount the API app on the main app
 app.route("/api", apiApp)
+
+// Add startup validation
+console.log("🔍 Starting server initialization validation...")
+
+// Validate environment variables
+console.log("Environment check:")
+console.log("- NODE_ENV:", process.env.NODE_ENV)
+console.log("- PORT:", process.env.PORT)
+console.log(
+  "- OPENAI_API_KEY:",
+  process.env.OPENAI_API_KEY ? "✅ Set" : "❌ Missing"
+)
+console.log(
+  "- OPENCAGE_API_KEY:",
+  process.env.OPENCAGE_API_KEY ? "✅ Set" : "❌ Missing"
+)
+
+// Validate container initialization
+try {
+  console.log("🔍 Validating container initialization...")
+  const { container } = await import("../core/container.js")
+  const cradle = container.cradle
+  console.log("✅ Container initialized successfully")
+  console.log("- Places store:", cradle.places ? "✅ Available" : "❌ Missing")
+} catch (error) {
+  console.error("❌ Container initialization failed:", error)
+  throw error
+}
 
 // Configure TRPC with complete manual implementation
 try {
@@ -313,6 +350,42 @@ try {
     )
   })
 }
+
+// Add global error handler for unhandled exceptions
+process.on("unhandledRejection", (reason, promise) => {
+  console.error("❌ Unhandled Rejection at:", promise, "reason:", reason)
+})
+
+process.on("uncaughtException", (error) => {
+  console.error("❌ Uncaught Exception:", error)
+  console.error("Error stack:", error.stack)
+})
+
+// Add a catch-all error handler for the main app
+app.onError((err, c) => {
+  console.error("❌ Main App Error Handler:", err)
+  console.error("Error path:", c.req.path)
+  console.error("Error method:", c.req.method)
+  console.error("Error stack:", err.stack)
+
+  // For tRPC requests, return proper tRPC error format
+  if (c.req.path.startsWith("/api/trpc/")) {
+    const errorResponse = {
+      error: {
+        message: err.message || "Internal Server Error",
+        code: -32603, // Internal error code
+        data: {
+          code: "INTERNAL_SERVER_ERROR",
+          httpStatus: 500
+        }
+      }
+    }
+    return c.json(errorResponse, 500)
+  }
+
+  // For other requests, return standard error
+  return c.json({ error: "Internal Server Error", message: err.message }, 500)
+})
 
 // Export the app for compatibility
 export default app
