@@ -16,6 +16,7 @@ console.log("  RAILWAY_PROJECT_ID:", process.env.RAILWAY_PROJECT_ID)
 console.log("  OPENAI_API_KEY exists:", !!process.env.OPENAI_API_KEY)
 console.log("  OPENAI_API_KEY length:", process.env.OPENAI_API_KEY?.length || 0)
 console.log("  OPENCAGE_API_KEY exists:", !!process.env.OPENCAGE_API_KEY)
+console.log("  🔧 Production fix: Environment loading enabled")
 
 const app = new Hono()
 
