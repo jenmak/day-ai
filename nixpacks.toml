@@ -7,9 +7,8 @@ nixLibs = ["glibc"]
 cmds = ["bun install --frozen-lockfile --ignore-scripts"]
 
 [phases.build]
-# Build shared package first, then backend
+# Build backend only (shared package is TypeScript modules, no build needed)
 cmds = [
-  "cd shared && bun run build",
   "cd backend && bun run build"
 ]
 

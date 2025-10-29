@@ -13,9 +13,9 @@
     "./consts/*": "./consts/*"
   },
   "scripts": {
-    "build": "echo 'Shared package - no build needed'",
-    "start": "echo 'Shared package - no start command'",
-    "type-check": "echo 'Shared package - no type check needed'"
+    "build": "true",
+    "start": "true",
+    "type-check": "true"
   },
   "dependencies": {
     "zod": "^3.24.2"
