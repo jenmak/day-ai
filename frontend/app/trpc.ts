@@ -16,7 +16,7 @@ export const queryClient = new QueryClient({
 // In production, use the configured backend URL
 const backendUrl = ENV.isDevelopment ? "http://localhost:3333" : ENV.backendUrl
 
-export const trpcClient = createTRPCClient({
+export const trpcClient = createTRPCClient<any>({
   links: [
     loggerLink(),
     httpLink({

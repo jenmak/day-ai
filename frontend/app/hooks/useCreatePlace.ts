@@ -5,6 +5,7 @@ import { ERROR_MESSAGES } from "../errors"
 import { usePlaceStore } from "../stores/placeStore"
 import { Place as PlaceType } from "../types/backend"
 import { trpcClient } from "../trpc"
+import { ENV } from "../config"
 
 interface useCreatePlaceOptions {
   onSuccess?: (place: PlaceType) => void
@@ -22,26 +23,38 @@ export const useCreatePlace = (options?: useCreatePlaceOptions) => {
       setError(null)
 
       try {
+        console.log('About to call tRPC client.places.create.mutate with:', { description })
+        console.log('tRPC client:', trpcClient)
+        console.log('tRPC client.places:', (trpcClient as any).places)
+        console.log('tRPC client.places.create:', (trpcClient as any).places?.create)
+
         // Use tRPC client to call the backend
-        const result = await trpcClient.places.create.mutate({
+        const result = await (trpcClient as any).places.create.mutate({
           description: description
         })
 
+        console.log('tRPC result:', result)
         return result
       } catch (error: any) {
         console.error("tRPC error:", error)
-        
+        console.error("Error details:", {
+          message: error.message,
+          data: error.data,
+          cause: error.cause,
+          stack: error.stack
+        })
+
         // Handle tRPC errors
         if (error.data?.code) {
           const errorMessage = error.message || ERROR_MESSAGES.USER.SERVER_ERROR
           throw new Error(errorMessage)
         }
-        
+
         // Handle network errors
         if (error.message?.includes('fetch')) {
           throw new Error(ERROR_MESSAGES.USER.NETWORK_ERROR)
         }
-        
+
         // Handle other errors
         throw new Error(error.message || ERROR_MESSAGES.USER.SERVER_ERROR)
       }
@@ -100,6 +113,8 @@ export const useCreatePlace = (options?: useCreatePlaceOptions) => {
   })
 
   const createPlace = (description: string) => {
+    console.log('createPlace called with description:', description)
+    console.log('Backend URL:', ENV.isDevelopment ? "http://localhost:3333" : ENV.backendUrl)
     createPlaceMutation.mutate(description)
   }
 

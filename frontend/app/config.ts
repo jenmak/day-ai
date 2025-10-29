@@ -35,17 +35,19 @@ export const SHARED_CONFIG = {
 
 // Environment configuration
 export const getEnvironmentConfig = () => {
-  const isDevelopment = process.env.NODE_ENV === "development"
-  const isProduction = process.env.NODE_ENV === "production"
+  const isDevelopment = import.meta.env.DEV
+  const isProduction = import.meta.env.PROD
 
   return {
     isDevelopment,
     isProduction,
-    isTest: process.env.NODE_ENV === "test",
-    apiUrl: process.env.API_URL || "http://localhost:3333",
+    isTest: import.meta.env.MODE === "test",
+    apiUrl: import.meta.env.VITE_API_URL || "http://localhost:3333",
     backendUrl:
-      process.env.BACKEND_URL || process.env.API_URL || "http://localhost:3333",
-    frontendUrl: process.env.FRONTEND_URL || "http://localhost:3000"
+      import.meta.env.VITE_BACKEND_URL ||
+      import.meta.env.VITE_API_URL ||
+      "http://localhost:3333",
+    frontendUrl: import.meta.env.VITE_FRONTEND_URL || "http://localhost:3000"
   }
 }
 

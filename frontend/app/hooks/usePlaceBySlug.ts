@@ -29,25 +29,25 @@ export const usePlaceBySlug = (options?: usePlaceBySlugOptions) => {
 
       try {
         // Use tRPC client to call the backend
-        const result = await trpcClient.places.getBySlug.query({
+        const result = await (trpcClient as any).places.getBySlug.query({
           slug: slug
         })
 
         return result
       } catch (error: any) {
         console.error("Error fetching place by slug:", error)
-        
+
         // Handle tRPC errors
         if (error.data?.code) {
           const errorMessage = error.message || ERROR_MESSAGES.USER.SERVER_ERROR
           throw new Error(errorMessage)
         }
-        
+
         // Handle network errors
         if (error.message?.includes('fetch')) {
           throw new Error(ERROR_MESSAGES.USER.NETWORK_ERROR)
         }
-        
+
         // Handle other errors
         throw new Error(error.message || ERROR_MESSAGES.USER.SERVER_ERROR)
       }

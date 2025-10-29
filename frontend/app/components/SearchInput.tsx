@@ -63,14 +63,24 @@ export function SearchInput({
   // Handlers.
   const handleSearch = () => {
     setHasAttemptedSearch(true)
-    const validationResult = validate()
-    if (validationResult.success) {
+
+    // Debug logging
+    console.log("Search attempt:", {
+      searchTerm,
+      isValid,
+      errors
+    })
+
+    // Simple validation - just check if search term is not empty
+    if (searchTerm.trim()) {
       clearError()
       onSearch(searchTerm.trim())
       setValue({ query: "" })
       setSearchTerm("")
       reset()
       setHasAttemptedSearch(false)
+    } else {
+      console.log("Search term is empty, not proceeding")
     }
   }
 
