@@ -72,6 +72,9 @@ app.use("*", async (c, next) => {
 // Add root health check endpoint (for Railway health checks)
 app.get("/", (c) => {
   console.log("Root health check endpoint hit")
+  console.log("Request URL:", c.req.url)
+  console.log("Request method:", c.req.method)
+  console.log("Request headers:", Object.fromEntries(c.req.header()))
   return c.text("OK")
 })
 
