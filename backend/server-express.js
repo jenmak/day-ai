@@ -45,39 +45,31 @@ app.get("/test", (req, res) => {
   res.json({ message: "Backend is working!", timestamp: new Date().toISOString() })
 })
 
-// Proxy to the Hono app
-app.use("/api", async (req, res) => {
-  try {
-    console.log(`🔍 Proxying request: ${req.method} ${req.originalUrl}`)
-    
-    // Import the Hono app
-    const { default: honoApp } = await import("./src/index.ts")
-    
-    // Create a new request for the Hono app
-    const url = new URL(req.originalUrl, `http://localhost:${port}`)
-    const honoRequest = new Request(url.toString(), {
-      method: req.method,
-      headers: req.headers,
-      body: req.method !== "GET" && req.method !== "HEAD" ? JSON.stringify(req.body) : undefined
-    })
-    
-    // Call the Hono app
-    const response = await honoApp.fetch(honoRequest)
-    const responseBody = await response.text()
-    
-    // Set response headers
-    response.headers.forEach((value, key) => {
-      res.set(key, value)
-    })
-    
-    res.status(response.status).send(responseBody)
-  } catch (error) {
-    console.error("❌ Error in proxy:", error)
-    res.status(500).json({
-      error: "Internal Server Error",
-      message: error.message
-    })
-  }
+// Simple API endpoints for testing
+app.get("/api/health", (req, res) => {
+  console.log("API health check endpoint hit")
+  res.json({ status: "ok", message: "API is working" })
+})
+
+// Placeholder for tRPC endpoints
+app.post("/api/trpc/places.create", (req, res) => {
+  console.log("tRPC places.create endpoint hit")
+  console.log("Request body:", req.body)
+  
+  // For now, return a simple response to test connectivity
+  res.json({
+    result: {
+      data: {
+        id: "test-123",
+        description: req.body.description || "Test place",
+        slug: "test-place",
+        normalizedPlace: "Test Location",
+        weather: [],
+        temperatureRangeCategory: null,
+        createdAt: new Date().toISOString()
+      }
+    }
+  })
 })
 
 // Start server
