@@ -1,5 +1,5 @@
 import { z } from "zod"
-import { ClothingCategoryEnum } from "./constants"
+import { ClothingCategoryEnum } from "../constants"
 import { NumberValidation } from "./validation"
 
 // Temperature range category enum with enhanced validation

@@ -12,15 +12,17 @@ export const queryClient = new QueryClient({
 })
 
 // Get the backend URL from environment configuration
-// In development, use empty string to use Vite proxy
+// In development, force use of local backend URL
 // In production, use the configured backend URL
-const backendUrl = ENV.IS_DEVELOPMENT ? "" : ENV.BACKEND_URL
+const backendUrl = ENV.IS_DEVELOPMENT
+  ? "http://localhost:3333"
+  : ENV.BACKEND_URL
 
 export const trpcClient = createTRPCClient({
   links: [
     loggerLink(),
     httpLink({
-      url: `${backendUrl}/api/trpc`,
+      url: `${backendUrl}/trpc`,
       transformer: superjson,
       headers: {
         "Content-Type": "application/json"
