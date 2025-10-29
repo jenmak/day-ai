@@ -14,7 +14,7 @@
   },
   "scripts": {
     "dev": "bun run --hot src/index.ts",
-    "build": "echo 'No build needed - Bun runs TypeScript directly'",
+    "build": "bun run type-check",
     "start": "bun server.js",
     "type-check": "tsc --noEmit"
   },
