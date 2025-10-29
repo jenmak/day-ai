@@ -1,5 +1,5 @@
 import { TRPCError } from "@trpc/server"
-import { procedure, router } from "../../core/trpc"
+import { procedure, publicProcedure, router } from "../../core/trpc"
 import {
   CreatePlaceSchema,
   GetPlaceBySlugSchema,
@@ -22,7 +22,8 @@ export const places = router({
    * If the place already exists,
    * it updates the place with the new description.
    */
-  create: procedure
+
+  create: publicProcedure
     .input(CreatePlaceSchema)
     .mutation(async ({ ctx, input }) => {
       try {
@@ -304,33 +305,4 @@ export const places = router({
         })
       }
     })
-
-  // /**
-  //  * Get cache statistics and health metrics
-  //  */
-  // getCacheStats: procedure.query(async ({ ctx }) => {
-  //   const metrics = CacheUtils.getCacheMetrics(ctx.cradle.cache)
-  //   return metrics
-  // }),
-
-  // /**
-  //  * Clean up expired cache entries
-  //  */
-  // cleanupCache: procedure.mutation(async ({ ctx }) => {
-  //   const cleaned = await CacheUtils.cleanupExpiredEntries(ctx.cradle.cache)
-  //   return { cleanedEntries: cleaned }
-  // }),
-
-  // /**
-  //  * Monitor cache health and return status
-  //  */
-  // monitorCacheHealth: procedure.query(async ({ ctx }) => {
-  //   CacheUtils.monitorCacheHealth(ctx.cradle.cache)
-  //   const metrics = CacheUtils.getCacheMetrics(ctx.cradle.cache)
-  //   return {
-  //     status: "healthy",
-  //     metrics,
-  //     timestamp: new Date().toISOString()
-  //   }
-  // }),
 })
