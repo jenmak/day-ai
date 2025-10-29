@@ -10,7 +10,7 @@ import { ClothingService } from "../services/clothingService"
 import { GeolocationService } from "../services/geolocationService"
 import { LLMService } from "../services/llmService"
 import { WeatherService } from "../services/weatherService"
-import { OpenMeteoWeatherCode } from "../types"
+import { GeocodedAddress, OpenMeteoWeatherCode } from "../types"
 import {
   ensureTemperatureRangeCategory,
   getPlaceTemperatureRangeCategory
@@ -119,7 +119,11 @@ export const places = router({
           description: input.description,
           normalizedPlace: llmResult.normalizedPlace,
           slug: llmResult.slug,
-          geocodedAddress,
+          geocodedAddress: {
+            ...geocodedAddress,
+            latitude: geocodedAddress.latitude.toString(),
+            longitude: geocodedAddress.longitude.toString()
+          } as GeocodedAddress,
           weather: weatherData,
           temperatureRangeCategory
         }

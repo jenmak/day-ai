@@ -194,8 +194,8 @@ export class GeolocationService {
     const components = result.components
 
     return {
-      latitude: Number(result.geometry.lat).toFixed(6),
-      longitude: Number(result.geometry.lng).toFixed(6),
+      latitude: Number(result.geometry.lat).toFixed(6).toString(),
+      longitude: Number(result.geometry.lng).toFixed(6).toString(),
       formattedAddress: result.formatted,
       structuredAddress: {
         city: components.city || "",

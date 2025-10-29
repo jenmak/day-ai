@@ -41,8 +41,8 @@ export const AddressSchema = z.object({
 
 // Geocoded Address Schema with enhanced validation
 export const GeocodedAddressSchema = z.object({
-  latitude: NumberValidation.latitude,
-  longitude: NumberValidation.longitude,
+  latitude: StringValidation.required,
+  longitude: StringValidation.required,
   formattedAddress: StringValidation.required
     .min(1, "Formatted address is required")
     .max(500, "Formatted address must be 500 characters or less"),
