@@ -103,8 +103,19 @@ export abstract class Store<T extends StoreItem> {
       if (!exists) return
 
       const content = await fs.readFile(this.storePath, "utf-8")
-      const entries = JSON.parse(content) as [string, T][]
-      this.items = new Map(entries)
+      
+      // Try to parse as regular JSON first
+      try {
+        const entries = JSON.parse(content) as [string, T][]
+        this.items = new Map(entries)
+      } catch (parseError) {
+        // If JSON parsing fails, the file might be corrupted or in old format
+        // Clear the store and start fresh
+        console.warn("Failed to parse store data, starting with empty store:", parseError)
+        this.items = new Map()
+        // Delete the corrupted file
+        await fs.unlink(this.storePath).catch(() => {})
+      }
     } catch (error) {
       console.error("Failed to load store:", error)
     }
