@@ -67,6 +67,8 @@ app.get("/", (c) => {
 
 // Add API routes without basePath (we'll mount them on /api)
 const apiApp = new Hono()
+console.log("🏗️ Creating API app")
+apiApp
   .use("*", async (c, next) => {
     const allowedOrigins = [
       "https://www.dripdrop.city",
@@ -182,7 +184,11 @@ const apiApp = new Hono()
   })
 
 // Mount the API app on the main app
+console.log("🔗 Mounting API app on /api")
+console.log("API app type:", typeof apiApp)
+console.log("API app methods:", Object.getOwnPropertyNames(apiApp))
 app.route("/api", apiApp)
+console.log("✅ API app mounted successfully")
 
 // Add startup validation
 console.log("🔍 Starting server initialization validation...")
