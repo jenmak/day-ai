@@ -46,10 +46,35 @@ export const useCreatePlace = (options?: useCreatePlaceOptions) => {
           userAgent: navigator.userAgent
         })
 
+        // Detect mobile browsers
+        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
+        const isSafari = /Safari/.test(navigator.userAgent) && !/Chrome/.test(navigator.userAgent)
+        const isChrome = /Chrome/.test(navigator.userAgent)
+
+        console.log('Error context:', {
+          isMobile,
+          isSafari,
+          isChrome,
+          errorName: error.name,
+          errorMessage: error.message,
+          userAgent: navigator.userAgent
+        })
+
+        // Handle mobile-specific errors
+        if (isMobile && error.name === 'TypeError' && error.message?.includes('Load failed')) {
+          console.error("Mobile Load failed error detected")
+          throw new Error("Network request failed. Please check your mobile connection and try again.")
+        }
+
         // Handle Safari-specific errors
         if (error.name === 'TypeError' && error.message?.includes('Load failed')) {
           console.error("Safari Load failed error detected")
           throw new Error("Network request failed. Please check your connection and try again.")
+        }
+
+        // Handle mobile network errors
+        if (isMobile && (error.message?.includes('fetch') || error.message?.includes('network'))) {
+          throw new Error("Mobile network error. Please check your connection and try again.")
         }
 
         // Handle tRPC errors
@@ -63,7 +88,7 @@ export const useCreatePlace = (options?: useCreatePlaceOptions) => {
           throw new Error(ERROR_MESSAGES.USER.NETWORK_ERROR)
         }
 
-        // Handle CORS errors (common in Safari)
+        // Handle CORS errors (common in mobile browsers)
         if (error.message?.includes('CORS') || error.message?.includes('cross-origin')) {
           throw new Error("Cross-origin request blocked. Please try again.")
         }
@@ -127,7 +152,13 @@ export const useCreatePlace = (options?: useCreatePlaceOptions) => {
 
   const createPlace = (description: string) => {
     console.log('createPlace called with description:', description)
-    console.log('Backend URL:', ENV.isDevelopment ? "http://localhost:3333" : ENV.backendUrl)
+    console.log('Backend URL:', ENV.backendUrl)
+    console.log('Environment:', {
+      isDevelopment: ENV.isDevelopment,
+      isProduction: ENV.isProduction,
+      userAgent: navigator.userAgent
+    })
+
     createPlaceMutation.mutate(description)
   }
 

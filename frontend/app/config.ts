@@ -48,12 +48,21 @@ export const getEnvironmentConfig = () => {
     return fallback
   }
 
+  // Determine backend URL based on environment
+  let backendUrl: string
+  if (isDevelopment) {
+    backendUrl = "http://localhost:3333"
+  } else {
+    // Production backend URL
+    backendUrl = "https://dripdropcitybackend-production.up.railway.app"
+  }
+
   return {
     isDevelopment,
     isProduction,
     isTest: getEnvVar('VITE_MODE', 'development') === "test",
-    apiUrl: getEnvVar('VITE_API_URL', "http://localhost:3333"),
-    backendUrl: getEnvVar('VITE_BACKEND_URL', getEnvVar('VITE_API_URL', "http://localhost:3333")),
+    apiUrl: backendUrl,
+    backendUrl: backendUrl,
     frontendUrl: getEnvVar('VITE_FRONTEND_URL', "http://localhost:3000")
   }
 }
