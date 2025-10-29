@@ -1,7 +1,6 @@
 import crypto from "node:crypto"
 import fs from "node:fs/promises"
 import path from "node:path"
-import superjson from "superjson"
 
 export interface StoreItem {
   id: string
@@ -82,7 +81,7 @@ export abstract class Store<T extends StoreItem> {
 
     try {
       await fs.mkdir(path.dirname(this.storePath), { recursive: true })
-      const serialized = superjson.stringify(Array.from(this.items.entries()))
+      const serialized = JSON.stringify(Array.from(this.items.entries()))
       await fs.writeFile(this.storePath, serialized)
     } catch (error) {
       console.error("Failed to persist store:", error)
@@ -104,7 +103,7 @@ export abstract class Store<T extends StoreItem> {
       if (!exists) return
 
       const content = await fs.readFile(this.storePath, "utf-8")
-      const entries = superjson.parse<[string, T][]>(content)
+      const entries = JSON.parse(content) as [string, T][]
       this.items = new Map(entries)
     } catch (error) {
       console.error("Failed to load store:", error)
