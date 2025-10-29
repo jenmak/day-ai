@@ -1,7 +1,7 @@
 import { fetchRequestHandler } from "@trpc/server/adapters/fetch"
 import { config } from "dotenv"
 import { Hono } from "hono"
-import { appRouter } from "../app/router/index.js"
+import { appRouter } from "../app/router/index"
 
 // Load environment variables from .env file (only in development)
 if (process.env.NODE_ENV !== "production") {

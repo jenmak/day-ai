@@ -8,4 +8,4 @@ cmds = ["bun install"]
 cmds = ["bun run type-check"]
 
 [start]
-cmd = "bun run start"
+cmd = "bun server.js"
