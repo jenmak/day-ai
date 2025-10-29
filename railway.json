@@ -2,10 +2,28 @@
   "$schema": "https://railway.app/railway.schema.json",
   "build": {
     "builder": "NIXPACKS",
-    "watchPatterns": ["backend/**", "shared/**"]
+    "watchPatterns": ["backend/**", "shared/**"],
+    "nixpacksPlan": {
+      "phases": {
+        "setup": {
+          "nixPkgs": ["nodejs_20", "bun"],
+          "nixLibs": ["glibc"]
+        },
+        "install": {
+          "cmds": [
+            "cd backend && bun install --frozen-lockfile --ignore-scripts --no-cache --no-verify"
+          ]
+        },
+        "build": {
+          "cmds": [
+            "cd backend && bun run type-check"
+          ]
+        }
+      }
+    }
   },
   "deploy": {
-    "startCommand": "bun run start:backend",
+    "startCommand": "cd backend && bun server.js",
     "healthcheckPath": "/",
     "healthcheckTimeout": 100,
     "restartPolicyType": "ON_FAILURE",

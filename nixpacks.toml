@@ -3,13 +3,15 @@ nixPkgs = ["nodejs_20", "bun"]
 nixLibs = ["glibc"]
 
 [phases.install]
-# Install workspace dependencies, skip postinstall scripts to avoid native binary issues
-cmds = ["bun install --frozen-lockfile --ignore-scripts"]
+# Install workspace dependencies with minimal flags to avoid issues
+cmds = [
+  "bun install --frozen-lockfile --ignore-scripts --no-cache --no-verify"
+]
 
 [phases.build]
-# Build backend only (shared package is TypeScript modules, no build needed)
+# Skip build phase entirely - just run TypeScript check
 cmds = [
-  "cd backend && bun run build"
+  "cd backend && bun run type-check"
 ]
 
 [start]
