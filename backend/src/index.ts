@@ -3,10 +3,9 @@ import { config } from "dotenv"
 import { Hono } from "hono"
 import { appRouter } from "../app/router/index"
 
-// Load environment variables from .env file (only in development)
-if (process.env.NODE_ENV !== "production") {
-  config()
-}
+// Load environment variables from .env file
+// Always load .env file to ensure API keys are available
+config()
 
 console.log("Starting server...")
 console.log("🔍 Environment check:")
@@ -14,6 +13,9 @@ console.log("  NODE_ENV:", process.env.NODE_ENV)
 console.log("  PORT:", process.env.PORT)
 console.log("  RAILWAY_ENVIRONMENT:", process.env.RAILWAY_ENVIRONMENT)
 console.log("  RAILWAY_PROJECT_ID:", process.env.RAILWAY_PROJECT_ID)
+console.log("  OPENAI_API_KEY exists:", !!process.env.OPENAI_API_KEY)
+console.log("  OPENAI_API_KEY length:", process.env.OPENAI_API_KEY?.length || 0)
+console.log("  OPENCAGE_API_KEY exists:", !!process.env.OPENCAGE_API_KEY)
 
 const app = new Hono()
 
