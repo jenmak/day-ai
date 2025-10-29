@@ -13,28 +13,12 @@ const isRailway = process.env.RAILWAY_ENVIRONMENT || process.env.RAILWAY_PROJECT
 console.log(`🏗️  Environment: ${isRailway ? "Railway" : "Local Development"}`)
 console.log(`🚀 Starting server on port ${port}`)
 
-// Start the server using Bun's serve function
+// Start the server using Bun's serve function with simplified configuration
 try {
   const server = Bun.serve({
-    fetch: async (request) => {
-      try {
-        console.log(`🔍 Incoming request: ${request.method} ${request.url}`)
-        const response = await app.fetch(request)
-        console.log(`✅ Response status: ${response.status}`)
-        return response
-      } catch (error) {
-        console.error(`❌ Error handling request:`, error)
-        return new Response(JSON.stringify({
-          error: "Internal Server Error",
-          message: error.message
-        }), {
-          status: 500,
-          headers: { "Content-Type": "application/json" }
-        })
-      }
-    },
     port: Number(port),
-    hostname: "0.0.0.0"
+    hostname: "0.0.0.0",
+    fetch: app.fetch
   })
 
   console.log(`✅ Server running on port ${server.port}`)
