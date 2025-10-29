@@ -89,8 +89,17 @@ export const CreatePlaceSchema = z.object({
     )
     .transform((desc) => desc.trim())
     .refine(
-      (desc) => !/^[0-9\s\-_]+$/.test(desc),
-      "Place description must contain letters"
+      (desc) => {
+        // Allow location descriptions (letters, spaces, commas, and common punctuation)
+        const isLocationDescription = /^[a-zA-Z\s\-'\.\,]+$/.test(desc) && desc.length > 0
+        // Allow US zip codes (5 digits or 5+4 format)
+        const isZipCode = /^\d{5}(-\d{4})?$/.test(desc)
+        // Allow international postal codes (alphanumeric with spaces and hyphens)
+        const isPostalCode = /^[a-zA-Z0-9\s-]{2,10}$/.test(desc) && /[a-zA-Z]/.test(desc)
+
+        return isLocationDescription || isZipCode || isPostalCode
+      },
+      "Must be a valid location description, US zip code, or international postal code"
     )
 })
 

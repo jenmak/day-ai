@@ -1,19 +1,16 @@
+import { TRPCError } from "@trpc/server"
+import { procedure, publicProcedure, router } from "../../core/trpc"
 import {
   CreatePlaceSchema,
   GetPlaceBySlugSchema,
   UpdatePlaceSchema,
   validateInput
 } from "../schemas"
-import {
-  GeocodedAddress,
-  OpenMeteoWeatherCode
-} from "../types"
-import { TRPCError } from "@trpc/server"
-import { procedure, publicProcedure, router } from "../../core/trpc"
 import { ClothingService } from "../services/clothingService"
 import { GeolocationService } from "../services/geolocationService"
 import { LLMService } from "../services/llmService"
 import { WeatherService } from "../services/weatherService"
+import { GeocodedAddress, OpenMeteoWeatherCode } from "../types"
 import {
   ensureTemperatureRangeCategory,
   getPlaceTemperatureRangeCategory

@@ -56,6 +56,16 @@ export const StringValidation = {
     .string()
     .regex(/^[a-zA-Z0-9\s-]{3,10}$/, "Must be a valid postal code"),
 
+  // US Zip code (5 digits or 5+4 format)
+  zipCode: z
+    .string()
+    .regex(/^\d{5}(-\d{4})?$/, "Must be a valid US zip code (12345 or 12345-6789)"),
+
+  // International postal code (more flexible)
+  internationalPostalCode: z
+    .string()
+    .regex(/^[a-zA-Z0-9\s-]{2,10}$/, "Must be a valid postal code"),
+
   // Phone number (flexible format)
   phoneNumber: z
     .string()
@@ -298,12 +308,26 @@ export const ValidationPatterns = {
 
 /**
  * Search input validation schema
+ * Supports both location descriptions and zip codes
  */
 export const SearchInputSchema = z.object({
   query: z
     .string()
     .max(100, "Search term must be 100 characters or less")
     .transform((val) => val.trim())
+    .refine(
+      (val) => {
+        // Allow location descriptions (letters, spaces, commas, and common punctuation)
+        const isLocationDescription = /^[a-zA-Z\s\-'\.\,]+$/.test(val) && val.length > 0
+        // Allow US zip codes (5 digits or 5+4 format)
+        const isZipCode = /^\d{5}(-\d{4})?$/.test(val)
+        // Allow international postal codes (alphanumeric with spaces and hyphens)
+        const isPostalCode = /^[a-zA-Z0-9\s-]{2,10}$/.test(val) && /[a-zA-Z]/.test(val)
+
+        return isLocationDescription || isZipCode || isPostalCode
+      },
+      "Must be a valid location description, US zip code, or international postal code"
+    )
 })
 
 // Re-export zod for convenience

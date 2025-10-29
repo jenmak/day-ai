@@ -33,7 +33,7 @@ export function Search() {
           animate-cascade-description font-body"
         >
           {/* eslint-disable-next-line max-len */}
-          Describe your location and we&apos;ll recommend some weather appropriate outfits for the
+          Enter your location (city, state, or zip code) and we&apos;ll recommend some weather appropriate outfits for the
           week.
         </Label>
         <div className="animate-cascade-input">
@@ -43,6 +43,7 @@ export function Search() {
             backgroundColor={BACKGROUND_COLOR}
             textColor={TEXT_COLOR}
             placeholderColor={PLACEHOLDER_COLOR}
+            placeholder="ie. New York, NY or 10001"
             onSearch={handleSearch}
             isLoading={isLoading}
             error={error}
