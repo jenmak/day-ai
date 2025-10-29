@@ -15,7 +15,8 @@
   "scripts": {
     "dev": "bun run --hot src/index.ts",
     "build": "echo 'No build needed - Bun runs TypeScript directly'",
-    "start": "bun server.js"
+    "start": "bun server.js",
+    "type-check": "tsc --noEmit"
   },
   "dependencies": {
     "@hono/trpc-server": "^0.3.4",
