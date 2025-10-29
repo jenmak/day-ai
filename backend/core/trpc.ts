@@ -1,4 +1,4 @@
-import { initTRPC } from "@trpc/server"
+import { initTRPC, TRPCError } from "@trpc/server"
 import type { FetchCreateContextFnOptions } from "@trpc/server/adapters/fetch"
 import superjson from "superjson"
 import { container } from "../core/container"
@@ -27,7 +27,6 @@ const errorMiddleware = trpc.middleware(async ({ path, type, next }) => {
     // Log on the server (Vercel logs, Sentry, etc.)
     console.error(`tRPC ${type} ${path} →`, err)
     // Re-throw as a TRPCError so the client can parse it
-    const { TRPCError } = await import("@trpc/server")
     throw new TRPCError({
       code: "INTERNAL_SERVER_ERROR",
       message: err?.message ?? "Unexpected server error"

@@ -90,8 +90,8 @@ export const places = router({
 
         console.log("🌤️ Fetching weather data...")
         const weatherData = await WeatherService.get7DayForecast({
-          latitude: geocodedAddress.latitude,
-          longitude: geocodedAddress.longitude
+          latitude: Number(geocodedAddress.latitude),
+          longitude: Number(geocodedAddress.longitude)
         })
         console.log("✅ Weather data fetched:", weatherData.length, "days")
 
@@ -261,8 +261,8 @@ export const places = router({
 
               // Fetch fresh 7-day weather data starting from today
               const freshWeatherData = await WeatherService.get7DayForecast({
-                latitude: place.geocodedAddress.latitude,
-                longitude: place.geocodedAddress.longitude
+                latitude: Number(place.geocodedAddress.latitude),
+                longitude: Number(place.geocodedAddress.longitude)
               })
 
               // Get clothing recommendations for the fresh weather data

@@ -1,5 +1,5 @@
 import { Store, type StoreItem } from "../../core/Store"
-import type { Place, Weather, TemperatureRangeCategory } from "../types"
+import type { Place, TemperatureRangeCategory, Weather } from "../types"
 
 export interface PlaceStoreItem
   extends StoreItem,
@@ -44,8 +44,8 @@ export class PlaceStore extends Store<PlaceStoreItem> {
     normalizedPlace: string
     slug: string
     geocodedAddress: {
-      latitude: number
-      longitude: number
+      latitude: string
+      longitude: string
       formattedAddress: string
       structuredAddress: {
         city: string

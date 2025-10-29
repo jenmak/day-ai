@@ -95,27 +95,35 @@ export const NumberValidation = {
       .min(min, `Must be at least ${min}`)
       .max(max, `Must be at most ${max}`),
 
-  // Latitude validation (-90 to 90)
+  // Latitude validation (-90 to 90) - stored as string for precision
   latitude: z
     .union([z.string(), z.number()])
-    .transform((val) => Number(val))
-    .pipe(
-      z
-        .number()
-        .min(-90, "Latitude must be between -90 and 90")
-        .max(90, "Latitude must be between -90 and 90")
-    ),
+    .transform((val) => {
+      const num = Number(val)
+      if (isNaN(num)) {
+        throw new Error("Latitude must be a valid number")
+      }
+      return num.toFixed(6) // Store as string with 6 decimal places
+    })
+    .refine((val) => {
+      const num = Number(val)
+      return num >= -90 && num <= 90
+    }, "Latitude must be between -90 and 90"),
 
-  // Longitude validation (-180 to 180)
+  // Longitude validation (-180 to 180) - stored as string for precision
   longitude: z
     .union([z.string(), z.number()])
-    .transform((val) => Number(val))
-    .pipe(
-      z
-        .number()
-        .min(-180, "Longitude must be between -180 and 180")
-        .max(180, "Longitude must be between -180 and 180")
-    ),
+    .transform((val) => {
+      const num = Number(val)
+      if (isNaN(num)) {
+        throw new Error("Longitude must be a valid number")
+      }
+      return num.toFixed(6) // Store as string with 6 decimal places
+    })
+    .refine((val) => {
+      const num = Number(val)
+      return num >= -180 && num <= 180
+    }, "Longitude must be between -180 and 180"),
 
   // Temperature in Fahrenheit (-50 to 150)
   temperatureF: z

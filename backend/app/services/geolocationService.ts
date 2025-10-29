@@ -70,8 +70,8 @@ export class GeolocationService {
     const mockCoordinates = this.getMockCoordinates(description)
 
     return {
-      latitude: Number(mockCoordinates.lat),
-      longitude: Number(mockCoordinates.lng),
+      latitude: Number(mockCoordinates.lat).toFixed(6),
+      longitude: Number(mockCoordinates.lng).toFixed(6),
       formattedAddress: description,
       structuredAddress: this.parseStructuredAddress(description)
     }
@@ -194,8 +194,8 @@ export class GeolocationService {
     const components = result.components
 
     return {
-      latitude: Number(result.geometry.lat),
-      longitude: Number(result.geometry.lng),
+      latitude: Number(result.geometry.lat).toFixed(6),
+      longitude: Number(result.geometry.lng).toFixed(6),
       formattedAddress: result.formatted,
       structuredAddress: {
         city: components.city || "",
