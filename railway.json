@@ -15,17 +15,7 @@
           ]
         },
         "build": {
-          "cmds": [
-            "echo 'Building shared package...'",
-            "cd shared && bun run build",
-            "echo 'Verifying shared package structure...'",
-            "ls -la shared/",
-            "echo 'Linking shared package to backend...'",
-            "cd ../backend && bun install --frozen-lockfile --ignore-scripts --no-cache --no-verify",
-            "echo 'Verifying backend can import shared package...'",
-            "cd ../backend && bun -e 'import(\"@dripdropcity/shared/schemas\").then(() => console.log(\"✅ Shared package import successful\")).catch(e => console.error(\"❌ Shared package import failed:\", e))'",
-            "echo 'Build completed successfully'"
-          ]
+          "cmds": ["echo 'No build needed - Bun handles TypeScript natively'"]
         }
       }
     }
