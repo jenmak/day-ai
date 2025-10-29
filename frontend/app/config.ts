@@ -43,6 +43,8 @@ export const getEnvironmentConfig = () => {
     isProduction,
     isTest: process.env.NODE_ENV === "test",
     apiUrl: process.env.API_URL || "http://localhost:3333",
+    backendUrl:
+      process.env.BACKEND_URL || process.env.API_URL || "http://localhost:3333",
     frontendUrl: process.env.FRONTEND_URL || "http://localhost:3000"
   }
 }

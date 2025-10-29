@@ -2,14 +2,14 @@
 nixPkgs = ['bun'] # Bun's the boss
 
 [phases.install]
-cmds = ['cd /app && bun install'] # Install from monorepo root
+cmds = ['bun install'] # Install dependencies
 
 [phases.build]
-cmds = ['cd frontend && bun run build'] # Build the frontend
+cmds = ['bun run build'] # Build the frontend
 
 [start]
-cmd = 'cd frontend && bun run start' # Start the Express server
+cmd = 'bun run start' # Start the Express server
 
 [staticAssets]
 mountPath = '/'
-destination = '/app/frontend/dist'
+destination = '/app/dist'
