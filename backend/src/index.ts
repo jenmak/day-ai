@@ -243,11 +243,15 @@ try {
       let body: string | ArrayBuffer | undefined = undefined
       if (c.req.method !== "GET" && c.req.method !== "HEAD") {
         const contentType = c.req.header("content-type")
+        console.log("  Content-Type:", contentType)
         if (contentType?.includes("application/json")) {
           const jsonData = await c.req.json()
+          console.log("  Request body:", jsonData)
           body = JSON.stringify(jsonData)
         } else {
-          body = await c.req.arrayBuffer()
+          const textData = await c.req.text()
+          console.log("  Request body (text):", textData)
+          body = textData
         }
       }
 
