@@ -36,12 +36,13 @@ export const getBackgroundColors = (
       ]
     default:
       console.warn("getBackgroundColors: Unknown temperature category", temperatureRangeCategory)
+      // Default to MILD colors instead of grayscale
       return [
-        "bg-[#f8f9fa]", // gray-1
-        "bg-[#dee2e6]", // gray-2
-        "bg-[#adb5bd]", // gray-3
-        "bg-[#495057]", // gray-4
-        "bg-[#212529]" // gray-5
+        "bg-[#73fbd3]", // cool-aquamarine
+        "bg-[#44e5e7]", // cool-cyan
+        "bg-[#59d2fe]", // cool-skyblue
+        "bg-[#4a8fe7]", // cool-blue
+        "bg-[#5c7aff]" // cool-crayola-blue
       ]
   }
 }

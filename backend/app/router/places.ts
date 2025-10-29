@@ -59,7 +59,7 @@ export const places = router({
             slug: llmResult.slug,
             geocodedAddress: null,
             weather: [],
-            temperatureRangeCategory: null
+            temperatureRangeCategory: "MILD" // Default to MILD for error cases
           }
           const place = ctx.cradle.places.add(placeData)
           console.log("Place created for error location:", place)

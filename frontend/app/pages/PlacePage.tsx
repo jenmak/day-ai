@@ -47,8 +47,12 @@ export function Place() {
     if (place?.temperatureRangeCategory) {
       const colors = getBackgroundColors(place.temperatureRangeCategory)
       setSwatchColors(colors)
+    } else if (place) {
+      // Fallback to MILD colors for places without temperature data
+      const colors = getBackgroundColors("MILD")
+      setSwatchColors(colors)
     }
-  }, [place?.temperatureRangeCategory])
+  }, [place?.temperatureRangeCategory, place])
 
   if (isLoading || isCreatingPlace) {
     return (
