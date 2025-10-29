@@ -3,8 +3,8 @@ nixPkgs = ["nodejs_20", "bun"]
 nixLibs = ["glibc"]
 
 [phases.install]
-# Install workspace dependencies
-cmds = ["bun install --frozen-lockfile"]
+# Install workspace dependencies, skip postinstall scripts to avoid native binary issues
+cmds = ["bun install --frozen-lockfile --ignore-scripts"]
 
 [phases.build]
 # Build shared package first, then backend
