@@ -1,11 +1,10 @@
 [phases.setup]
-nixPkgs = ["nodejs_20"]
+nixPkgs = ["nodejs_20", "bun"]
+nixLibs = ["glibc"]
 
 [phases.install]
-cmds = ["curl -fsSL https://bun.sh/install | bash", "export PATH=\"$HOME/.bun/bin:$PATH\"", "bun install"]
-
-[phases.build]
-cmds = ["export PATH=\"$HOME/.bun/bin:$PATH\"", "bun run build"]
+# Install all dependencies including devDependencies
+cmds = ["bun install --frozen-lockfile --production=false"]
 
 [start]
-cmd = "export PATH=\"$HOME/.bun/bin:$PATH\" && bun run start"
+cmd = "cd backend && bun server.js"

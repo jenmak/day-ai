@@ -1,0 +1,25 @@
+{
+  "name": "@dripdropcity/shared",
+  "type": "module",
+  "version": "0.0.0",
+  "exports": {
+    "./schemas": "./schemas.ts",
+    "./types": "./types.ts",
+    "./config": "./config.ts",
+    "./constants": "./constants.ts",
+    "./consts": "./consts/index.ts",
+    "./schemas/*": "./schemas/*",
+    "./types/*": "./types/*",
+    "./consts/*": "./consts/*"
+  },
+  "scripts": {
+    "build": "echo 'Shared package - no build needed'",
+    "start": "echo 'Shared package - no start command'"
+  },
+  "dependencies": {
+    "zod": "^3.24.2"
+  },
+  "devDependencies": {
+    "turbo": "^2.4.4"
+  }
+}

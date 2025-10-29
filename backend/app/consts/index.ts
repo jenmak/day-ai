@@ -5,6 +5,5 @@ import { config } from "dotenv"
 // Direct access to process.env.OPENAI_API_KEY is not allowed for security
 config()
 
-export * from "./clothing"
-export * from "./place"
-export * from "./weather"
+// Re-export all constants from shared package
+export * from "@dripdropcity/shared/constants"

@@ -1,9 +1,8 @@
 import OpenAI from "openai"
 import { MOCK_MAPPINGS } from "../consts"
 import { DESCRIPTION_TO_NORMALIZED_PLACE_PROMPT } from "../prompts/descriptionToNormalizedPlacePrompt"
-import { PlaceNormalizationSchema } from "../schemas"
+import { PlaceNormalization, PlaceNormalizationSchema } from "../schemas"
 import { apiKeys, getApiKeyWithFallback } from "../security/apiKeys"
-import { PlaceNormalization } from "../types"
 
 export class LLMService {
   /**

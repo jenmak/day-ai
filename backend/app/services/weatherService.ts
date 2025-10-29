@@ -1,5 +1,4 @@
-import { OpenMeteoResponseSchema } from "../schemas"
-import { Weather } from "../types"
+import { OpenMeteoResponseSchema, Weather } from "../schemas"
 import { getTemperatureRangeCategory } from "../utils/temperatureUtils"
 import { DateService } from "./dateService"
 

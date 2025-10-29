@@ -1,5 +1,5 @@
-import { TEMPERATURE_RANGES, ClothingCategoryEnum, WEATHER_CLOTHING_RULES } from "../consts"
-import { ClothingCategory, OpenMeteoWeatherCode } from "../types"
+import { ClothingCategoryEnum, TEMPERATURE_RANGES, WEATHER_CLOTHING_RULES } from "../consts"
+import { ClothingCategory, OpenMeteoWeatherCode } from "../schemas"
 
 // Rules engine function
 export function getClothingRecommendations(

@@ -1,5 +1,5 @@
+import { type Address, type GeocodedAddress } from "../schemas"
 import { apiKeys, getApiKeyWithFallback } from "../security/apiKeys"
-import { type Address, type GeocodedAddress } from "../types"
 
 export interface OpenCageResponse {
   results: Array<{

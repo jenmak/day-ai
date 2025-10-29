@@ -1,5 +1,5 @@
-import { TEMPERATURE_RANGES } from "../consts/weather"
-import { Place } from "../types"
+import { TEMPERATURE_RANGES } from "../consts"
+import { Place } from "../schemas"
 
 // Type for temperature range categories
 export type TemperatureRangeCategory = keyof typeof TEMPERATURE_RANGES

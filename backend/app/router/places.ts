@@ -3,9 +3,9 @@ import { procedure, publicProcedure, router } from "../../core/trpc"
 import {
   CreatePlaceSchema,
   GetPlaceBySlugSchema,
-  UpdatePlaceSchema
-} from "../schemas/place"
-import { validateInput } from "../schemas/validation"
+  UpdatePlaceSchema,
+  validateInput
+} from "../schemas"
 import { ClothingService } from "../services/clothingService"
 import { GeolocationService } from "../services/geolocationService"
 import { LLMService } from "../services/llmService"

@@ -1,5 +1,5 @@
-import z from "zod"
-import { ClothingCategoryEnum } from "../consts"
+import { z } from "zod"
+import { ClothingCategoryEnum } from "../constants"
 
 // Clothing category schema
 export const ClothingCategorySchema = z.enum([

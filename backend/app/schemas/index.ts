@@ -1,3 +1,2 @@
-export * from "./clothing"
-export * from "./place"
-export * from "./weather"
+// Re-export all schemas from shared package
+export * from "@dripdropcity/shared/schemas";

@@ -1,5 +1,5 @@
 import { getClothingRecommendations } from "../rules/clothingRules"
-import type { ClothingCategory, OpenMeteoWeatherCode } from "../types"
+import type { ClothingCategory, OpenMeteoWeatherCode } from "../schemas"
 
 export class ClothingService {
   /**

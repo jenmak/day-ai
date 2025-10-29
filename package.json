@@ -10,12 +10,13 @@
     "@types/bun": "latest",
     "eslint": "^9.22.0",
     "prettier": "^3.6.2",
-    "turbo": "^2.4.4",
+    "turbo": "^2.5.8",
     "typescript-eslint": "^8.26.1"
   },
   "workspaces": [
     "backend",
-    "frontend"
+    "frontend",
+    "shared"
   ],
   "packageManager": "bun@1.2.5",
   "dependencies": {
@@ -30,10 +31,14 @@
   },
   "scripts": {
     "dev": "turbo dev",
+    "build": "turbo build",
+    "start": "turbo start",
+    "type-check": "turbo type-check",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "lint": "turbo lint",
     "lint:fix": "turbo lint:fix",
-    "fix-long-lines": "node scripts/fix-long-lines.js"
+    "clean": "rm -rf node_modules backend/node_modules frontend/node_modules",
+    "install:all": "bun install && cd backend && bun install && cd ../frontend && bun install"
   }
 }

@@ -1,5 +1,5 @@
 import { Store, type StoreItem } from "../../core/Store"
-import type { Place, TemperatureRangeCategory, Weather } from "../types"
+import type { Place, TemperatureRangeCategory, Weather } from "../schemas"
 
 export interface PlaceStoreItem
   extends StoreItem,

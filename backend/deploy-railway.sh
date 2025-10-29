@@ -1,11 +1,11 @@
 #!/bin/bash
 
-# DripDrop City Backend Railway Deployment Script
+# Drip Drop City Backend Railway Deployment Script
 # This script builds and deploys the backend to Railway using Bun
 
 set -e  # Exit on any error
 
-echo "🚂 Starting DripDrop City Backend Railway Deployment..."
+echo "🚂 Starting Drip Drop City Backend Railway Deployment..."
 
 # Check if we're in the backend directory
 if [ ! -f "package.json" ]; then
@@ -51,8 +51,6 @@ echo "🎉 Deployment completed successfully!"
 echo ""
 echo "📋 Next steps:"
 echo "1. Set environment variables in Railway dashboard:"
-echo "   - OPENAI_API_KEY"
-echo "   - OPENCAGE_API_KEY"
 echo "   - NODE_ENV=production"
 echo ""
 echo "2. Test your deployment:"

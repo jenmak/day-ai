@@ -1,0 +1,15 @@
+[phases.setup]
+nixPkgs = ['bun'] # Bun's the boss
+
+[phases.install]
+cmds = ['cd /app && bun install'] # Install from monorepo root
+
+[phases.build]
+cmds = ['cd frontend && bun run build'] # Build the frontend
+
+[start]
+cmd = 'bunx serve dist -s' # Serve it up, SPA-style
+
+[staticAssets]
+mountPath = '/'
+destination = '/app/frontend/dist'
