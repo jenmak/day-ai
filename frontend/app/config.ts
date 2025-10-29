@@ -33,21 +33,28 @@ export const SHARED_CONFIG = {
   }
 } as const
 
-// Environment configuration
+// Environment configuration with Safari compatibility
 export const getEnvironmentConfig = () => {
-  const isDevelopment = import.meta.env.DEV
-  const isProduction = import.meta.env.PROD
+  // Safari-compatible environment detection
+  const isDevelopment = typeof import.meta !== 'undefined' ? import.meta.env?.DEV : process.env.NODE_ENV === 'development'
+  const isProduction = typeof import.meta !== 'undefined' ? import.meta.env?.PROD : process.env.NODE_ENV === 'production'
+
+  // Fallback for Safari compatibility
+  const getEnvVar = (key: string, fallback: string): string => {
+    if (typeof import.meta !== 'undefined' && import.meta.env) {
+      return import.meta.env[key] || fallback
+    }
+    // Fallback for older browsers or server-side rendering
+    return fallback
+  }
 
   return {
     isDevelopment,
     isProduction,
-    isTest: import.meta.env.MODE === "test",
-    apiUrl: import.meta.env.VITE_API_URL || "http://localhost:3333",
-    backendUrl:
-      import.meta.env.VITE_BACKEND_URL ||
-      import.meta.env.VITE_API_URL ||
-      "http://localhost:3333",
-    frontendUrl: import.meta.env.VITE_FRONTEND_URL || "http://localhost:3000"
+    isTest: getEnvVar('VITE_MODE', 'development') === "test",
+    apiUrl: getEnvVar('VITE_API_URL', "http://localhost:3333"),
+    backendUrl: getEnvVar('VITE_BACKEND_URL', getEnvVar('VITE_API_URL', "http://localhost:3333")),
+    frontendUrl: getEnvVar('VITE_FRONTEND_URL', "http://localhost:3000")
   }
 }
 

@@ -13,9 +13,12 @@ export default defineConfig({
   build: {
     outDir: "dist",
     sourcemap: false,
+    target: "es2015", // Safari compatibility
     rollupOptions: {
       output: {
-        manualChunks: undefined
+        manualChunks: undefined,
+        // Safari compatibility
+        format: "es"
       }
     }
   },
@@ -33,5 +36,9 @@ export default defineConfig({
     alias: {
       "@": path.resolve(__dirname, "./src")
     }
+  },
+  // Safari compatibility
+  define: {
+    global: "globalThis"
   }
 })

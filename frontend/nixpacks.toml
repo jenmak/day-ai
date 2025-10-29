@@ -9,7 +9,3 @@ cmds = ['bun run build'] # Build the frontend
 
 [start]
 cmd = 'bun run start' # Start the Express server
-
-[staticAssets]
-mountPath = '/'
-destination = '/app/dist'

@@ -23,7 +23,19 @@ export const trpcClient = createTRPCClient<any>({
       url: `${backendUrl}/trpc`,
       transformer: superjson,
       headers: {
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
+        "Accept": "application/json"
+      },
+      // Safari compatibility options
+      fetch: (url, options) => {
+        // Add Safari-specific fetch options
+        const safariOptions = {
+          ...options,
+          credentials: 'omit', // Safari CORS compatibility
+          mode: 'cors',
+          cache: 'no-cache'
+        }
+        return fetch(url, safariOptions)
       }
     })
   ]

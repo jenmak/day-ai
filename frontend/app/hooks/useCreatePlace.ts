@@ -41,8 +41,16 @@ export const useCreatePlace = (options?: useCreatePlaceOptions) => {
           message: error.message,
           data: error.data,
           cause: error.cause,
-          stack: error.stack
+          stack: error.stack,
+          name: error.name,
+          userAgent: navigator.userAgent
         })
+
+        // Handle Safari-specific errors
+        if (error.name === 'TypeError' && error.message?.includes('Load failed')) {
+          console.error("Safari Load failed error detected")
+          throw new Error("Network request failed. Please check your connection and try again.")
+        }
 
         // Handle tRPC errors
         if (error.data?.code) {
@@ -51,8 +59,13 @@ export const useCreatePlace = (options?: useCreatePlaceOptions) => {
         }
 
         // Handle network errors
-        if (error.message?.includes('fetch')) {
+        if (error.message?.includes('fetch') || error.message?.includes('Load failed')) {
           throw new Error(ERROR_MESSAGES.USER.NETWORK_ERROR)
+        }
+
+        // Handle CORS errors (common in Safari)
+        if (error.message?.includes('CORS') || error.message?.includes('cross-origin')) {
+          throw new Error("Cross-origin request blocked. Please try again.")
         }
 
         // Handle other errors
