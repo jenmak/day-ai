@@ -1,5 +1,9 @@
+import type {
+  Place,
+  TemperatureRangeCategory,
+  Weather
+} from "@dripdropcity/shared/schemas"
 import { Store, type StoreItem } from "../../core/Store"
-import type { Place, TemperatureRangeCategory, Weather } from "../schemas"
 
 export interface PlaceStoreItem
   extends StoreItem,

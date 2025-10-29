@@ -1,4 +1,7 @@
-import { type Address, type GeocodedAddress } from "../schemas"
+import {
+  type Address,
+  type GeocodedAddress
+} from "@dripdropcity/shared/schemas"
 import { apiKeys, getApiKeyWithFallback } from "../security/apiKeys"
 
 export interface OpenCageResponse {

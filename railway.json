@@ -11,7 +11,13 @@
         },
         "install": {
           "cmds": [
-            "cd backend && bun install --frozen-lockfile --ignore-scripts --no-cache --no-verify"
+            "bun install --frozen-lockfile --ignore-scripts --no-cache --no-verify"
+          ]
+        },
+        "build": {
+          "cmds": [
+            "echo 'Shared package - no build needed'",
+            "echo 'Backend ready - no build needed'"
           ]
         }
       }

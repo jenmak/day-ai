@@ -1,4 +1,4 @@
-import { OpenMeteoResponseSchema, Weather } from "../schemas"
+import { OpenMeteoResponseSchema, Weather } from "@dripdropcity/shared/schemas"
 import { getTemperatureRangeCategory } from "../utils/temperatureUtils"
 import { DateService } from "./dateService"
 
@@ -13,7 +13,9 @@ export class WeatherService {
   /**
    * Get 7-day weather forecast for given coordinates
    */
-  static async get7DayForecast(options: WeatherServiceOptions): Promise<Weather[]> {
+  static async get7DayForecast(
+    options: WeatherServiceOptions
+  ): Promise<Weather[]> {
     const { latitude, longitude } = options
 
     try {
@@ -35,7 +37,9 @@ export class WeatherService {
       const response = await fetch(url.toString())
 
       if (!response.ok) {
-        throw new Error(`Weather API request failed: ${response.status} ${response.statusText}`)
+        throw new Error(
+          `Weather API request failed: ${response.status} ${response.statusText}`
+        )
       }
 
       const data = await response.json()
@@ -49,7 +53,8 @@ export class WeatherService {
         const maxTemp = validatedData.daily.temperature_2m_max[i]
         const minTemp = validatedData.daily.temperature_2m_min[i]
         const avgTemp = (maxTemp + minTemp) / 2
-        const rainProbability = validatedData.daily.precipitation_probability_max[i]
+        const rainProbability =
+          validatedData.daily.precipitation_probability_max[i]
         const windSpeed = validatedData.daily.windspeed_10m_max[i]
         const weatherCode = validatedData.daily.weathercode[i]
 
@@ -60,7 +65,9 @@ export class WeatherService {
             temperatureMinimum: Math.round(minTemp),
             temperatureMaximum: Math.round(maxTemp)
           },
-          temperatureRangeCategory: getTemperatureRangeCategory(Math.round(avgTemp)),
+          temperatureRangeCategory: getTemperatureRangeCategory(
+            Math.round(avgTemp)
+          ),
           rainProbabilityPercentage: Math.round(rainProbability),
           windSpeedMph: Math.round(windSpeed),
           condition: weatherCode,
@@ -70,7 +77,9 @@ export class WeatherService {
         weatherForecast.push(weather)
       }
 
-      console.log(`Successfully fetched ${weatherForecast.length} days of weather data`)
+      console.log(
+        `Successfully fetched ${weatherForecast.length} days of weather data`
+      )
 
       return weatherForecast
     } catch (error) {
@@ -84,7 +93,10 @@ export class WeatherService {
   /**
    * Get current day weather (today's forecast)
    */
-  static async getCurrentDayWeather(latitude: number, longitude: number): Promise<Weather> {
+  static async getCurrentDayWeather(
+    latitude: number,
+    longitude: number
+  ): Promise<Weather> {
     const forecast = await this.get7DayForecast({ latitude, longitude })
     return forecast[0] // First day is today
   }

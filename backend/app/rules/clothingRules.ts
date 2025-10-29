@@ -1,5 +1,12 @@
-import { ClothingCategoryEnum, TEMPERATURE_RANGES, WEATHER_CLOTHING_RULES } from "../consts"
-import { ClothingCategory, OpenMeteoWeatherCode } from "../schemas"
+import {
+  ClothingCategory,
+  OpenMeteoWeatherCode
+} from "@dripdropcity/shared/schemas"
+import {
+  ClothingCategoryEnum,
+  TEMPERATURE_RANGES,
+  WEATHER_CLOTHING_RULES
+} from "../consts"
 
 // Rules engine function
 export function getClothingRecommendations(
@@ -72,7 +79,10 @@ export function getClothingRecommendations(
 
   // Add rain-specific recommendations
   if (rainProbability > 30) {
-    recommendations.push(ClothingCategoryEnum.RAIN_JACKET, ClothingCategoryEnum.UMBRELLA)
+    recommendations.push(
+      ClothingCategoryEnum.RAIN_JACKET,
+      ClothingCategoryEnum.UMBRELLA
+    )
     if (rainProbability > 70) {
       recommendations.push(ClothingCategoryEnum.RAIN_BOOTS)
     }
@@ -80,7 +90,10 @@ export function getClothingRecommendations(
 
   // Add wind-specific recommendations
   if (windSpeed > 15) {
-    recommendations.push(ClothingCategoryEnum.SCARF, ClothingCategoryEnum.JACKET)
+    recommendations.push(
+      ClothingCategoryEnum.SCARF,
+      ClothingCategoryEnum.JACKET
+    )
   }
 
   // Remove duplicates and return

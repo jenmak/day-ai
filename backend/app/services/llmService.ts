@@ -1,7 +1,10 @@
+import {
+  PlaceNormalization,
+  PlaceNormalizationSchema
+} from "@dripdropcity/shared/schemas"
 import OpenAI from "openai"
 import { MOCK_MAPPINGS } from "../consts"
 import { DESCRIPTION_TO_NORMALIZED_PLACE_PROMPT } from "../prompts/descriptionToNormalizedPlacePrompt"
-import { PlaceNormalization, PlaceNormalizationSchema } from "../schemas"
 import { apiKeys, getApiKeyWithFallback } from "../security/apiKeys"
 
 export class LLMService {
@@ -9,17 +12,22 @@ export class LLMService {
    * Normalize a place description using OpenAI LLM
    * Converts descriptions like "Gotham City" to "New York, NY"
    */
-  static async normalizePlace(description: string): Promise<PlaceNormalization> {
+  static async normalizePlace(
+    description: string
+  ): Promise<PlaceNormalization> {
     try {
       // Check if OpenAI API key is available
       if (!apiKeys.isOpenAIAvailable()) {
-        console.warn("OpenAI API key not available, falling back to mock implementation")
+        console.warn(
+          "OpenAI API key not available, falling back to mock implementation"
+        )
         const mockResponse = this.getMockNormalization(description)
         return PlaceNormalizationSchema.parse(mockResponse)
       }
 
       // Use OpenAI API for place normalization
-      const openaiResponse = await this.convertDescriptionToNormalizedPlace(description)
+      const openaiResponse =
+        await this.convertDescriptionToNormalizedPlace(description)
       return PlaceNormalizationSchema.parse(openaiResponse)
     } catch (error) {
       throw new Error("Failed to normalize place from description: " + error)
@@ -57,8 +65,13 @@ export class LLMService {
     }
   }
 
-  private static async createOpenAICompletion(prompt: string): Promise<PlaceNormalization> {
-    const apiKey = getApiKeyWithFallback("openai", "Failed to get OpenAI API key")
+  private static async createOpenAICompletion(
+    prompt: string
+  ): Promise<PlaceNormalization> {
+    const apiKey = getApiKeyWithFallback(
+      "openai",
+      "Failed to get OpenAI API key"
+    )
     if (!apiKey) {
       throw new Error("OpenAI API key not available")
     }
@@ -73,7 +86,8 @@ export class LLMService {
         messages: [
           {
             role: "system",
-            content: "You are a place normalization expert. Always respond with valid JSON."
+            content:
+              "You are a place normalization expert. Always respond with valid JSON."
           },
           {
             role: "user",

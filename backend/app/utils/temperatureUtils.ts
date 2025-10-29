@@ -1,5 +1,5 @@
+import { Place } from "@dripdropcity/shared/schemas"
 import { TEMPERATURE_RANGES } from "../consts"
-import { Place } from "../schemas"
 
 // Type for temperature range categories
 export type TemperatureRangeCategory = keyof typeof TEMPERATURE_RANGES
@@ -9,7 +9,9 @@ export type TemperatureRangeCategory = keyof typeof TEMPERATURE_RANGES
  * @param temperature - Temperature in Fahrenheit
  * @returns The temperature range category (e.g., 'VERY_HOT', 'COLD', etc.)
  */
-export function getTemperatureRangeCategory(temperature: number): TemperatureRangeCategory {
+export function getTemperatureRangeCategory(
+  temperature: number
+): TemperatureRangeCategory {
   if (temperature >= TEMPERATURE_RANGES.VERY_HOT.min) {
     return "VERY_HOT"
   } else if (temperature >= TEMPERATURE_RANGES.HOT.min) {
@@ -91,8 +93,14 @@ export function getPlaceTemperatureRangeCategory(
  * @returns The place model with the temperature range category
  */
 export function ensureTemperatureRangeCategory(model: Place) {
-  if (!model.temperatureRangeCategory && model.weather && model.weather.length > 0) {
-    model.temperatureRangeCategory = getPlaceTemperatureRangeCategory(model.weather)
+  if (
+    !model.temperatureRangeCategory &&
+    model.weather &&
+    model.weather.length > 0
+  ) {
+    model.temperatureRangeCategory = getPlaceTemperatureRangeCategory(
+      model.weather
+    )
   }
   return model
 }
