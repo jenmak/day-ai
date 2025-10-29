@@ -1,4 +1,4 @@
-import { OpenMeteoResponseSchema, Weather } from "@dripdropcity/shared/schemas"
+import { OpenMeteoResponseSchema, Weather } from "../schemas"
 import { getTemperatureRangeCategory } from "../utils/temperatureUtils"
 import { DateService } from "./dateService"
 

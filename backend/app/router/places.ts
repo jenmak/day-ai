@@ -3,11 +3,11 @@ import {
   GetPlaceBySlugSchema,
   UpdatePlaceSchema,
   validateInput
-} from "@dripdropcity/shared/schemas"
+} from "../schemas"
 import {
   GeocodedAddress,
   OpenMeteoWeatherCode
-} from "@dripdropcity/shared/types"
+} from "../types"
 import { TRPCError } from "@trpc/server"
 import { procedure, publicProcedure, router } from "../../core/trpc"
 import { ClothingService } from "../services/clothingService"

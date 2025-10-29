@@ -1,4 +1,4 @@
-import { Place } from "@dripdropcity/shared/schemas"
+import { Place } from "../schemas"
 import { TEMPERATURE_RANGES } from "../consts"
 
 // Type for temperature range categories

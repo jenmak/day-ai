@@ -2,7 +2,7 @@ import type {
   Place,
   TemperatureRangeCategory,
   Weather
-} from "@dripdropcity/shared/schemas"
+} from "../schemas"
 import { Store, type StoreItem } from "../../core/Store"
 
 export interface PlaceStoreItem

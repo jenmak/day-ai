@@ -15,7 +15,7 @@
           ]
         },
         "build": {
-          "cmds": ["echo 'No build needed - Bun handles TypeScript natively'"]
+          "cmds": ["bash build-railway.sh"]
         }
       }
     }

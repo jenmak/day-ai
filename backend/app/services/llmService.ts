@@ -1,7 +1,7 @@
 import {
   PlaceNormalization,
   PlaceNormalizationSchema
-} from "@dripdropcity/shared/schemas"
+} from "../schemas"
 import OpenAI from "openai"
 import { MOCK_MAPPINGS } from "../consts"
 import { DESCRIPTION_TO_NORMALIZED_PLACE_PROMPT } from "../prompts/descriptionToNormalizedPlacePrompt"

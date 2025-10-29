@@ -1,7 +1,7 @@
 import type {
   ClothingCategory,
   OpenMeteoWeatherCode
-} from "@dripdropcity/shared/schemas"
+} from "../schemas"
 import { getClothingRecommendations } from "../rules/clothingRules"
 
 export class ClothingService {

@@ -1,7 +1,7 @@
 import {
   ClothingCategory,
   OpenMeteoWeatherCode
-} from "@dripdropcity/shared/schemas"
+} from "../schemas"
 import {
   ClothingCategoryEnum,
   TEMPERATURE_RANGES,
