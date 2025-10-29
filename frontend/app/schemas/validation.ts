@@ -1,10 +1,10 @@
 import { z } from "zod"
 
 /**
- * Frontend Input Validation Schemas
+ * Comprehensive Input Validation Schemas
  *
- * This module provides client-side input validation for user inputs,
- * form data, and API responses using Zod schemas.
+ * This module provides robust input validation for all user inputs,
+ * API requests, and data transformations using Zod schemas.
  */
 
 // ============================================================================
@@ -12,17 +12,18 @@ import { z } from "zod"
 // ============================================================================
 
 /**
- * Common string validation patterns for frontend
+ * Common string validation patterns
  */
 export const StringValidation = {
   // Non-empty string with length constraints
-  required: z.string().min(1, "This field is required"),
+  required: z.string().min(1, "Field is required"),
 
   // Optional string with length constraints
-  optional: () => z.string().optional(),
+  optional: z.string().optional(),
 
   // String with maximum length
-  maxLength: (max: number) => z.string().max(max, `Must be ${max} characters or less`),
+  maxLength: (max: number) =>
+    z.string().max(max, `Must be ${max} characters or less`),
 
   // String with minimum and maximum length
   lengthRange: (min: number, max: number) =>
@@ -31,421 +32,242 @@ export const StringValidation = {
       .min(min, `Must be at least ${min} characters`)
       .max(max, `Must be at most ${max} characters`),
 
-  // Trimmed string
-  trimmed: z.string().transform((str) => str.trim()),
+  // Alphanumeric string
+  alphanumeric: z
+    .string()
+    .regex(/^[a-zA-Z0-9]+$/, "Must contain only letters and numbers"),
 
-  // Sanitized string (removes potentially dangerous characters)
-  sanitized: z.string().transform((str) =>
-    str.replace(/[<>\"'&]/g, (match) => {
-      const entities: Record<string, string> = {
-        "<": "&lt;",
-        ">": "&gt;",
-        '"': "&quot;",
-        "'": "&#x27;",
-        "&": "&amp;"
-      }
-      return entities[match]
-    })
-  )
+  // Slug format (lowercase, hyphens, alphanumeric)
+  slug: z
+    .string()
+    .regex(
+      /^[a-z0-9-]+$/,
+      "Must be a valid slug (lowercase, numbers, hyphens only)"
+    ),
+
+  // Email format
+  email: z.string().email("Must be a valid email address"),
+
+  // URL format
+  url: z.string().url("Must be a valid URL"),
+
+  // Postal code (flexible format)
+  postalCode: z
+    .string()
+    .regex(/^[a-zA-Z0-9\s-]{3,10}$/, "Must be a valid postal code"),
+
+  // Phone number (flexible format)
+  phoneNumber: z
+    .string()
+    .regex(/^[\+]?[1-9][\d]{0,15}$/, "Must be a valid phone number"),
+
+  // UUID format
+  uuid: z.string().uuid("Must be a valid UUID"),
+
+  // ISO date string
+  isoDate: z.string().datetime("Must be a valid ISO date string"),
+
+  // JSON string
+  json: z.string().refine((str) => {
+    try {
+      JSON.parse(str)
+      return true
+    } catch {
+      return false
+    }
+  }, "Must be valid JSON")
 }
 
 /**
- * Common number validation patterns for frontend
+ * Common number validation patterns
  */
 export const NumberValidation = {
   // Positive number
   positive: z.number().positive("Must be a positive number"),
 
   // Non-negative number
-  nonNegative: z.number().nonnegative("Must be a non-negative number"),
-
-  // Integer
-  integer: () => z.number().int("Must be an integer"),
+  nonNegative: z.number().min(0, "Must be a non-negative number"),
 
   // Number within range
   range: (min: number, max: number) =>
-    z.number().min(min, `Must be at least ${min}`).max(max, `Must be at most ${max}`)
-}
+    z
+      .number()
+      .min(min, `Must be at least ${min}`)
+      .max(max, `Must be at most ${max}`),
 
-// ============================================================================
-// USER INPUT VALIDATION SCHEMAS
-// ============================================================================
-
-/**
- * Search input validation
- */
-export const SearchInputSchema = z.object({
-  query: z
-    .string()
-    .min(1, "Please enter a location to search")
-    .max(200, "Search query must be 200 characters or less")
-    .transform((query) => query.trim())
-    .refine((query) => query.length > 0, "Search query cannot be empty")
-    .refine((query) => !/^[\s\-_]+$/.test(query), "Search query cannot be only spaces, dashes, or underscores")
-})
-
-/**
- * Place description validation
- */
-export const PlaceDescriptionSchema = z.object({
-  description: StringValidation.required
-    .min(1, "Please enter a place description")
-    .max(500, "Place description must be 500 characters or less")
-    .transform((desc) => desc.trim())
-    .refine((desc) => desc.length > 0, "Place description cannot be empty")
-    .refine((desc) => !/^[\s\-_]+$/.test(desc), "Place description cannot be only spaces, dashes, or underscores")
-})
-
-/**
- * Form validation schemas
- */
-export const FormValidationSchemas = {
-  // Contact form
-  contact: z.object({
-    name: z
-      .string()
-      .min(2, "Name must be at least 2 characters")
-      .max(100, "Name must be 100 characters or less")
-      .regex(/^[a-zA-Z\s\-'\.]+$/, "Name contains invalid characters"),
-
-    email: z.string().email("Must be a valid email address"),
-
-    message: z
-      .string()
-      .min(10, "Message must be at least 10 characters")
-      .max(1000, "Message must be 1000 characters or less")
-  }),
-
-  // Feedback form
-  feedback: z.object({
-    rating: z.number().min(1).max(5),
-    comment: z.string().max(500, "Comment must be 500 characters or less").optional(),
-    category: z.enum(["bug", "feature", "general", "other"]),
-    email: z.string().email().optional()
-  }),
-
-  // Settings form
-  settings: z.object({
-    temperatureUnit: z.enum(["fahrenheit", "celsius"]).default("fahrenheit"),
-    language: z.string().max(10).default("en"),
-    notifications: z.boolean().default(true),
-    theme: z.enum(["light", "dark", "auto"]).default("auto")
-  })
-}
-
-// ============================================================================
-// API RESPONSE VALIDATION SCHEMAS
-// ============================================================================
-
-/**
- * API response wrapper validation
- */
-export const ApiResponseSchema = z.object({
-  success: z.boolean(),
-  data: z.unknown().optional(),
-  error: z.string().optional(),
-  message: z.string().optional(),
-  timestamp: z.string().datetime().optional()
-})
-
-/**
- * Paginated response validation
- */
-export const PaginatedResponseSchema = z.object({
-  data: z.array(z.unknown()),
-  total: NumberValidation.nonNegative,
-  limit: NumberValidation.positive,
-  offset: NumberValidation.nonNegative,
-  hasMore: z.boolean()
-})
-
-/**
- * Error response validation
- */
-export const ErrorResponseSchema = z.object({
-  error: z.string(),
-  message: z.string(),
-  details: z
-    .array(
-      z.object({
-        field: z.string(),
-        message: z.string(),
-        code: z.string(),
-        received: z.unknown().optional()
-      })
-    )
-    .optional(),
-  timestamp: z.string().datetime()
-})
-
-// ============================================================================
-// WEATHER DATA VALIDATION
-// ============================================================================
-
-/**
- * Weather condition validation
- */
-export const WeatherConditionSchema = z.object({
-  code: z.number().min(0).max(99),
-  name: z.string().max(50),
-  description: z.string().max(200),
-  icon: z.string().max(50).optional()
-})
-
-/**
- * Weather data validation
- */
-export const WeatherDataSchema = z.object({
-  date: z.string().datetime(),
-  degreesFahrenheit: z.number().min(-50).max(150),
-  temperatureRange: z.object({
-    temperatureMinimum: z.number().min(-50).max(150),
-    temperatureMaximum: z.number().min(-50).max(150)
-  }),
-  temperatureRangeCategory: z.enum([
-    "VERY_HOT",
-    "HOT",
-    "WARM",
-    "MILD",
-    "COOL",
-    "COLD",
-    "VERY_COLD"
-  ]),
-  rainProbabilityPercentage: NumberValidation.range(0, 100),
-  windSpeedMph: NumberValidation.range(0, 200),
-  condition: NumberValidation.range(0, 99),
-  clothing: z.array(z.string()).min(1).max(10)
-})
-
-/**
- * Place data validation
- */
-export const PlaceDataSchema = z.object({
-  id: z.string().uuid(),
-  description: z.string().max(500).optional(),
-  normalizedPlace: z.string().max(200),
-  slug: z.string().regex(/^[a-z0-9-]+$/, "Must be a valid slug"),
-  geocodedAddress: z
-    .object({
-      latitude: z.number().min(-90).max(90),
-      longitude: z.number().min(-180).max(180),
-      formattedAddress: z.string().max(500),
-      structuredAddress: z.object({
-        city: z.string().max(100),
-        state: z.string().max(100),
-        postalCode: z.string().max(10),
-        country: z.string().max(100),
-        street: z.string().max(200).optional(),
-        streetNumber: z.string().max(20).optional()
-      })
+  // Latitude validation (-90 to 90) - stored as string for precision
+  latitude: z
+    .union([z.string(), z.number()])
+    .transform((val) => {
+      const num = Number(val)
+      if (isNaN(num)) {
+        throw new Error("Latitude must be a valid number")
+      }
+      return num.toFixed(6) // Store as string with 6 decimal places
     })
-    .nullable(),
-  weather: z.array(WeatherDataSchema).optional(),
-  temperatureRangeCategory: z
-    .enum(["VERY_HOT", "HOT", "WARM", "MILD", "COOL", "COLD", "VERY_COLD"])
-    .optional(),
-  createdAt: z.string().datetime()
-})
+    .refine((val) => {
+      const num = Number(val)
+      return num >= -90 && num <= 90
+    }, "Latitude must be between -90 and 90"),
 
-// ============================================================================
-// URL PARAMETER VALIDATION
-// ============================================================================
+  // Longitude validation (-180 to 180) - stored as string for precision
+  longitude: z
+    .union([z.string(), z.number()])
+    .transform((val) => {
+      const num = Number(val)
+      if (isNaN(num)) {
+        throw new Error("Longitude must be a valid number")
+      }
+      return num.toFixed(6) // Store as string with 6 decimal places
+    })
+    .refine((val) => {
+      const num = Number(val)
+      return num >= -180 && num <= 180
+    }, "Longitude must be between -180 and 180"),
+
+  // Temperature in Fahrenheit (-50 to 150)
+  temperatureF: z
+    .number()
+    .min(-50, "Temperature must be between -50°F and 150°F")
+    .max(150, "Temperature must be between -50°F and 150°F"),
+
+  // Temperature in Celsius (-50 to 65)
+  temperatureC: z
+    .number()
+    .min(-50, "Temperature must be between -50°C and 65°C")
+    .max(65, "Temperature must be between -50°C and 65°C"),
+
+  // Percentage (0 to 100)
+  percentage: z
+    .number()
+    .min(0, "Percentage must be between 0 and 100")
+    .max(100, "Percentage must be between 0 and 100"),
+
+  // Wind speed in MPH (0 to 200)
+  windSpeedMph: z
+    .number()
+    .min(0, "Wind speed must be between 0 and 200 MPH")
+    .max(200, "Wind speed must be between 0 and 200 MPH"),
+
+  // Integer
+  integer: z.number().int("Must be an integer"),
+
+  // Float
+  float: z.number().finite("Must be a finite number")
+}
 
 /**
- * URL parameter validation schemas
+ * Common date validation patterns
  */
-export const UrlParamSchemas = {
-  // Place slug parameter
-  placeSlug: z.object({
-    slug: z
-      .string()
-      .min(1, "Slug is required")
-      .max(100, "Slug must be 100 characters or less")
-      .regex(/^[a-z0-9-]+$/, "Must be a valid slug format")
-  }),
+export const DateValidation = {
+  // ISO string date
+  isoString: z.string().datetime("Must be a valid ISO date string"),
 
-  // Place ID parameter
-  placeId: z.object({
-    id: z.string().uuid("Must be a valid UUID")
-  }),
+  // Date object
+  date: z.date({ message: "Must be a valid date" }),
 
-  // Search parameters
-  searchParams: z.object({
-    q: z
-      .string()
-      .max(200, "Search query must be 200 characters or less")
-      .transform((query) => query?.trim())
-      .optional(),
-    page: z
-      .string()
-      .regex(/^\d+$/, "Page must be a number")
-      .transform((page) => parseInt(page, 10))
-      .refine((page) => page > 0, "Page must be positive")
-      .default("1"),
-    limit: z
-      .string()
-      .regex(/^\d+$/, "Limit must be a number")
-      .transform((limit) => parseInt(limit, 10))
-      .refine((limit) => limit > 0 && limit <= 100, "Limit must be between 1 and 100")
-      .default("20")
-  })
+  // Date string that can be parsed
+  dateString: z
+    .string()
+    .refine((str) => !isNaN(Date.parse(str)), "Must be a valid date string")
 }
 
 // ============================================================================
-// VALIDATION UTILITIES
+// VALIDATION UTILITY FUNCTIONS
 // ============================================================================
 
 /**
- * Validate input and return detailed error information
+ * Create a validation schema with common patterns
  */
-export function validateInput<T>(
-  schema: z.ZodSchema<T>,
-  input: unknown
-): {
-  success: boolean
-  data?: T
-  errors?: Array<{
-    field: string
-    message: string
-    code: string
-  }>
-} {
-  try {
-    const data = schema.parse(input)
-    return { success: true, data }
-  } catch (error) {
-    if (error instanceof z.ZodError) {
-      const errors = error.errors.map((err) => ({
-        field: err.path.join("."),
-        message: err.message,
-        code: err.code
-      }))
-      return { success: false, errors }
-    }
-    return {
-      success: false,
-      errors: [{ field: "unknown", message: "Unknown validation error", code: "custom" }]
-    }
+export function createValidationSchema<T extends z.ZodRawShape>(
+  shape: T,
+  options?: {
+    required?: boolean
+    minLength?: number
+    maxLength?: number
   }
+) {
+  const schema = z.object(shape)
+
+  if (options?.required) {
+    return schema.required()
+  }
+
+  return schema
 }
 
 /**
- * Validate input and throw error if invalid
+ * Validate input against a schema and throw on error
  */
-export function validateInputOrThrow<T>(schema: z.ZodSchema<T>, input: unknown): T {
+export function validateInput<T>(schema: z.ZodSchema<T>, input: unknown): T {
   try {
     return schema.parse(input)
   } catch (error) {
     if (error instanceof z.ZodError) {
-      const errorMessages = error.errors.map((err) => `${err.path.join(".")}: ${err.message}`)
-      throw new Error(`Validation failed: ${errorMessages.join(", ")}`)
+      const errorMessages = error.errors
+        .map((err) => `${err.path.join(".")}: ${err.message}`)
+        .join(", ")
+      throw new Error(`Validation failed: ${errorMessages}`)
     }
     throw error
   }
 }
 
 /**
- * Create a validation schema with custom error messages
+ * Validate input against a schema and return result
  */
-export function createValidationSchema<T extends z.ZodRawShape>(
-  shape: T,
-  errorMap?: z.ZodErrorMap
-): z.ZodObject<T> {
-  return z.object(shape, { errorMap })
-}
-
-/**
- * Sanitize input data to prevent XSS
- */
-export function sanitizeInput<T>(data: T): T {
-  if (typeof data === "string") {
-    return data
-      .replace(/[<>\"'&]/g, (match) => {
-        const entities: Record<string, string> = {
-          "<": "&lt;",
-          ">": "&gt;",
-          '"': "&quot;",
-          "'": "&#x27;",
-          "&": "&amp;"
-        }
-        return entities[match]
-      })
-      .trim() as T
-  }
-
-  if (Array.isArray(data)) {
-    return data.map((item) => sanitizeInput(item)) as T
-  }
-
-  if (data && typeof data === "object") {
-    const sanitized: Record<string, unknown> = {}
-    for (const [key, value] of Object.entries(data)) {
-      sanitized[key] = sanitizeInput(value)
-    }
-    return sanitized as T
-  }
-
-  return data
-}
-
-/**
- * Validate and sanitize form data
- */
-export function validateAndSanitizeFormData<T>(
+export function safeValidateInput<T>(
   schema: z.ZodSchema<T>,
-  formData: FormData
-): {
-  success: boolean
-  data?: T
-  errors?: Array<{ field: string; message: string; code: string }>
-} {
-  try {
-    // Convert FormData to object
-    const data: Record<string, unknown> = {}
-    for (const [key, value] of formData.entries()) {
-      data[key] = value
-    }
-
-    // Sanitize the data
-    const sanitizedData = sanitizeInput(data)
-
-    // Validate the data
-    const result = validateInput(schema, sanitizedData)
-    return result
-  } catch (error) {
-    return {
-      success: false,
-      errors: [{ field: "form", message: "Failed to process form data", code: "custom" }]
-    }
+  input: unknown
+): { success: true; data: T } | { success: false; error: z.ZodError } {
+  const result = schema.safeParse(input)
+  if (result.success) {
+    return { success: true, data: result.data }
+  } else {
+    return { success: false, error: result.error }
   }
 }
 
-// ============================================================================
-// COMMON VALIDATION PATTERNS
-// ============================================================================
+/**
+ * Transform and validate input
+ */
+export function transformAndValidate<T, U>(
+  schema: z.ZodSchema<T>,
+  transformer: (input: T) => U,
+  input: unknown
+): U {
+  const validated = validateInput(schema, input)
+  return transformer(validated)
+}
 
 /**
- * Common validation patterns for reuse
+ * Common validation patterns
  */
 export const ValidationPatterns = {
-  // Email validation
-  email: z.string().email("Must be a valid email address"),
+  // Email pattern
+  email: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
 
-  // URL validation
-  url: z.string().url("Must be a valid URL"),
+  // Phone pattern (flexible)
+  phone: /^[\+]?[1-9][\d]{0,15}$/,
 
-  // Phone number validation
-  phoneNumber: z.string().regex(/^[\+]?[1-9][\d]{0,15}$/, "Must be a valid phone number"),
+  // URL pattern
+  url: /^https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)$/,
 
-  // UUID validation
-  uuid: z.string().uuid("Must be a valid UUID"),
+  // Slug pattern
+  slug: /^[a-z0-9-]+$/,
 
-  // Slug validation
-  slug: z.string().regex(/^[a-z0-9-]+$/, "Must be a valid slug (lowercase, numbers, hyphens only)"),
+  // UUID pattern
+  uuid: /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i,
 
-  // Alphanumeric validation
-  alphanumeric: z.string().regex(/^[a-zA-Z0-9]+$/, "Must contain only letters and numbers"),
+  // Postal code pattern (flexible)
+  postalCode: /^[a-zA-Z0-9\s-]{3,10}$/,
 
-  // No special characters (for names, places)
-  noSpecialChars: z.string().regex(/^[a-zA-Z0-9\s\-'\.]+$/, "Contains invalid characters")
+  // Alphanumeric pattern
+  alphanumeric: /^[a-zA-Z0-9]+$/,
+
+  // JSON pattern (basic check)
+  json: /^[\],:{}\s]*$/
 }
+
+// Re-export zod for convenience
+export { z }

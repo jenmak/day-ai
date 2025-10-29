@@ -15,8 +15,7 @@
   },
   "workspaces": [
     "backend",
-    "frontend",
-    "shared"
+    "frontend"
   ],
   "packageManager": "bun@1.2.5",
   "dependencies": {
