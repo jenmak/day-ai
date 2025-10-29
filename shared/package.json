@@ -14,7 +14,8 @@
   },
   "scripts": {
     "build": "echo 'Shared package - no build needed'",
-    "start": "echo 'Shared package - no start command'"
+    "start": "echo 'Shared package - no start command'",
+    "type-check": "echo 'Shared package - no type check needed'"
   },
   "dependencies": {
     "zod": "^3.24.2"

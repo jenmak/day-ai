@@ -3,8 +3,11 @@ nixPkgs = ["nodejs_20", "bun"]
 nixLibs = ["glibc"]
 
 [phases.install]
-# Install all dependencies including devDependencies
-cmds = ["bun install --frozen-lockfile --production=false"]
+# Install workspace dependencies first, then backend dependencies
+cmds = [
+  "cd .. && bun install --frozen-lockfile --production=false",
+  "bun install --frozen-lockfile --production=false"
+]
 
 [start]
-cmd = "cd backend && bun server.js"
+cmd = "bun server.js"

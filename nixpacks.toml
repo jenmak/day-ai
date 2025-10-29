@@ -1,0 +1,17 @@
+[phases.setup]
+nixPkgs = ["nodejs_20", "bun"]
+nixLibs = ["glibc"]
+
+[phases.install]
+# Install workspace dependencies
+cmds = ["bun install --frozen-lockfile"]
+
+[phases.build]
+# Build shared package first, then backend
+cmds = [
+  "cd shared && bun run build",
+  "cd backend && bun run build"
+]
+
+[start]
+cmd = "cd backend && bun server.js"
