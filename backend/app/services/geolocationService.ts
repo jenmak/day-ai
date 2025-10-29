@@ -32,7 +32,9 @@ export class GeolocationService {
     try {
       // Check if OpenCage API key is available
       if (!apiKeys.isOpenCageAvailable()) {
-        console.warn("OpenCage API key not available, falling back to mock implementation")
+        console.warn(
+          "OpenCage API key not available, falling back to mock implementation"
+        )
         const mockResult = this.getMockGeocoding(description)
 
         return mockResult
@@ -68,8 +70,8 @@ export class GeolocationService {
     const mockCoordinates = this.getMockCoordinates(description)
 
     return {
-      latitude: mockCoordinates.lat,
-      longitude: mockCoordinates.lng,
+      latitude: Number(mockCoordinates.lat),
+      longitude: Number(mockCoordinates.lng),
       formattedAddress: description,
       structuredAddress: this.parseStructuredAddress(description)
     }
@@ -78,7 +80,10 @@ export class GeolocationService {
   /**
    * Get mock coordinates for common places
    */
-  private static getMockCoordinates(description: string): { lat: number; lng: number } {
+  private static getMockCoordinates(description: string): {
+    lat: number
+    lng: number
+  } {
     const place = description.toLowerCase()
 
     // Try to find a matching city
@@ -139,8 +144,13 @@ export class GeolocationService {
   /**
    * Call OpenCage Geocoding API
    */
-  private static async callOpenCageAPI(description: string): Promise<OpenCageResponse> {
-    const apiKey = getApiKeyWithFallback("opencage", "Failed to get OpenCage API key")
+  private static async callOpenCageAPI(
+    description: string
+  ): Promise<OpenCageResponse> {
+    const apiKey = getApiKeyWithFallback(
+      "opencage",
+      "Failed to get OpenCage API key"
+    )
     if (!apiKey) {
       throw new Error("OpenCage API key not available")
     }
@@ -151,7 +161,9 @@ export class GeolocationService {
       const response = await fetch(url)
 
       if (!response.ok) {
-        throw new Error(`OpenCage API error: ${response.status} ${response.statusText}`)
+        throw new Error(
+          `OpenCage API error: ${response.status} ${response.statusText}`
+        )
       }
 
       const data = (await response.json()) as OpenCageResponse
@@ -182,8 +194,8 @@ export class GeolocationService {
     const components = result.components
 
     return {
-      latitude: result.geometry.lat,
-      longitude: result.geometry.lng,
+      latitude: Number(result.geometry.lat),
+      longitude: Number(result.geometry.lng),
       formattedAddress: result.formatted,
       structuredAddress: {
         city: components.city || "",
@@ -191,7 +203,9 @@ export class GeolocationService {
         postalCode: components.postcode || "",
         country: components.country || "",
         ...(components.road && { street: components.road }),
-        ...(components.house_number && { streetNumber: components.house_number })
+        ...(components.house_number && {
+          streetNumber: components.house_number
+        })
       }
     }
   }

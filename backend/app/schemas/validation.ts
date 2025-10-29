@@ -97,15 +97,25 @@ export const NumberValidation = {
 
   // Latitude validation (-90 to 90)
   latitude: z
-    .number()
-    .min(-90, "Latitude must be between -90 and 90")
-    .max(90, "Latitude must be between -90 and 90"),
+    .union([z.string(), z.number()])
+    .transform((val) => Number(val))
+    .pipe(
+      z
+        .number()
+        .min(-90, "Latitude must be between -90 and 90")
+        .max(90, "Latitude must be between -90 and 90")
+    ),
 
   // Longitude validation (-180 to 180)
   longitude: z
-    .number()
-    .min(-180, "Longitude must be between -180 and 180")
-    .max(180, "Longitude must be between -180 and 180"),
+    .union([z.string(), z.number()])
+    .transform((val) => Number(val))
+    .pipe(
+      z
+        .number()
+        .min(-180, "Longitude must be between -180 and 180")
+        .max(180, "Longitude must be between -180 and 180")
+    ),
 
   // Temperature in Fahrenheit (-50 to 150)
   temperatureF: z
