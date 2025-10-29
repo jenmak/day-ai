@@ -8,7 +8,7 @@ cmds = ['cd /app && bun install'] # Install from monorepo root
 cmds = ['cd frontend && bun run build'] # Build the frontend
 
 [start]
-cmd = 'bunx serve dist -s' # Serve it up, SPA-style
+cmd = 'cd frontend && bun run start' # Start the Express server
 
 [staticAssets]
 mountPath = '/'

@@ -241,6 +241,29 @@ export function transformAndValidate<T, U>(
 }
 
 /**
+ * Sanitize input by trimming strings and removing extra whitespace
+ */
+export function sanitizeInput<T>(input: T): T {
+  if (typeof input === "string") {
+    return input.trim().replace(/\s+/g, " ") as T
+  }
+
+  if (Array.isArray(input)) {
+    return input.map(sanitizeInput) as T
+  }
+
+  if (input && typeof input === "object") {
+    const sanitized = {} as T
+    for (const [key, value] of Object.entries(input)) {
+      ;(sanitized as any)[key] = sanitizeInput(value)
+    }
+    return sanitized
+  }
+
+  return input
+}
+
+/**
  * Common validation patterns
  */
 export const ValidationPatterns = {
@@ -268,6 +291,21 @@ export const ValidationPatterns = {
   // JSON pattern (basic check)
   json: /^[\],:{}\s]*$/
 }
+
+// ============================================================================
+// SPECIFIC SCHEMAS
+// ============================================================================
+
+/**
+ * Search input validation schema
+ */
+export const SearchInputSchema = z.object({
+  searchTerm: z
+    .string()
+    .min(1, "Search term is required")
+    .max(100, "Search term must be 100 characters or less")
+    .transform((val) => val.trim())
+})
 
 // Re-export zod for convenience
 export { z }
