@@ -3,9 +3,14 @@ import { config } from "dotenv"
 import { Hono } from "hono"
 import { appRouter } from "../app/router/index"
 
-// Load environment variables from .env file
-// Always load .env file to ensure API keys are available
-config()
+// Load environment variables from .env file (for local development)
+// In production (Railway), environment variables are set in the dashboard
+if (process.env.NODE_ENV !== "production") {
+  config()
+} else {
+  // In production, environment variables should be set in Railway dashboard
+  console.log("🔧 Production mode: Using Railway environment variables")
+}
 
 console.log("Starting server...")
 console.log("🔍 Environment check:")
@@ -15,8 +20,10 @@ console.log("  RAILWAY_ENVIRONMENT:", process.env.RAILWAY_ENVIRONMENT)
 console.log("  RAILWAY_PROJECT_ID:", process.env.RAILWAY_PROJECT_ID)
 console.log("  OPENAI_API_KEY exists:", !!process.env.OPENAI_API_KEY)
 console.log("  OPENAI_API_KEY length:", process.env.OPENAI_API_KEY?.length || 0)
+console.log("  OPENAI_API_KEY starts with sk-:", process.env.OPENAI_API_KEY?.startsWith("sk-") || false)
 console.log("  OPENCAGE_API_KEY exists:", !!process.env.OPENCAGE_API_KEY)
-console.log("  🔧 Production fix: Environment loading enabled")
+console.log("  OPENCAGE_API_KEY length:", process.env.OPENCAGE_API_KEY?.length || 0)
+console.log("  🔧 Environment loading:", process.env.NODE_ENV === "production" ? "Railway dashboard" : ".env file")
 
 const app = new Hono()
 
