@@ -96,8 +96,10 @@ app.use("/api", express.json(), async (req, res) => {
   console.log(`🔍 Request headers:`, req.headers)
 
   const isProduction = process.env.NODE_ENV === "production"
-  // Temporarily use local backend until Railway backend is fixed
-  const backendUrl = "http://localhost:3333"
+  // Use Railway backend URL in production, local in development
+  const backendUrl = isProduction
+    ? "https://dripdropcitybackend-production.up.railway.app"
+    : "http://localhost:3333"
 
   // Log the backend URL being used
   console.log(`🌐 Using backend URL: ${backendUrl}`)
