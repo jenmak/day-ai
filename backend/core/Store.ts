@@ -103,7 +103,7 @@ export abstract class Store<T extends StoreItem> {
       if (!exists) return
 
       const content = await fs.readFile(this.storePath, "utf-8")
-      
+
       // Try to parse as regular JSON first
       try {
         const entries = JSON.parse(content) as [string, T][]
