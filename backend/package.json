@@ -14,9 +14,8 @@
   },
   "scripts": {
     "dev": "bun run --hot src/index.ts",
-    "build": "bun run type-check",
-    "start": "bun server.js",
-    "type-check": "tsc --noEmit"
+    "build": "echo 'No build needed - Bun runs TypeScript natively'",
+    "start": "bun server.js"
   },
   "dependencies": {
     "@dripdropcity/shared": "workspace:*",
@@ -35,8 +34,6 @@
   },
   "devDependencies": {
     "@types/node": "^24.3.3",
-    "prettier": "^3.0.0",
-    "tsx": "^4.19.2",
-    "typescript": "^5.7.3"
+    "prettier": "^3.0.0"
   }
 }

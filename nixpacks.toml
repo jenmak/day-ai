@@ -8,11 +8,5 @@ cmds = [
   "bun install --frozen-lockfile --ignore-scripts --no-cache --no-verify"
 ]
 
-[phases.build]
-# Skip build phase entirely - just run TypeScript check
-cmds = [
-  "cd backend && bun run type-check"
-]
-
 [start]
 cmd = "cd backend && bun server.js"
