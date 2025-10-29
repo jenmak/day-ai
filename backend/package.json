@@ -14,7 +14,7 @@
   },
   "scripts": {
     "dev": "tsx watch src/index.ts",
-    "start": "node server-express.js",
+    "start": "node server-simple.js",
     "build": "npm run type-check",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
