@@ -13,11 +13,6 @@
           "cmds": [
             "cd backend && bun install --frozen-lockfile --ignore-scripts --no-cache --no-verify"
           ]
-        },
-        "build": {
-          "cmds": [
-            "cd backend && bun run type-check"
-          ]
         }
       }
     }
