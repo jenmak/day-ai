@@ -300,9 +300,8 @@ export const ValidationPatterns = {
  * Search input validation schema
  */
 export const SearchInputSchema = z.object({
-  searchTerm: z
+  query: z
     .string()
-    .min(1, "Search term is required")
     .max(100, "Search term must be 100 characters or less")
     .transform((val) => val.trim())
 })

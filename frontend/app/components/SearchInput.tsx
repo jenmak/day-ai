@@ -41,7 +41,15 @@ export function SearchInput({
   const { clearError } = usePlaceStore()
 
   // Validation hook.
-  const { errors, isValid, setValue, validate, handleChange, handleBlur, reset } = useValidation({
+  const {
+    errors,
+    isValid,
+    setValue,
+    validate,
+    handleChange,
+    handleBlur,
+    reset
+  } = useValidation({
     schema: SearchInputSchema,
     initialValue: { query: "" },
     validateOnChange: false,
@@ -56,7 +64,7 @@ export function SearchInput({
   const handleSearch = () => {
     setHasAttemptedSearch(true)
     const validationResult = validate()
-    if (validationResult.success && searchTerm.trim()) {
+    if (validationResult.success) {
       clearError()
       onSearch(searchTerm.trim())
       setValue({ query: "" })
@@ -107,7 +115,7 @@ export function SearchInput({
         />
         <Button
           type="submit"
-          disabled={isLoading || isSubmitting || !searchTerm.trim() || !isValid}
+          disabled={isLoading || isSubmitting || !isValid}
           className="search-button"
         >
           <ChevronRight className="h-4 w-4" />
