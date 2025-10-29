@@ -1,6 +1,5 @@
 import { QueryClient } from "@tanstack/react-query"
 import { createTRPCClient, httpLink, loggerLink } from "@trpc/client"
-import superjson from "superjson"
 import { ENV } from "./config"
 
 export const queryClient = new QueryClient({
@@ -36,7 +35,7 @@ export const trpcClient = createTRPCClient<any>({
     loggerLink(),
     httpLink({
       url: `${backendUrl}/trpc`,
-      transformer: superjson,
+      // Removed superjson transformer to fix production issues
       headers: {
         "Content-Type": "application/json",
         "Accept": "application/json"

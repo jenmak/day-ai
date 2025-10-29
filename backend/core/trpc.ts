@@ -1,6 +1,5 @@
 import { initTRPC, TRPCError } from "@trpc/server"
 import type { FetchCreateContextFnOptions } from "@trpc/server/adapters/fetch"
-import superjson from "superjson"
 import { container } from "../core/container"
 
 export const createContext = async (opts: FetchCreateContextFnOptions) => {
@@ -13,7 +12,7 @@ export const createContext = async (opts: FetchCreateContextFnOptions) => {
 }
 
 const trpc = initTRPC.context<typeof createContext>().create({
-  transformer: superjson
+  // Removed superjson transformer to fix production issues
 })
 
 /**

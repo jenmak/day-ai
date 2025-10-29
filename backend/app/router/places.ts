@@ -38,13 +38,19 @@ export const places = router({
 
         // 1. Use LLM to normalize the location description
         console.log("🤖 Calling LLM service...")
-        const llmResult = await LLMService.normalizePlace(
-          validatedInput.description
-        )
-        console.log(
-          `LLM normalized "${input.description}" to "${llmResult.normalizedPlace}" (confidence: ${llmResult.confidence})`
-        )
-        console.log(`LLM generated slug: "${llmResult.slug}"`)
+        let llmResult
+        try {
+          llmResult = await LLMService.normalizePlace(
+            validatedInput.description
+          )
+          console.log(
+            `LLM normalized "${input.description}" to "${llmResult.normalizedPlace}" (confidence: ${llmResult.confidence})`
+          )
+          console.log(`LLM generated slug: "${llmResult.slug}"`)
+        } catch (llmError) {
+          console.error("❌ LLM service error:", llmError)
+          throw llmError
+        }
 
         // 1a. Handle unknown/not found/not applicable locations
         if (
