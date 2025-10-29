@@ -13,12 +13,12 @@
     "./errors": "./app/errors.ts"
   },
   "scripts": {
-    "dev": "bun run --watch src/index.ts",
+    "dev": "tsx watch src/index.ts",
     "start": "node server-express.js",
-    "build": "bun run type-check",
+    "build": "npm run type-check",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "type-check": "bun run tsc --noEmit"
+    "type-check": "tsc --noEmit"
   },
   "dependencies": {
     "@hono/trpc-server": "^0.3.4",

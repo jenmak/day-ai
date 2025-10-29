@@ -416,5 +416,5 @@ app.onError((err, c) => {
 // Export the app for compatibility
 export default app
 
-// Server startup is now handled by server.js
+// Server startup is now handled by server-express.js
 // This file only exports the app configuration
