@@ -13,12 +13,9 @@
     "./errors": "./app/errors.ts"
   },
   "scripts": {
-    "dev": "tsx watch src/index.ts",
-    "start": "node index.js",
-    "build": "npm run type-check",
-    "format": "prettier --write .",
-    "format:check": "prettier --check .",
-    "type-check": "tsc --noEmit"
+    "dev": "bun run --hot src/index.ts",
+    "build": "echo 'No build needed - Bun runs TypeScript directly'",
+    "start": "bun server.js"
   },
   "dependencies": {
     "@hono/trpc-server": "^0.3.4",
