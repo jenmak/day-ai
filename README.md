@@ -1,4 +1,4 @@
-# DripDrop.City
+# Drip Drop City
 
 ## Tech Stack
 
